@@ -26,11 +26,14 @@ predict.cubist <- function (object, newdata = NULL, neighbors = 0, ...)
   ## make cases file
   caseString <- makeDataFile(x = newdata, y = NULL)
   
+  ## fix breaking predictions when using sample parameter
+  caseModel <- ifelse(!(regexpr("sample", object$model) == -1), paste(substr(object$model, 1, regexpr("sample", object$model)-1), substr(object$model, regexpr("entries", object$model), nchar(object$model)), sep = ""), object$model)
+  
   Z <- .C("predictions",
           as.character(caseString),
           as.character(object$names),
           as.character(object$data),
-          as.character(object$model),
+          as.character(caseModel),
           pred = double(nrow(newdata)),    
           output = character(1),
           PACKAGE = "Cubist"
