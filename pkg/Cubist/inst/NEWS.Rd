@@ -1,6 +1,6 @@
 \name{NEWS}
 \title{News for Package \pkg{Cubist}}
-\newcommand{\cpkg}{\href{http://CRAN.R-project.org/package=#1}{\pkg{#1}}}
+\newcommand{\cpkg}{\href{https://CRAN.R-project.org/package=#1}{\pkg{#1}}}
 \newcommand{\issue}{\href{https://github.com/topepo/cubist/issues/#1}{(issue #1)}}
 
 \section{Changes in version 0.0.19}{
