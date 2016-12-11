@@ -2,6 +2,8 @@ useDynLib(Cubist)
 
 import(lattice, reshape2)
 
+importFrom("stats", "complete.cases", "reshape")
+
 export(cubistControl,
        cubist,
        exportCubistFiles,
