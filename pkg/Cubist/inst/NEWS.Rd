@@ -1,6 +1,15 @@
 \name{NEWS}
 \title{News for Package \pkg{Cubist}}
 \newcommand{\cpkg}{\href{http://CRAN.R-project.org/package=#1}{\pkg{#1}}}
+\newcommand{\issue}{\href{https://github.com/topepo/cubist/issues/#1}{(issue #1)}}
+
+\section{Changes in version 0.0.19}{
+\itemize{ 
+\item A bug was fixed, found by Duncan Murdoch. 
+\item A bug in predictions when sampling was used was fixed by Laurae (a random data witch/magician) \issue{1}
+ }  
+}
+
 
 \section{Changes in version 0.0.17}{
 \itemize{ 
