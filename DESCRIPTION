@@ -8,7 +8,11 @@ Maintainer: Max Kuhn <mxkuhn@gmail.com>
 Description: Regression modeling using rules with added instance-based corrections.
 Depends: lattice
 Imports: reshape2
-Suggests: mlbench, caret
+Suggests: mlbench, caret, knitr
+URL: https://github.com/topepo/Cubist
+BugReports: https://github.com/topepo/Cubist/issues
 License: GPL-3
 LazyLoad: yes
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.0.1
+VignetteBuilder: knitr
