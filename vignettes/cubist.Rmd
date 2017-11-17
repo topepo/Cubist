@@ -1,0 +1,188 @@
+---
+title: "Cubist Regresion Models"
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Cubist Regresion Models}
+output:
+  knitr:::html_vignette:
+    toc: yes
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(caret)
+library(Cubist)
+theme_set(theme_bw())
+options(digits = 3)
+```
+
+`Cubist` is an `R` port of the Cubist GPL `C` code released by RuleQuest at [`http://rulequest.com/cubist-info.html`](http://rulequest.com/cubist-info.html). See the last section of this document for information on the porting. The other parts describes the functionality of the `R` package.
+
+
+## Model Trees
+
+Cubist is a rule--based model that is an extension of Quinlan's M5 model tree. A tree is grown where the terminal leaves contain linear regression models. These models are based on the predictors used in previous splits.  Also, there are intermediate linear models at each step of the tree. A prediction is made using the linear regression model at the terminal node of the tree, but is "smoothed" by taking into account the prediction from the linear model in the previous node of the tree (which also occurs recursively up the tree). The tree is reduced to a set of rules, which initially are paths from the top of the tree to the bottom. Rules are eliminated via pruning and/or combined for simplification. 
+
+This is explained better in Quinlan (1992). Wang and Witten (1997) attempted to recreate this model using a "rational reconstruction" of Quinlan (1992) that is the basis for the `M5P` model in `Weka` (and the R package `RWeka`).
+
+An example of a model tree can be illustrated using the Boston Housing data in the `mlbench` package.
+
+```{r bh1}
+library(Cubist)
+library(mlbench)
+
+data(BostonHousing)
+BostonHousing$chas <- as.numeric(BostonHousing$chas) - 1
+
+set.seed(1)
+inTrain <- sample(1:nrow(BostonHousing), floor(.8*nrow(BostonHousing)))
+
+train_pred <- BostonHousing[ inTrain, -14]
+test_pred  <- BostonHousing[-inTrain, -14]
+
+train_resp <- BostonHousing$medv[ inTrain]
+test_resp  <- BostonHousing$medv[-inTrain]
+
+model_tree <- cubist(x = train_pred, y = train_resp)
+model_tree
+``` 
+```{r bh2}
+summary(model_tree)
+``` 
+
+There is no formula method for `cubist`; the predictors are specified as matrix or data frame and the outcome is a numeric vector.
+
+There is a predict method for the model:
+
+```{r bh3}
+model_tree_pred <- predict(model_tree, test_pred)
+## Test set RMSE
+sqrt(mean((model_tree_pred - test_resp)^2))
+## Test set R^2
+cor(model_tree_pred, test_resp)^2
+``` 
+
+## Ensembles By Committees
+
+The Cubist model can also use a boosting--like scheme called _committees_ where iterative model trees are created in sequence. The first tree follows the procedure described in the last section. Subsequent trees are created using adjusted versions to the training set outcome: if the model over--predicted a value, the response is adjusted downward for the next model (and so on). Unlike traditional boosting, stage weights for each committee are not used to average the predictions from each model tree; the final prediction is a simple average of the predictions from each model tree.
+
+The `committee` option can be used to control number of model trees:
+
+```{r bh4}
+set.seed(1)
+com_model <- cubist(x = train_pred, y = train_resp,
+                         committees = 5)
+summary(com_model)
+``` 
+
+For this model:
+
+```{r bh5}
+com_pred <- predict(com_model, test_pred)
+## RMSE
+sqrt(mean((com_pred - test_resp)^2))
+## R^2
+cor(com_pred, test_resp)^2
+``` 
+
+## Instance--Based Corrections
+
+Another innovation in Cubist using nearest--neighbors to adjust the predictions from the rule--based model. First, a model tree (with or without committees) is created. Once a sample is predicted by this model, Cubist can find it's nearest neighbors and determine the average of these training set points. See Quinlan (1993a) for the details of the adjustment.
+
+The development of rules and committees is independent of the choice of using instances. The original `C` code allowed the program to choose whether to use instances, not use them or let the program decide. Our approach is to build a model with the `cubist` function that is ignorant to the decision about instances. When samples are predicted, the argument `neighbors` can be used to adjust the rule--based model predictions (or not). 
+
+We can add instances to the previously fit committee model:
+
+```{r bh6}
+inst_pred <- predict(com_model, test_pred, neighbors = 5)
+## RMSE
+sqrt(mean((inst_pred - test_resp)^2))
+## R^2
+cor(inst_pred, test_resp)^2
+``` 
+
+Note that the previous models used the implicit default of `neighbors = 0` for their predictions.
+
+To tune the model over different values of `neighbors` and `committees`, the `train` function in the
+[`caret](http://cran.r-project.org/web/packages/caret/index.html) package can be used to optimize these parameters. For example:
+
+```{r tune}
+library(caret)
+
+grid <- expand.grid(committees = c(1, 10, 50, 100),
+                    neighbors = c(0, 1, 5, 9))
+set.seed(1)
+boston_tuned <- train(
+  x = train_pred,
+  y = train_resp,
+  method = "cubist",
+  tuneGrid = grid,
+  trControl = trainControl(method = "cv")
+  )
+boston_tuned
+``` 
+
+The next figure shows the profiles of the tuning parameters produced using `ggplot(boston_tuned)`.
+
+```{r plot-tune, echo = FALSE, fig = TRUE, width = 6, height = 4.25}
+ggplot(boston_tuned) + 
+  theme(legend.position = "top")
+``` 
+
+It may also be useful to see how the different models fit a single predictor:
+
+```{r lstat}
+lstat_df <- train_pred[, "lstat", drop = FALSE]
+rules_only <- cubist(x = lstat_df, y = train_resp)
+rules_and_com <- cubist(x = lstat_df, y = train_resp, committees = 100)
+
+predictions <- lstat_df
+predictions$medv <- train_resp
+predictions$rules_neigh <- predict(rules_only, lstat_df, neighbors = 5)
+predictions$committees <- predict(rules_and_com, lstat_df)
+``` 
+
+The figure below shows the model fits for the test data. For these data, there doesn't appear to be much of a improvement when committees or instances are added to the based rules.
+
+```{r lstatPlot, echo = FALSE, fig = TRUE, width = 8, height = 4.5}
+ggplot(predictions, aes(x = lstat, y = medv)) + 
+  geom_point(alpha = .5) + 
+  geom_line(aes(y = rules_neigh), col = "red", alpha = .5, lwd = 1) + 
+  geom_line(aes(y = committees), col = "blue", alpha = .5, lwd = 1)  
+``` 
+
+## Variable Importance
+
+The `modelTree` method for Cubist shows the usage of each variable in either the rule conditions or the (terminal) linear model. In actuality, many more linear models are used in prediction that are shown in the output.  Because of this,  the variable usage statistics shown at the end of the output of the `summary` function will probably be inconsistent with the rules also shown in the output. At each split of the tree, Cubist saves a linear model (after feature selection) that is allowed to have terms for each variable used in the current split or any split above it. Quinlan (1992) discusses a smoothing algorithm where each model prediction is a linear combination of the parent and child model along the tree. As such, the final prediction is a function of all the linear models from the initial node to the terminal node. The percentages shown in the Cubist output reflects all the models involved in prediction (as opposed to the terminal models shown in the output).
+
+The raw usage statistics are contained in a data frame called `usage` in the `cubist` object. 
+
+The `caret` package has a general variable importance method `varImp`. When using this function on a `cubist` argument, the variable importance is a linear combination of the usage in the rule conditions and the model. 
+
+For example:
+
+```{r vimp}
+summary(model_tree)
+model_tree$usage
+library(caret)
+varImp(model_tree)
+``` 
+
+It should be noted that this variable importance measure does not capture the influence of the predictors when using the instance--based correction.
+
+
+## Exporting the Model
+
+As previously mentioned, this code is a port of the command--line `C` code. To run the `C` code, the training set data must be converted to a specific file format as detailed on the RuleQuest website. Two files are created. The `file.data` file is a header--less, comma delimited version of the data (the `file` part is a name given by the user). The `file.names` file provides information about the columns (eg. levels for categorical data and so on). After running the `C` program, another text file called `file.models`, which contains the information needed for prediction. 
+
+Once a model has been built with the `R` `cubist` package, the `exportCubistFiles` can be used to create the `.data`, `.names` and `.model` files so that the same model can be run at the command--line.
+
+
+## Current Limitations
+
+There are a few features in the `C` code that are not yet operational in the `R` package:
+
+ * only continuous and categorical predictors can be used (the original source code allows for other data types)
+ * there is an option to let the `C` code decide on using instances or not. The choice is more explicit in this package
+ * non--standard predictor names are not currently checked/fixed
+ * the `C` code supports binning of predictors
