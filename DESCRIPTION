@@ -11,3 +11,4 @@ Imports: reshape2
 Suggests: mlbench, caret
 License: GPL-3
 LazyLoad: yes
+RoxygenNote: 6.0.1
