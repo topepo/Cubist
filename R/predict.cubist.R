@@ -1,33 +1,33 @@
 #' Predict method for cubist fits
 #' 
-#' Predicted values based on a cubist object.
 #' 
-#' Prediction using the parametric model are calculated using the method of
-#' Quinlan (1992). If `neighbors` is greater than zero, these predictions
-#' are adjusted by training set instances nearby using the approach of Qunilan
-#' (1993).
+#'Prediction using the parametric model are calculated using the
+#'  method of Quinlan (1992). If `neighbors` is greater than zero,
+#'  these predictions are adjusted by training set instances nearby
+#'  using the approach of Quinlan (1993).
 #' 
 #' @param object an object of class `cubist`
-#' @param newdata a data frame of predictors (in the same order as the original
-#' training data)
-#' @param neighbors an integer from 0 to 9: how many instances to use to
-#' correct the rule-based prediction?
-#' @param \dots other options to pass through the function (not currently used)
+#' @param newdata a data frame of predictors (in the same order as
+#'  the original training data)
+#' @param neighbors an integer from 0 to 9: how many instances to
+#'  use to correct the rule-based prediction?
+#' @param \dots other options to pass through the function (not
+#'  currently used)
 #' @return a numeric vector is returned
 #' @author R code by Max Kuhn, original C sources by R Quinlan and
-#' modifications be Steve Weston
-#' @seealso [cubist()], [cubistControl()],
-#' [summary.cubist()], [predict.cubist()],
-#' [dotplot.cubist()]
-#' @references Quinlan. Learning with continuous classes. Proceedings of the
-#' 5th Australian Joint Conference On Artificial Intelligence (1992) pp.
-#' 343-348
+#'  modifications be Steve Weston
+#' @seealso [cubist()], [cubistControl()], [summary.cubist()],
+#'  [predict.cubist()], [dotplot.cubist()]
+#' @references Quinlan. Learning with continuous classes.
+#'  Proceedings of the 5th Australian Joint Conference On Artificial
+#'  Intelligence (1992) pp. 343-348
 #' 
-#' Quinlan. Combining instance-based and model-based learning. Proceedings of
-#' the Tenth International Conference on Machine Learning (1993) pp. 236-243
+#' Quinlan. Combining instance-based and model-based learning.
+#'  Proceedings of the Tenth International Conference on Machine
+#'  Learning (1993) pp. 236-243
 #' 
-#' Quinlan. \strong{C4.5: Programs For Machine Learning} (1993) Morgan Kaufmann
-#' Publishers Inc. San Francisco, CA
+#' Quinlan. \strong{C4.5: Programs For Machine Learning} (1993)
+#'  Morgan Kaufmann Publishers Inc. San Francisco, CA
 #' 
 #' \url{http://rulequest.com/cubist-info.html}
 #' @keywords models
@@ -46,33 +46,45 @@
 #' 
 #' @export predict.cubist
 predict.cubist <- function (object, newdata = NULL, neighbors = 0, ...) {
-  if(is.null(newdata)) stop("newdata must be non-null")
+  if (is.null(newdata))
+    stop("newdata must be non-null", call. = FALSE)
   
   ## check order of data to make sure that it is the same
-  newdata <- newdata[, object$vars$all,drop = FALSE]
+  newdata <- newdata[, object$vars$all, drop = FALSE]
   
-  if(length(neighbors) > 1) stop("only a single value of neighbors is allowed")
-  if(neighbors > 9) stop("'neighbors' must be less than 10")
-  if(neighbors > 0){
-    object$model <- gsub("insts=\"0\"",
-                         paste("insts=\"1\" nn=\"",
-                               neighbors,
-                               "\" maxd=\"",
-                               object$maxd,
-                               "\"",
-                               sep = ""),
-                         object$model)
+  if (length(neighbors) > 1)
+    stop("only a single value of neighbors is allowed")
+  if (neighbors > 9)
+    stop("'neighbors' must be less than 10")
+  if (neighbors > 0) {
+    object$model <- gsub(
+      "insts=\"0\"",
+      paste(
+        "insts=\"1\" nn=\"",
+        neighbors,
+        "\" maxd=\"",
+        object$maxd,
+        "\"",
+        sep = ""
+      ),
+      object$model
+    )
   }
   
   ## make cases file
   caseString <- makeDataFile(x = newdata, y = NULL)
   
   ## fix breaking predictions when using sample parameter
-  caseModel <- ifelse(!(regexpr("sample", object$model) == -1), 
-                      paste0(substr(object$model, 1, 
-                                    regexpr("sample", object$model)-1), 
-                             substr(object$model, regexpr("entries", object$model), 
-                                   nchar(object$model))), 
+  caseModel <- ifelse(!(regexpr("sample", object$model) == -1),
+                      paste0(
+                        substr(object$model, 1,
+                               regexpr("sample", object$model) - 1),
+                        substr(
+                          object$model,
+                          regexpr("entries", object$model),
+                          nchar(object$model)
+                        )
+                      ),
                       object$model)
   
   Z <- .C("predictions",
