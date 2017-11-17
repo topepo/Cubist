@@ -1,3 +1,4 @@
+#' @export
 cubist <-  function(x, ...) UseMethod("cubist")
 
 # About the Cubist C code and our approach here...
@@ -129,6 +130,7 @@ cubist <-  function(x, ...) UseMethod("cubist")
 #' 
 #' \url{http://rulequest.com/cubist-info.html}
 #' @keywords models
+#' @useDynLib Cubist
 #' @examples
 #' 
 #' library(mlbench)
@@ -142,7 +144,8 @@ cubist <-  function(x, ...) UseMethod("cubist")
 #' mod2 <- cubist(x = BostonHousing[, -14], y = BostonHousing$medv, committees = 10)
 #' mod2
 #' 
-#' @export cubist.default
+#' @export 
+#' @method cubist default
 cubist.default <- function(x, y,
                            committees = 1,
                            control = cubistControl(), 
@@ -313,6 +316,7 @@ cubistControl <- function(
   }
 
 
+#' @export
 print.cubist <- function(x, ...) {
   cat("\nCall:\n", truncateText(deparse(x$call, width.cutoff = 500)), "\n\n", sep = "")
   
@@ -482,13 +486,15 @@ print.cubist <- function(x, ...) {
 #' ## Time: 0.0 secs
 #' 
 #' 
-#' @export summary.cubist
+#' @method summary cubist
+#' @export 
 summary.cubist <- function(object, ...) {
   out <- list(output = object$output, call = object$call)
   class(out) <- "summary.cubist"
   out
 }
 
+#' @export
 print.summary.cubist <- function(x, ...) {
   cat(
     "\nCall:\n", 

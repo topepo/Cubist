@@ -8,7 +8,7 @@
   committee = NULL, rule = NULL, ...)
 }
 \arguments{
-\item{x}{a [cubist()] object}
+\item{x}{a \code{\link[=cubist]{cubist()}} object}
 
 \item{data}{not currently used (here for lattice compatibility)}
 
@@ -18,22 +18,24 @@
 
 \item{rule}{which rules to plot}
 
-\item{\dots}{options to pass to [lattice::dotplot()]}
+\item{\dots}{options to pass to \code{\link[lattice:dotplot]{lattice::dotplot()}}}
 }
 \value{
-a [lattice::dotplot()] object
+a \code{\link[lattice:dotplot]{lattice::dotplot()}} object
 }
 \description{
 Lattice dotplots of the rule conditions or the linear model coefficients
-produced by [cubist()] objects
+produced by \code{\link[=cubist]{cubist()}} objects
 }
 \details{
-For the splits, a panel is created for each predictor. The x-axis is the
-range of the predictor scaled to [0, 1] and the y-axis has a line for each
-rule (within each committee). Areas are colored as based on their region.
-For example, if one rule has `var1 < 10`, the linear for this rule
-would be colored. If another rule had the complementary region of `var1
-<= 10`, it would be on another line and shaded a different color.
+For the splits, a panel is created for each predictor. The
+x-axis is the range of the predictor scaled to be between zero
+and one and the y-axis has a line for each rule (within each
+committee). Areas are colored as based on their region. For
+example, if one rule has \code{var1 < 10}, the linear for this rule
+would be colored. If another rule had the complementary region
+of \code{var1 <= 10}, it would be on another line and shaded a
+different color.
 
 For the coefficient plot, another dotplot is made. The layout is the same
 except the the x-axis is in the original units and has a dot if the rule
@@ -72,9 +74,9 @@ Publishers Inc. San Francisco, CA
 \url{http://rulequest.com/cubist-info.html}
 }
 \seealso{
-[cubist()], [cubistControl()],
-[predict.cubist()], [summary.cubist()],
-[predict.cubist()], [lattice::dotplot()]
+\code{\link[=cubist]{cubist()}}, \code{\link[=cubistControl]{cubistControl()}},
+\code{\link[=predict.cubist]{predict.cubist()}}, \code{\link[=summary.cubist]{summary.cubist()}},
+\code{\link[=predict.cubist]{predict.cubist()}}, \code{\link[lattice:dotplot]{lattice::dotplot()}}
 }
 \author{
 R code by Max Kuhn, original C sources by R Quinlan and

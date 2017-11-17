@@ -7,7 +7,7 @@
 \method{predict}{cubist}(object, newdata = NULL, neighbors = 0, ...)
 }
 \arguments{
-\item{object}{an object of class `cubist`}
+\item{object}{an object of class \code{cubist}}
 
 \item{newdata}{a data frame of predictors (in the same order as
 the original training data)}
@@ -23,9 +23,9 @@ a numeric vector is returned
 }
 \description{
 Prediction using the parametric model are calculated using the
- method of Quinlan (1992). If `neighbors` is greater than zero,
- these predictions are adjusted by training set instances nearby
- using the approach of Quinlan (1993).
+method of Quinlan (1992). If \code{neighbors} is greater than zero,
+these predictions are adjusted by training set instances nearby
+using the approach of Quinlan (1993).
 }
 \examples{
 
@@ -39,28 +39,27 @@ predict(mod1, BostonHousing[1:4, -14])
 ## now add instances
 predict(mod1, BostonHousing[1:4, -14], neighbors = 5)
 
-
 }
 \references{
 Quinlan. Learning with continuous classes.
- Proceedings of the 5th Australian Joint Conference On Artificial
- Intelligence (1992) pp. 343-348
+Proceedings of the 5th Australian Joint Conference On Artificial
+Intelligence (1992) pp. 343-348
 
 Quinlan. Combining instance-based and model-based learning.
- Proceedings of the Tenth International Conference on Machine
- Learning (1993) pp. 236-243
+Proceedings of the Tenth International Conference on Machine
+Learning (1993) pp. 236-243
 
 Quinlan. \strong{C4.5: Programs For Machine Learning} (1993)
- Morgan Kaufmann Publishers Inc. San Francisco, CA
+Morgan Kaufmann Publishers Inc. San Francisco, CA
 
 \url{http://rulequest.com/cubist-info.html}
 }
 \seealso{
-[cubist()], [cubistControl()], [summary.cubist()],
- [predict.cubist()], [dotplot.cubist()]
+\code{\link[=cubist]{cubist()}}, \code{\link[=cubistControl]{cubistControl()}}, \code{\link[=summary.cubist]{summary.cubist()}},
+\code{\link[=predict.cubist]{predict.cubist()}}, \code{\link[=dotplot.cubist]{dotplot.cubist()}}
 }
 \author{
 R code by Max Kuhn, original C sources by R Quinlan and
- modifications be Steve Weston
+modifications be Steve Weston
 }
 \keyword{models}

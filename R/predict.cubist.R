@@ -43,8 +43,8 @@
 #' ## now add instances
 #' predict(mod1, BostonHousing[1:4, -14], neighbors = 5)
 #' 
-#' 
-#' @export predict.cubist
+#' @method predict cubist 
+#' @export 
 predict.cubist <- function (object, newdata = NULL, neighbors = 0, ...) {
   if (is.null(newdata))
     stop("newdata must be non-null", call. = FALSE)

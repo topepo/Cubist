@@ -336,64 +336,63 @@ parser <- function(x)
     x
   }
 
-
-coef.cubist <- function(object, varNames = NULL, ...)
-  {
-
-    
-    x <- object$model
-    x <- strsplit(x, "\n")[[1]]
-    comNum <- ruleNum <- condNum <- rep(NA, length(x))
-    comIdx <- rIdx <- 0
-    for(i in seq(along = x))
-      {
-        tt <- parser(x[i])
-        if(names(tt)[1] == "rules")
-          {
-            comIdx <- comIdx + 1
-            rIdx <- 0
-          }
-        comNum[i] <-comIdx
-        if(names(tt)[1] == "conds")
-          {
-            rIdx <- rIdx + 1
-            cIdx <- 0
-          }
-        ruleNum[i] <-rIdx
-        if(names(tt)[1] == "type")
-          {
-            cIdx <- cIdx + 1
-            condNum[i] <- cIdx
-          }
-      }
-    isEqn <- ifelse(grepl("^coeff=", x), TRUE, FALSE) 
-
-    isEqn <- grepl("^coeff=", x)
-    coefs <- eqn(x[isEqn], dig = 0, text = FALSE, varNames = varNames)
-    p <- length(coefs)
-    dims <- unlist(lapply(coefs, length))
-    
-    coefs <- do.call("c", coefs)
-    coms <- rep(comNum[isEqn], dims)
-    rls <- rep(ruleNum[isEqn], dims)
-    out <- data.frame(tmp = paste(coms, rls, sep = "."), value = coefs, var = names(coefs))
-    out <- reshape(out, direction = "wide", v.names = "value", timevar = "var",
-                   idvar = "tmp")
-    colnames(out) <- gsub("value.", "", colnames(out), fixed = TRUE)
-    tmp <- strsplit(as.character(out$tmp), ".", fixed = TRUE)
-    out$committee <- unlist(lapply(tmp, function(x) x[1]))
-    out$rule <- unlist(lapply(tmp, function(x) x[2]))
-    out$tmp <- NULL
-    out
-
+#' @importFrom stats reshape
+coef.cubist <- function(object, varNames = NULL, ...)  {
+  x <- object$model
+  x <- strsplit(x, "\n")[[1]]
+  comNum <- ruleNum <- condNum <- rep(NA, length(x))
+  comIdx <- rIdx <- 0
+  for (i in seq(along = x)) {
+    tt <- parser(x[i])
+    if (names(tt)[1] == "rules") {
+      comIdx <- comIdx + 1
+      rIdx <- 0
+    }
+    comNum[i] <- comIdx
+    if (names(tt)[1] == "conds") {
+      rIdx <- rIdx + 1
+      cIdx <- 0
+    }
+    ruleNum[i] <- rIdx
+    if (names(tt)[1] == "type") {
+      cIdx <- cIdx + 1
+      condNum[i] <- cIdx
+    }
   }
+  isEqn <- ifelse(grepl("^coeff=", x), TRUE, FALSE)
+  
+  isEqn <- grepl("^coeff=", x)
+  coefs <-
+    eqn(x[isEqn],
+        dig = 0,
+        text = FALSE,
+        varNames = varNames)
+  p <- length(coefs)
+  dims <- unlist(lapply(coefs, length))
+  
+  coefs <- do.call("c", coefs)
+  coms <- rep(comNum[isEqn], dims)
+  rls <- rep(ruleNum[isEqn], dims)
+  out <-
+    data.frame(
+      tmp = paste(coms, rls, sep = "."),
+      value = coefs,
+      var = names(coefs)
+    )
+  out <-
+    reshape(
+      out,
+      direction = "wide",
+      v.names = "value",
+      timevar = "var",
+      idvar = "tmp"
+    )
+  colnames(out) <- gsub("value.", "", colnames(out), fixed = TRUE)
+  tmp <- strsplit(as.character(out$tmp), ".", fixed = TRUE)
+  out$committee <- unlist(lapply(tmp, function(x) x[1]))
+  out$rule <- unlist(lapply(tmp, function(x) x[2]))
+  out$tmp <- NULL
+  out
+  
+}
 
-
-
-
-if(FALSE)
-  {
-    setwd("~/Downloads/Cubist")
-    comMod <- read.delim("committee_example.model", stringsAsFactors = FALSE)[,1]
-    printCubistRules(comMod, 1)
-  }

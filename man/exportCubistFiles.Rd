@@ -7,7 +7,7 @@
 exportCubistFiles(x, neighbors = 0, path = getwd(), prefix = NULL)
 }
 \arguments{
-\item{x}{a [cubist()] object}
+\item{x}{a \code{\link[=cubist]{cubist()}} object}
 
 \item{neighbors}{how many, if any, neighbors should be used to correct the
 model predictions}
@@ -24,8 +24,8 @@ For a fitted cubist object, text files consistent with teh RuleQuest
 command-line version can be exported.
 }
 \details{
-Using the RuleQuest specifications, `model`, `names` and
-`data` files are created for use with the command-line version of the
+Using the RuleQuest specifications, \code{model}, \code{names} and
+\code{data} files are created for use with the command-line version of the
 program.
 }
 \examples{
@@ -52,9 +52,9 @@ Publishers Inc. San Francisco, CA
 \url{http://rulequest.com/cubist-info.html}
 }
 \seealso{
-[cubist()][cubistControl()],
-[predict.cubist()], [summary.cubist()],
-[predict.cubist()]
+\link[=cubistControl]{cubist()},
+\code{\link[=predict.cubist]{predict.cubist()}}, \code{\link[=summary.cubist]{summary.cubist()}},
+\code{\link[=predict.cubist]{predict.cubist()}}
 }
 \author{
 Max Kuhn

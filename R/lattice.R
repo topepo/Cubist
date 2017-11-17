@@ -1,19 +1,16 @@
-## To avoid "dotplot.cubist: no visible binding for global variable 'type'":
-type <- NULL
-
-
-
 #' Visualization of Cubist Rules and Equations
 #' 
 #' Lattice dotplots of the rule conditions or the linear model coefficients
 #' produced by [cubist()] objects
 #' 
-#' For the splits, a panel is created for each predictor. The x-axis is the
-#' range of the predictor scaled to [0, 1] and the y-axis has a line for each
-#' rule (within each committee). Areas are colored as based on their region.
-#' For example, if one rule has `var1 < 10`, the linear for this rule
-#' would be colored. If another rule had the complementary region of `var1
-#' <= 10`, it would be on another line and shaded a different color.
+#' For the splits, a panel is created for each predictor. The
+#'  x-axis is the range of the predictor scaled to be between zero
+#'  and one and the y-axis has a line for each rule (within each
+#'  committee). Areas are colored as based on their region. For
+#'  example, if one rule has `var1 < 10`, the linear for this rule
+#'  would be colored. If another rule had the complementary region
+#'  of `var1 <= 10`, it would be on another line and shaded a
+#'  different color.
 #' 
 #' For the coefficient plot, another dotplot is made. The layout is the same
 #' except the the x-axis is in the original units and has a dot if the rule
@@ -61,88 +58,103 @@ type <- NULL
 #'         scales = list(x = list(relation = "free"), 
 #'                       y = list(cex = .25)))
 #' 
-#' @export dotplot.cubist
-dotplot.cubist <- function(x, data = NULL, what = "splits", committee = NULL, rule = NULL, ...)
-  {
+#' @export 
+#' @method dotplot cubist
+#' @importFrom lattice dotplot panel.segments trellis.par.get
+#' @importFrom reshape2 melt
+#' @importFrom stats complete.cases
+dotplot.cubist <- function(x, data = NULL, what = "splits", 
+                           committee = NULL, rule = NULL, ...) {
 
-    splits <- x$splits
-    if(is.null(splits)) stop("No splits were used in this model")
-
-    if(!is.null(committee)) splits <- splits[splits$committee <= committee,]
-    if(!is.null(rule)) splits <-  splits[splits$rule <= rule,]
-
-    if(max(splits$committee) == 1)
-      {
-        lab <- "Rule"
-        splits$label <-gsub(" ", "0", format(as.character(splits$rule), justify = "right"))
-      } else {
-        splits$label <- paste(gsub(" ", "0", format(as.character(splits$committe), justify = "right")),
-                              gsub(" ", "0", as.character(format(splits$rule), justify = "right")),
-                              sep = "/")
-        lab <- "Committe/Rule"
-      }
-
-    
-    if(what == "splits")
-      {
-        if(all(splits$type == "type3")) stop("No splits of continuous predictors were made")
-        out <- dotplot(label ~ percentile|variable, data = splits,
-                       subset = type == "type2",
-                       groups = dir,
-                       panel = function(x, y, groups, subscripts)
-                       {
-                         plotTheme <- trellis.par.get()
-                        
-                        
-                         y2 <- as.numeric(y)
-                         groups <- groups[subscripts]
-                         isLower <- grepl("<", groups)
-                         for(i in seq(along = levels(y)))
-                           {
-                             panel.segments(0, i, 1, i,
-                                            col =  plotTheme$reference.line$col,
-                                            lty =  plotTheme$reference.line$lty, 
-                                            lwd =  plotTheme$reference.line$lwd)
-                           }
-                         for(i in seq(along = x))
-                           {
-                             
-                             if(isLower[i])
-                               {
-                                 panel.segments(0, y2[i], x[i], y2[i],
-                                                col = plotTheme$superpose.line$col[1],
-                                                lty = plotTheme$superpose.line$lty[1],
-                                                lwd = plotTheme$superpose.line$lwd[1])
-                               } else panel.segments(x[i], y2[i], 1, y2[i],
-                                                     col = plotTheme$superpose.line$col[2],
-                                                     lty = plotTheme$superpose.line$lty[2],
-                                                     lwd = plotTheme$superpose.line$lwd[2])
-                           }
-
-
-
-                       },
-                       xlim = c(-.05, 1.05),
-                       xlab = "Training Data Coverage",
-                       ylab = lab,
-                       ...)
-      }
-    if(what == "coefs")
-      {
-        coefVals <- x$coefficients
-        coefVals <- melt(coefVals, id.vars = c("committee", "rule"))
-        coefVals <- coefVals[complete.cases(coefVals),]
-        if(max(coefVals$committee) == 1)
-          {
-            lab <- "Rule"
-            coefVals$label <-gsub(" ", "0", format(as.character(coefVals$rule), justify = "right"))
-          } else {
-            coefVals$label <- paste(gsub(" ", "0", format(as.character(coefVals$committe), justify = "right")),
-                                    gsub(" ", "0", as.character(format(coefVals$rule), justify = "right")),
-                                    sep = "/")
-            lab <- "Committe/Rule"
-          }
-        out <- dotplot(label ~ value|variable, data = coefVals, ...)
-      }
-    out
+  splits <- x$splits
+  if (is.null(splits))
+    stop("No splits were used in this model", call. = FALSE)
+  
+  if (!is.null(committee))
+    splits <- splits[splits$committee <= committee, ]
+  if (!is.null(rule))
+    splits <-  splits[splits$rule <= rule, ]
+  
+  if (max(splits$committee) == 1) {
+    lab <- "Rule"
+    splits$label <-
+      gsub(" ", "0", format(as.character(splits$rule), justify = "right"))
+  } else {
+    splits$label <-
+      paste(gsub(" ", "0", format(
+        as.character(splits$committe), justify = "right"
+      )),
+      gsub(" ", "0", as.character(format(splits$rule), justify = "right")),
+      sep = "/")
+    lab <- "Committe/Rule"
   }
+
+  
+  if (what == "splits") {
+    if (all(splits$type == "type3"))
+      stop("No splits of continuous predictors were made", call. = FALSE)
+    out <- dotplot(
+      label ~ percentile | variable,
+      data = splits,
+      subset = type == "type2",
+      groups = dir,
+      panel = function(x, y, groups, subscripts) {
+        plotTheme <- trellis.par.get()
+        y2 <- as.numeric(y)
+        groups <- groups[subscripts]
+        isLower <- grepl("<", groups)
+        for (i in seq(along = levels(y))) {
+          panel.segments(
+            0, i, 1, i,
+            col =  plotTheme$reference.line$col,
+            lty =  plotTheme$reference.line$lty,
+            lwd =  plotTheme$reference.line$lwd
+          )
+        }
+        for (i in seq(along = x)) {
+          if (isLower[i]) {
+            panel.segments(
+              0, y2[i], x[i], y2[i],
+              col = plotTheme$superpose.line$col[1],
+              lty = plotTheme$superpose.line$lty[1],
+              lwd = plotTheme$superpose.line$lwd[1]
+            )
+          } else
+            panel.segments(
+              x[i], y2[i], 1, y2[i],
+              col = plotTheme$superpose.line$col[2],
+              lty = plotTheme$superpose.line$lty[2],
+              lwd = plotTheme$superpose.line$lwd[2]
+            )
+        }
+      },
+      xlim = c(-.05, 1.05),
+      xlab = "Training Data Coverage",
+      ylab = lab,
+      ...
+    )
+  }
+  if (what == "coefs") {
+    coefVals <- x$coefficients
+    coefVals <- melt(coefVals, id.vars = c("committee", "rule"))
+    coefVals <- coefVals[complete.cases(coefVals), ]
+    if (max(coefVals$committee) == 1) {
+      lab <- "Rule"
+      coefVals$label <-
+        gsub(" ", "0", format(as.character(coefVals$rule), justify = "right"))
+    } else {
+      coefVals$label <-
+        paste(gsub(" ", "0", format(
+          as.character(coefVals$committe), justify = "right"
+        )),
+        gsub(" ", "0", as.character(format(coefVals$rule), justify = "right")),
+        sep = "/")
+      lab <- "Committe/Rule"
+    }
+    out <- dotplot(label ~ value | variable, data = coefVals, ...)
+  }
+  out
+}
+
+#' @importFrom utils globalVariables
+utils::globalVariables(c("type"))

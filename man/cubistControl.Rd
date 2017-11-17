@@ -10,8 +10,8 @@ cubistControl(unbiased = FALSE, rules = 100, extrapolation = 100,
 \arguments{
 \item{unbiased}{a logical: should unbiased rules be used?}
 
-\item{rules}{an integer (or `NA`): define an explicit limit to
-the number of rules used (`NA` let's Cubist decide).}
+\item{rules}{an integer (or \code{NA}): define an explicit limit to
+the number of rules used (\code{NA} let's Cubist decide).}
 
 \item{extrapolation}{a number between 0 and 100: since Cubist
 uses linear models, predictions can be outside of the outside of
@@ -32,7 +32,7 @@ A list containing the options.
 }
 \description{
 Most of these values are discussed at length in
- \url{http://rulequest.com/cubist-unix.html}
+\url{http://rulequest.com/cubist-unix.html}
 }
 \examples{
 
@@ -41,21 +41,21 @@ cubistControl()
 }
 \references{
 Quinlan. Learning with continuous classes.
- Proceedings of the 5th Australian Joint Conference On Artificial
- Intelligence (1992) pp. 343-348
+Proceedings of the 5th Australian Joint Conference On Artificial
+Intelligence (1992) pp. 343-348
 
-  Quinlan. Combining instance-based and model-based learning.
- Proceedings of the Tenth International Conference on Machine
- Learning (1993) pp. 236-243
+Quinlan. Combining instance-based and model-based learning.
+Proceedings of the Tenth International Conference on Machine
+Learning (1993) pp. 236-243
 
-  Quinlan. \strong{C4.5: Programs For Machine Learning} (1993)
- Morgan Kaufmann Publishers Inc. San Francisco, CA
+Quinlan. \strong{C4.5: Programs For Machine Learning} (1993)
+Morgan Kaufmann Publishers Inc. San Francisco, CA
 
 \url{http://rulequest.com/cubist-info.html}
 }
 \seealso{
-[cubist()], [predict.cubist()], [summary.cubist()],
- [predict.cubist()], [dotplot.cubist()]
+\code{\link[=cubist]{cubist()}}, \code{\link[=predict.cubist]{predict.cubist()}}, \code{\link[=summary.cubist]{summary.cubist()}},
+\code{\link[=predict.cubist]{predict.cubist()}}, \code{\link[=dotplot.cubist]{dotplot.cubist()}}
 }
 \author{
 Max Kuhn
