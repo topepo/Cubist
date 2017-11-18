@@ -96,6 +96,36 @@ predict.cubist <- function (object, newdata = NULL, neighbors = 0, ...) {
           output = character(1),
           PACKAGE = "Cubist")
   
-  
+  if(all(Z$pred == 0))
+    stop(Z$output, call. = FALSE)
+  if(nchar(Z$output) > 0) {
+    bad_att_rows <- bad_att_index(Z$output)
+    if(length(bad_att_rows))
+      Z$pred[bad_att_rows] <- NA
+    warning(Z$output, "\n Setting to NA", call. = FALSE)
+  }
   Z$pred
 }
+
+# There are occations when a new sample is predicted that has a 
+# different categoriucal value than what was in the training set.
+# The C code does nto return a status integer and only issues
+# errors in Z$output so we parse that and set these cases to NA
+
+bad_att_index <- function(x) {
+  bad_att <- grep("\n    bad value of", x, fixed = TRUE)
+  if(length(bad_att) == 0) {
+    return(integer(0))
+  } else {
+    x <- x[bad_att]
+    x <- strsplit(x, "\n")[[1]]
+    x <- x[grepl("*** line", x, fixed = TRUE)]
+    x <- gsub("*** line ", "", x, fixed = TRUE)
+    x <- strsplit(x, " ")
+    x <- lapply(x, function(x) as.integer(x[1]))
+    x <- unlist(x)
+  }
+  x
+}
+
+
