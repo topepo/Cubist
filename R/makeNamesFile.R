@@ -33,44 +33,64 @@
 ## their values will be given for each case.
 
 makeNamesFile <-
-function(x, y, label = "outcome", comments = TRUE)
-  {
-    if(comments)
-      {
-        call <- match.call()
-        out <- paste("| Generated using ", R.version.string, "\n",
-                     "| on ", format(Sys.time(), "%a %b %d %H:%M:%S %Y"), "\n",
-                     "| function call: ", paste(deparse(call)),
-                     sep = "")
-      } else out <- ""
-
-    if(is.numeric(y))
-      {
-        outcomeInfo <- ": continuous."
-      } else {
-        lvls <- levels(y)
-        prefix <- if(is.ordered(y)) "[ordered] " else ""
-        outcomeInfo <- paste(": ",
-                             prefix,
-                             paste(lvls, collapse = ","),
-                             ".", sep = "")
-      }
-
+  function(x,
+           y,
+           label = "outcome",
+           comments = TRUE) {
+    
+    # See issue #5
+    has_sample <- grep("^sample", colnames(x))
+    if(length(has_sample)) 
+      colnames(x) <- gsub("^sample", "__Sample", colnames(x))
+    
+    if (comments) {
+      call <- match.call()
+      out <- paste(
+        "| Generated using ",
+        R.version.string,
+        "\n",
+        "| on ",
+        format(Sys.time(), "%a %b %d %H:%M:%S %Y"),
+        "\n",
+        "| function call: ",
+        paste(deparse(call)),
+        sep = ""
+      )
+    } else
+      out <- ""
+    
+    if (is.numeric(y)) {
+      outcomeInfo <- ": continuous."
+    } else {
+      lvls <- levels(y)
+      prefix <- if (is.ordered(y))
+        "[ordered] "
+      else
+        ""
+      outcomeInfo <- paste(": ",
+                           prefix,
+                           paste(lvls, collapse = ","),
+                           ".", sep = "")
+    }
+    
     out <- paste(out,
                  "\n", label, ".\n",
                  "\n", label, outcomeInfo,
                  sep = "")
     varData <- QuinlanAttributes(x)
-    varData <- paste(escapes(names(varData)), ": ", varData, sep = "", collapse = "\n")
+    varData <-
+      paste(escapes(names(varData)),
+            ": ",
+            varData,
+            sep = "",
+            collapse = "\n")
     out <- paste(out, "\n", varData, "\n", sep = "")
     out
-
-
   }
 
-escapes <- function(x, chars = c(":", ";", "|"))
-  {
-    for(i in chars) x <- gsub(i, paste("\\", i, sep = ""), x, fixed = TRUE)
-    x
-  }
+escapes <- function(x, chars = c(":", ";", "|")) {
+  for (i in chars)
+    x <- gsub(i, paste("\\", i, sep = ""), x, fixed = TRUE)
+  x
+}
 

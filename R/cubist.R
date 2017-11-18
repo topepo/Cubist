@@ -182,6 +182,13 @@ cubist.default <- function(x, y,
           PACKAGE = "Cubist"
           )
 
+  # Check for converted names
+  has_reserved <- grep("\n__Sample", namesString, fixed = TRUE)
+  if(length(has_reserved) > 0) {
+    Z$output <- gsub("__Sample", "sample", Z$output)
+    Z$model <- gsub("__Sample", "sample", Z$model)
+  }
+  
   splits <- getSplits(Z$model)
   if (!is.null(splits)) {
     splits$percentile <- NA
@@ -299,11 +306,11 @@ cubistControl <- function(
   label = "outcome"
 ) {
   if (!is.na(rules) & (rules < 1 | rules > 1000000))
-    stop("number of rules must be between 1 and 1000000")
+    stop("number of rules must be between 1 and 1000000", call. = FALSE)
   if (extrapolation < 0 | extrapolation > 100)
-    stop("percent extrapolation must between 0 and 100")
+    stop("percent extrapolation must between 0 and 100", call. = FALSE)
   if (sample < 0.0 | sample > 99.9)
-    stop("sampling percentage must be between 0.0 and 99.9")
+    stop("sampling percentage must be between 0.0 and 99.9", call. = FALSE)
   
   list(
     unbiased = unbiased,
