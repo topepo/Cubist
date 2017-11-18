@@ -12,3 +12,6 @@ pkg/Cubist/src/Makevars
 pkg/Cubist_0.0.19.tar.gz
 
 pkg/Cubist.Rcheck
+
+config.log
+
