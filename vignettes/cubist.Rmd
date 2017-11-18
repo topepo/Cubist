@@ -70,8 +70,7 @@ The `committee` option can be used to control number of model trees:
 
 ```{r bh4}
 set.seed(1)
-com_model <- cubist(x = train_pred, y = train_resp,
-                         committees = 5)
+com_model <- cubist(x = train_pred, y = train_resp, committees = 5)
 summary(com_model)
 ``` 
 
