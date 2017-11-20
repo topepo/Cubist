@@ -403,7 +403,7 @@ float Distance(DataRec Case1, DataRec Case2, float Thresh)
 	else
 	if ( Ordered(Att) )
 	{
-	    DTot += fabs(DVal(Case2, Att) - DVal(Case1, Att)) /
+	    DTot += abs(DVal(Case2, Att) - DVal(Case1, Att)) /
 		    (MaxAttVal[Att] - 1);
 	}
 	else
@@ -628,7 +628,7 @@ Index BuildIndex(CaseNo Fp, CaseNo Lp)
 
 	ForEach(Att, 1, MaxAtt)
 	{
-	    if ( Skip(Att) || Att == ClassAtt || Tested[Att] && Discrete(Att) )
+	    if ( Skip(Att) || Att == ClassAtt || ( Tested[Att] && Discrete(Att) ) )
 	    {
 		continue;
 	    }
@@ -686,7 +686,7 @@ Index BuildIndex(CaseNo Fp, CaseNo Lp)
 		    {
 			ForEach(vv, 2, MaxAttVal[Att])
 			{
-			    ExpDist += ValFreq[v] * ValFreq[vv] * fabs(vv - v);
+			    ExpDist += ValFreq[v] * ValFreq[vv] * abs(vv - v);
 			}
 		    }
 		}
@@ -780,9 +780,9 @@ Index BuildIndex(CaseNo Fp, CaseNo Lp)
 
 	/*  Safety check:  return leaf if not a sensible split  */
 
-	if ( Xp == Lp+1 ||
-	     Xp == Fp && Kp == Lp+1 ||
-	     Kp == Fp )
+	if (   Xp == Lp+1 ||
+	     ( Xp == Fp && Kp == Lp+1 ) ||
+	       Kp == Fp )
 	{
 	    Node->Tested = 0;
 	    Node->IFp    = Fp;
@@ -867,7 +867,7 @@ void ScanIndex(DataRec Case, Index Node, float MinD)
 		      ( v == 1 || First == 1 ? 1.0 :
 			Continuous(Att) ? CVDiff(Case, Node->Cut, Att) :
 			Ordered(Att) ?
-			    fabs(v - First) / (MaxAttVal[Att] - 1) :
+			    abs(v - First) / (MaxAttVal[Att] - 1) :
 			2.0 / (MaxAttVal[Att] - 1) );
 	    NewMinD = MinD + GNNEnv.AttMinD[Att] - SaveAttMinD;
 

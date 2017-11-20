@@ -181,7 +181,7 @@ void ReadDefinition(FILE *f)
 
 	if ( c == '|' ) SkipComment;
 
-	if ( c == EOF || c == '\n' && LastWasPeriod )
+	if ( c == EOF || ( c == '\n' && LastWasPeriod ) )
 	{
 	    /*  The definition is complete.  Add a period if it's
 		not there already and terminate the string  */
@@ -461,12 +461,16 @@ Boolean Atom(void)
     {
 	/*  Check for date or time first  */
 
-	if ( ( Buff[BN+4] == '/' && Buff[BN+7] == '/' ||
-	       Buff[BN+4] == '-' && Buff[BN+7] == '-' )&&
-	     isdigit(Buff[BN+1]) && isdigit(Buff[BN+2]) &&
-		isdigit(Buff[BN+3]) &&
-	     isdigit(Buff[BN+5]) && isdigit(Buff[BN+6]) &&
-	     isdigit(Buff[BN+8]) && isdigit(Buff[BN+9]) )
+	if ( ( (Buff[BN+4] == '/' && Buff[BN+7] == '/') ||
+	       (Buff[BN+4] == '-' && Buff[BN+7] == '-') ) &&
+	     isdigit(Buff[BN+1]) && 
+	     isdigit(Buff[BN+2]) &&
+	     isdigit(Buff[BN+3]) &&
+	     isdigit(Buff[BN+5]) && 
+	     isdigit(Buff[BN+6]) &&
+	     isdigit(Buff[BN+8]) && 
+	     isdigit(Buff[BN+9]) 
+     )
 	{
 	    memcpy(Date, Buff+BN, 10);
 	    Date[10] = '\00';

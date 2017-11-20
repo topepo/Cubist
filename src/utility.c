@@ -640,16 +640,21 @@ int DateToDay(String DS)	/*  Day 1 is 0000/03/01  */
     Month = GetInt(DS+5, 2);
     Day   = GetInt(DS+8, 2);
 
-    if ( ! ( DS[4] == '/' && DS[7] == '/' || DS[4] == '-' && DS[7] == '-' ) ||
+    if ( ! ( (DS[4] == '/' && DS[7] == '/') || 
+             (DS[4] == '-' && DS[7] == '-') ) ||
 	 Year < 0 || Month < 1 || Day < 1 ||
 	 Month > 12 ||
 	 Day > 31 ||
-	 Day > 30 &&
-	    ( Month == 4 || Month == 6 || Month == 9 || Month == 11 ) ||
-	 Month == 2 &&
+	 ( Day > 30 &&
+	    ( Month == 4 || Month == 6 || Month == 9 || Month == 11 ) ) ||
+	 ( Month == 2 &&
 	    ( Day > 29 ||
-	      Day > 28 && ( Year % 4 != 0 ||
-			    Year % 100 == 0 && Year % 400 != 0 ) ) )
+	      ( Day > 28 && ( Year % 4 != 0 ||
+			    (Year % 100 == 0 && Year % 400 != 0) )
+	      )
+      )
+     )
+    )
     {
 	return 0;
     }
@@ -688,8 +693,10 @@ void DayToDate(int Day, String Date)
     }
     else
     if ( Day > 366 ||
-	 Day == 366 &&
-	 ( (Year+1) % 4 != 0 || (Year+1) % 100 == 0 && (Year+1) % 400 != 0 ) )
+	       ( Day == 366 &&
+	       ( (Year+1) % 4 != 0 || ((Year+1) % 100 == 0 && (Year+1) % 400 != 0) ) 
+	       )
+    )
     {
 	Year++;
 	Day = OrigDay - (Year * 365 + Year / 4 - Year / 100 + Year / 400);

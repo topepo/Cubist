@@ -684,7 +684,7 @@ void CheckValue(DataRec DVec, Attribute Att)
     ContValue	Cv;
 
     Cv = CVal(DVec, Att);
-    if ( ! finite(Cv) )
+    if ( ! isfinite(Cv) )
     {
 	Error(BADNUMBER, AttName[Att], "");
 

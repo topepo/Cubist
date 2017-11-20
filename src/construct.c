@@ -457,8 +457,8 @@ void AttributeUsage(void)
 	    if ( Max(SumCond[Att], SumModel[Att]) >= 0.01 * SumCases &&
 		 ( ! BestAtt ||
 		     SumCond[Att] > SumCond[BestAtt] ||
-		     SumCond[Att] >= SumCond[BestAtt] &&
-			 SumModel[Att] > SumModel[BestAtt] ) )
+		     (SumCond[Att] >= SumCond[BestAtt] &&
+			    SumModel[Att] > SumModel[BestAtt]) ) )
 	    {
 		BestAtt = Att;
 	    }

@@ -375,8 +375,11 @@ void FormTree(CaseNo Fp, CaseNo Lp, int Level, Tree *Result, Tree Parent)
 
 	if ( (Val = GEnv.Gain[Att]) > -Epsilon )
 	{ 
-	    if ( Val > BestVal ||
-		 Val > 0.999 * BestVal && AttPref[Att] > AttPref[BestAtt] )
+	    if ( 
+	        Val > BestVal ||
+		      (Val > 0.999 * BestVal && 
+		       AttPref[Att] > AttPref[BestAtt]) 
+          )
 	    { 
 	        BestAtt = Att; 
 	        BestVal = Val;
