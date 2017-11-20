@@ -39,27 +39,20 @@
 
 #include "transform.h"
 #include "redefine.h"
-
-#define Inc 2048
+#include <Rmath.h>
 
 /*  Alternative random number generator  */
 
-#define AltRandom	drand48()
-#ifdef WIN32
-static double
-drand48()
-{
+#define AltRandom my_rand()
+static double my_rand() {
     double dval;
-
-    do {
-        dval = ((double) rand()) / ((double) RAND_MAX);
-    } while (dval < 0.0 || dval >= 1.0);
-
+  GetRNGstate();
+  dval = runif(0, 1);
+  PutRNGstate();
     return dval;
 }
-#else
-double drand48(void);
-#endif
+
+#define Inc 2048
 
 Boolean SuppressErrorMessages=false;
 #define XError(a,b,c)   if (! SuppressErrorMessages) Error(a,b,c)
