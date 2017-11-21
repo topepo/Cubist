@@ -1,9 +1,9 @@
 #' Visualization of Cubist Rules and Equations
 #' 
-#' Lattice dotplots of the rule conditions or the linear model coefficients
-#' produced by [cubist()] objects
+#'   Lattice dotplots of the rule conditions or the linear model
+#'  coefficients produced by [cubist()] objects
 #' 
-#' For the splits, a panel is created for each predictor. The
+#'   For the splits, a panel is created for each predictor. The
 #'  x-axis is the range of the predictor scaled to be between zero
 #'  and one and the y-axis has a line for each rule (within each
 #'  committee). Areas are colored as based on their region. For
@@ -12,9 +12,9 @@
 #'  of `var1 <= 10`, it would be on another line and shaded a
 #'  different color.
 #' 
-#' For the coefficient plot, another dotplot is made. The layout is the same
-#' except the the x-axis is in the original units and has a dot if the rule
-#' used that variable in a linear model.
+#'   For the coefficient plot, another dotplot is made. The layout
+#'  is the same except the the x-axis is in the original units and
+#'  has a dot if the rule used that variable in a linear model.
 #' 
 #' @param x a [cubist()] object
 #' @param data not currently used (here for lattice compatibility)
@@ -28,15 +28,16 @@
 #' @seealso [cubist()], [cubistControl()],
 #' [predict.cubist()], [summary.cubist()],
 #' [predict.cubist()], [lattice::dotplot()]
-#' @references Quinlan. Learning with continuous classes. Proceedings of the
-#' 5th Australian Joint Conference On Artificial Intelligence (1992) pp.
-#' 343-348
+#' @references Quinlan. Learning with continuous classes.
+#'  Proceedings of the 5th Australian Joint Conference On Artificial
+#'  Intelligence (1992) pp. 343-348
 #' 
-#' Quinlan. Combining instance-based and model-based learning. Proceedings of
-#' the Tenth International Conference on Machine Learning (1993) pp. 236-243
+#'   Quinlan. Combining instance-based and model-based learning.
+#'  Proceedings of the Tenth International Conference on Machine
+#'  Learning (1993) pp. 236-243
 #' 
-#' Quinlan. \strong{C4.5: Programs For Machine Learning} (1993) Morgan Kaufmann
-#' Publishers Inc. San Francisco, CA
+#'   Quinlan. \strong{C4.5: Programs For Machine Learning} (1993)
+#'  Morgan Kaufmann Publishers Inc. San Francisco, CA
 #' 
 #' \url{http://rulequest.com/cubist-info.html}
 #' @keywords hplot
@@ -51,7 +52,9 @@
 #' dotplot(mod1, what = "coefs")
 #' 
 #' ## Now with 10 committees
-#' mod2 <- cubist(x = BostonHousing[, -14], y = BostonHousing$medv, committees = 10)
+#' mod2 <- cubist(x = BostonHousing[, -14], 
+#'                y = BostonHousing$medv, 
+#'                committees = 10)
 #' dotplot(mod2, scales = list(y = list(cex = .25)))
 #' dotplot(mod2, what = "coefs", 
 #'         between = list(x = 1, y = 1),
