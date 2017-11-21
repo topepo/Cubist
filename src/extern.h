@@ -22,8 +22,6 @@
 /*									 */
 /*************************************************************************/
 
-
-
 /*************************************************************************/
 /*									 */
 /*		Data defined in global.c				 */
@@ -31,114 +29,77 @@
 /*									 */
 /*************************************************************************/
 
-extern	Attribute
-		ClassAtt,
-		LabelAtt,
-		CWtAtt;
+extern Attribute ClassAtt, LabelAtt, CWtAtt;
 
-extern	 char	*IgnoredVals;
-extern	 int	IValsSize,
-		IValsOffset;
+extern char *IgnoredVals;
+extern int IValsSize, IValsOffset;
 
-extern	int	MaxAtt,
-		MaxDiscrVal,
-		Precision,
-		MaxLabel,
-		LineNo,
-		ErrMsgs,
-		AttExIn,
-		TSBase;
-	
-extern	CaseNo	MaxCase;
-	
-extern	DataRec *Case;
-	
-extern	DataRec *SaveCase,
-		*Blocked;
-extern	CaseNo	SaveMaxCase;
-	
-extern	DiscrValue
-		*MaxAttVal,
-		*Modal;
-	
-extern	char	*SpecialStatus;
-	
-extern	Definition
-		*AttDef;
-extern	Attribute
-		**AttDefUses;
-	
-extern	String	*AttName,
-		**AttValName;
-	
-extern	FILE	*Of;
-extern	String	FileStem;
-	
-extern	ContValue
-		*AttMean,
-		*AttSD,
-		*AttMaxVal,
-		*AttMinVal,
-		*AttPref,
-		Ceiling,
-		Floor,
-		AvCWt;
+extern int MaxAtt, MaxDiscrVal, Precision, MaxLabel, LineNo, ErrMsgs, AttExIn,
+    TSBase;
 
-extern	float	ErrReduction;
-	
-double		*AttUnit;
+extern CaseNo MaxCase;
 
-extern	int	*AttPrec;
+extern DataRec *Case;
 
-extern	DataRec *Instance,
-		Ref[2];
-extern	CaseNo	MaxInstance;
-extern	Index	KDTree;
-extern	NNEnvRec
-		GNNEnv;
-extern	float	*RSPredVal;
+extern DataRec *SaveCase, *Blocked;
+extern CaseNo SaveMaxCase;
 
-extern	EnvRec	GEnv;
+extern DiscrValue *MaxAttVal, *Modal;
 
-extern	Tree	TempMT;
+extern char *SpecialStatus;
 
-extern	SortRec	*SRec;
-	
-extern	float	GlobalMean,
-		GlobalSD,
-		GlobalErr;
-	
-extern	char	Fn[512];
-	
-extern	FILE	*Mf,
-		*Pf;
-	
-extern	CRule	*Rule;
-extern	RuleNo	NRules;
-extern	int	RuleSpace;
-	
-extern	RRuleSet
-		*Cttee;
-	
-	
-extern	int	VERBOSITY,
-		FOLDS,
-		NN,
-		MEMBERS;
-	
-extern	float	MAXD;
-	
-extern	Boolean	XVAL,
-		CHOOSEMODE,
-		USEINSTANCES,
-		UNBIASED;
-	
-extern	float	SAMPLE;
-extern	int	KRInit;
-extern	Boolean	LOCK;
-	
-extern	CaseCount
-		MINITEMS;
-extern	int	MAXRULES;
+extern Definition *AttDef;
+extern Attribute **AttDefUses;
 
-extern	float	EXTRAP;
+extern String *AttName, **AttValName;
+
+extern FILE *Of;
+extern String FileStem;
+
+extern ContValue *AttMean, *AttSD, *AttMaxVal, *AttMinVal, *AttPref, Ceiling,
+    Floor, AvCWt;
+
+extern float ErrReduction;
+
+double *AttUnit;
+
+extern int *AttPrec;
+
+extern DataRec *Instance, Ref[2];
+extern CaseNo MaxInstance;
+extern Index KDTree;
+extern NNEnvRec GNNEnv;
+extern float *RSPredVal;
+
+extern EnvRec GEnv;
+
+extern Tree TempMT;
+
+extern SortRec *SRec;
+
+extern float GlobalMean, GlobalSD, GlobalErr;
+
+extern char Fn[512];
+
+extern FILE *Mf, *Pf;
+
+extern CRule *Rule;
+extern RuleNo NRules;
+extern int RuleSpace;
+
+extern RRuleSet *Cttee;
+
+extern int VERBOSITY, FOLDS, NN, MEMBERS;
+
+extern float MAXD;
+
+extern Boolean XVAL, CHOOSEMODE, USEINSTANCES, UNBIASED;
+
+extern float SAMPLE;
+extern int KRInit;
+extern Boolean LOCK;
+
+extern CaseCount MINITEMS;
+extern int MAXRULES;
+
+extern float EXTRAP;
