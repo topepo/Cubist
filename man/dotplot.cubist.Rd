@@ -24,8 +24,8 @@
 a \code{\link[lattice:dotplot]{lattice::dotplot()}} object
 }
 \description{
-Lattice dotplots of the rule conditions or the linear model coefficients
-produced by \code{\link[=cubist]{cubist()}} objects
+Lattice dotplots of the rule conditions or the linear model
+coefficients produced by \code{\link[=cubist]{cubist()}} objects
 }
 \details{
 For the splits, a panel is created for each predictor. The
@@ -37,9 +37,9 @@ would be colored. If another rule had the complementary region
 of \code{var1 <= 10}, it would be on another line and shaded a
 different color.
 
-For the coefficient plot, another dotplot is made. The layout is the same
-except the the x-axis is in the original units and has a dot if the rule
-used that variable in a linear model.
+For the coefficient plot, another dotplot is made. The layout
+is the same except the the x-axis is in the original units and
+has a dot if the rule used that variable in a linear model.
 }
 \examples{
 
@@ -52,7 +52,9 @@ dotplot(mod1, what = "splits")
 dotplot(mod1, what = "coefs")
 
 ## Now with 10 committees
-mod2 <- cubist(x = BostonHousing[, -14], y = BostonHousing$medv, committees = 10)
+mod2 <- cubist(x = BostonHousing[, -14], 
+               y = BostonHousing$medv, 
+               committees = 10)
 dotplot(mod2, scales = list(y = list(cex = .25)))
 dotplot(mod2, what = "coefs", 
         between = list(x = 1, y = 1),
@@ -61,15 +63,16 @@ dotplot(mod2, what = "coefs",
 
 }
 \references{
-Quinlan. Learning with continuous classes. Proceedings of the
-5th Australian Joint Conference On Artificial Intelligence (1992) pp.
-343-348
+Quinlan. Learning with continuous classes.
+Proceedings of the 5th Australian Joint Conference On Artificial
+Intelligence (1992) pp. 343-348
 
-Quinlan. Combining instance-based and model-based learning. Proceedings of
-the Tenth International Conference on Machine Learning (1993) pp. 236-243
+Quinlan. Combining instance-based and model-based learning.
+Proceedings of the Tenth International Conference on Machine
+Learning (1993) pp. 236-243
 
-Quinlan. \strong{C4.5: Programs For Machine Learning} (1993) Morgan Kaufmann
-Publishers Inc. San Francisco, CA
+Quinlan. \strong{C4.5: Programs For Machine Learning} (1993)
+Morgan Kaufmann Publishers Inc. San Francisco, CA
 
 \url{http://rulequest.com/cubist-info.html}
 }
