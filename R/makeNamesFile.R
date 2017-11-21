@@ -32,9 +32,12 @@
 ## Following this entry, all attributes are defined in the order that
 ## their values will be given for each case.
 
+#' @export
+#' @keywords external
 makeNamesFile <-
   function(x,
            y,
+           w = NULL,
            label = "outcome",
            comments = TRUE) {
     
@@ -45,16 +48,12 @@ makeNamesFile <-
     
     if (comments) {
       call <- match.call()
-      out <- paste(
+      out <- paste0(
         "| Generated using ",
         R.version.string,
         "\n",
         "| on ",
-        format(Sys.time(), "%a %b %d %H:%M:%S %Y"),
-        "\n",
-        "| function call: ",
-        paste(deparse(call)),
-        sep = ""
+        format(Sys.time(), "%a %b %d %H:%M:%S %Y")
       )
     } else
       out <- ""
@@ -62,7 +61,7 @@ makeNamesFile <-
     if (is.numeric(y)) {
       outcomeInfo <- ": continuous."
     } else {
-      lvls <- levels(y)
+      lvls <- escapes(levels(y))
       prefix <- if (is.ordered(y))
         "[ordered] "
       else
@@ -78,6 +77,8 @@ makeNamesFile <-
                  "\n", label, outcomeInfo,
                  sep = "")
     varData <- QuinlanAttributes(x)
+    if (!is.null(w)) 
+      varData <- c(varData, "case weight" = "continuous.")
     varData <-
       paste(escapes(names(varData)),
             ": ",
@@ -91,6 +92,7 @@ makeNamesFile <-
 escapes <- function(x, chars = c(":", ";", "|")) {
   for (i in chars)
     x <- gsub(i, paste("\\", i, sep = ""), x, fixed = TRUE)
+  gsub("([^[:alnum:]^[:space:]])", "\\\\\\1", x, useBytes = TRUE)  
   x
 }
 

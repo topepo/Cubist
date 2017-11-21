@@ -71,6 +71,14 @@ predict.cubist <- function (object, newdata = NULL, neighbors = 0, ...) {
     )
   }
   
+  ## If there are case weights used during training, the C code
+  ## will expect a column of weights in the new data but the 
+  ## values will be ignored. `makeDataFile` puts those last in 
+  ## the data when `cubist.default` is run, so we will add a 
+  ## column of NA values at the end here
+  if (object$caseWeights)
+    newdata$case_weight_pred <- NA
+  
   ## make cases file
   caseString <- makeDataFile(x = newdata, y = NULL)
   

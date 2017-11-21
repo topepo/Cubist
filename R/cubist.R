@@ -84,6 +84,13 @@ cubist <-  function(x, ...) UseMethod("cubist")
 #'  boosting iterations) should be used?
 #' @param control options that control details of the `cubist`
 #'  algorithm. See [cubistControl()]
+#' @param weights an optional vector of case weights (the same 
+#'  length as `y`) for how much each instance should contribute to
+#'  the model fit. From the RuleQuest website: "The relative
+#'  weight assigned to each case is its value of this attribute
+#'  divided by the average value; if the value is undefined, not 
+#'  applicable, or is less than or equal to zero, the case's 
+#'  relative weight is set to 1."
 #' @param \dots optional arguments to pass (not currently used)
 #' @return an object of class `cubist` with elements: 
 #'  \item{data, names, model}{character strings that correspond to
@@ -148,7 +155,8 @@ cubist <-  function(x, ...) UseMethod("cubist")
 #' @method cubist default
 cubist.default <- function(x, y,
                            committees = 1,
-                           control = cubistControl(), 
+                           control = cubistControl(),
+                           weights = NULL, 
                            ...) {
   funcCall <- match.call(expand.dots = TRUE)
   if (!is.numeric(y))
@@ -161,9 +169,12 @@ cubist.default <- function(x, y,
       !is.matrix(x))
     stop("x must be a matrix or data frame", call. = FALSE)
   
+  if (!is.null(weights) && !is.numeric(weights))
+    stop("case weights must be numeric", call. = FALSE)
+  
   namesString <-
-    makeNamesFile(x, y, label = control$label, comments = TRUE)
-  dataString <- makeDataFile(x, y)
+    makeNamesFile(x, y, w = weights, label = control$label, comments = TRUE)
+  dataString <- makeDataFile(x, y, weights)
 
   Z <- .C("cubist",
           as.character(namesString),
@@ -228,6 +239,7 @@ cubist.default <- function(x, y,
 
   out <- list(data = dataString,
               names = namesString,
+              caseWeights = !is.null(weights),
               model = Z$model,
               output = Z$output,
               control = control,
@@ -335,6 +347,9 @@ print.cubist <- function(x, ...) {
       "\nNumber of predictors:",
       x$dims[2],
       "\n\n")
+  
+  if(x$caseWeights)
+    cat("Case weights used\n\n")
   
   cat("Number of committees:", length(nRules), "\n")
   if (length(nRules) > 1) {

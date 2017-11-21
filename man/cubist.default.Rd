@@ -6,7 +6,7 @@
 \title{Fit a Cubist model}
 \usage{
 \method{cubist}{default}(x, y, committees = 1, control = cubistControl(),
-  ...)
+  weights = NULL, ...)
 }
 \arguments{
 \item{x}{a matrix or data frame of predictor variables. Missing
@@ -20,6 +20,14 @@ boosting iterations) should be used?}
 
 \item{control}{options that control details of the \code{cubist}
 algorithm. See \code{\link[=cubistControl]{cubistControl()}}}
+
+\item{weights}{an optional vector of case weights (the same
+length as \code{y}) for how much each instance should contribute to
+the model fit. From the RuleQuest website: "The relative
+weight assigned to each case is its value of this attribute
+divided by the average value; if the value is undefined, not
+applicable, or is less than or equal to zero, the case's
+relative weight is set to 1."}
 
 \item{\dots}{optional arguments to pass (not currently used)}
 }
