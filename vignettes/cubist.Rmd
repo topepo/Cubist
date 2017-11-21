@@ -103,7 +103,7 @@ cor(inst_pred, test_resp)^2
 Note that the previous models used the implicit default of `neighbors = 0` for their predictions.
 
 To tune the model over different values of `neighbors` and `committees`, the `train` function in the
-[`caret](http://cran.r-project.org/web/packages/caret/index.html) package can be used to optimize these parameters. For example:
+[`caret](hhttps://CRAN.R-project.org/package=caret) package can be used to optimize these parameters. For example:
 
 ```{r tune}
 library(caret)
