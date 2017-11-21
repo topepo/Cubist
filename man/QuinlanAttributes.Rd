@@ -4,10 +4,10 @@
 \alias{QuinlanAttributes}
 \title{Convert Data to Text Format}
 \usage{
-QuinlanAttributes(x, ...)
+QuinlanAttributes(object, ...)
 }
 \arguments{
-\item{x}{An object to translate to the format expected by
+\item{object}{An object to translate to the format expected by
 the Quinlan C code.}
 }
 \value{
