@@ -34,6 +34,13 @@
 
 #' @export
 #' @keywords external
+#' @rdname QuinlanAttributes
+#' @param x A data frame or matrix or predictors
+#' @param y A vector of outcomes
+#' @param w A numeric vector of case weights or `NULL`
+#' @param label A string required by the C code as the file name
+#' @param comments A logical; should info about the call be
+#'  printed in the string?
 makeNamesFile <-
   function(x,
            y,

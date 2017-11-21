@@ -1,6 +1,7 @@
 
 #' @export
 #' @keywords external
+#' @rdname QuinlanAttributes
 makeDataFile <- function(x, y, w = NULL) {
   if (!is.data.frame(x))
     x <- as.data.frame(x)
