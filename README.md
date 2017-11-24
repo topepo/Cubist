@@ -9,7 +9,7 @@ The `Cubist` R package fits Quinlan's Cubist regression model based on the sourc
 
 * Quinlan. [Combining instance-based and model-based learning](https://scholar.google.com/scholar?hl=en&as_sdt=0%2C7&q=%22Combining+instance-based+and+model-based+learning%22&btnG=). _Proceedings of the Tenth International Conference on Machine Learning_ (1993) pp. 236-243
 
-More details on Cubist can be found in [_Applied Predictive Modeling_](http://appliedpredictivemodeling.com/). 
+More details on Cubist can be found in [_Applied Predictive Modeling_](http://appliedpredictivemodeling.com/). A presentation on the model can be found [here](https://www.dropbox.com/s/2vf3swfbk48lfdc/RulesRulesRules.pdf?dl=0). 
 
 To install the production version of the package, use:
 
