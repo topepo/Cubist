@@ -4,7 +4,7 @@ template:
 
 navbar:
   left:
-  - text: Cubist Regresion Models 
+  - text: Introduction 
     href: articles/cubist.html         
   - text: Reference
     href: reference/index.html
