@@ -1,0 +1,10 @@
+template:
+  params:
+    bootswatch: united
+
+navbar:
+  left:
+  - text: Cubist Regresion Models 
+    href: articles/cubist.html         
+  - text: Reference
+    href: reference/index.html

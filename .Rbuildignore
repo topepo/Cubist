@@ -1,1 +1,5 @@
 .github
+^docs$
+^pkgdown$
+^_pkgdown\.yml$
+^README.md$
