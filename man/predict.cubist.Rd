@@ -27,6 +27,12 @@ method of Quinlan (1992). If \code{neighbors} is greater than zero,
 these predictions are adjusted by training set instances nearby
 using the approach of Quinlan (1993).
 }
+\details{
+Note that the predictions can fail for various reasons.
+For example, as shown in the examples, if the model uses a
+qualitative predictor and the predictoin data has a new level
+of that predictor, the function will throw an error.
+}
 \examples{
 
 library(mlbench)
@@ -39,6 +45,17 @@ predict(mod1, BostonHousing[1:4, -14])
 ## now add instances
 predict(mod1, BostonHousing[1:4, -14], neighbors = 5)
 
+# Example error 
+iris_test <- iris
+iris_test$Species <- as.character(iris_test$Species)
+
+mod <- cubist(x = iris_test[1:99, 2:5], 
+              y = iris_test$Sepal.Length[1:99])
+              
+# predict(mod, iris_test[100:151, 2:5])
+# Error: 
+# *** line 2 of `undefined.cases':
+# bad value of 'virginica' for attribute 'Species'
 }
 \references{
 Quinlan. Learning with continuous classes.

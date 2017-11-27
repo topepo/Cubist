@@ -16,6 +16,10 @@
 #' @return a numeric vector is returned
 #' @author R code by Max Kuhn, original C sources by R Quinlan and
 #'  modifications be Steve Weston
+#' @details Note that the predictions can fail for various reasons. 
+#'  For example, as shown in the examples, if the model uses a
+#'  qualitative predictor and the predictoin data has a new level
+#'  of that predictor, the function will throw an error. 
 #' @seealso [cubist()], [cubistControl()], [summary.cubist()],
 #'  [predict.cubist()], [dotplot.cubist()]
 #' @references Quinlan. Learning with continuous classes.
@@ -43,6 +47,17 @@
 #' ## now add instances
 #' predict(mod1, BostonHousing[1:4, -14], neighbors = 5)
 #' 
+#' # Example error 
+#' iris_test <- iris
+#' iris_test$Species <- as.character(iris_test$Species)
+#' 
+#' mod <- cubist(x = iris_test[1:99, 2:5], 
+#'               y = iris_test$Sepal.Length[1:99])
+#'               
+#' # predict(mod, iris_test[100:151, 2:5])
+#' # Error: 
+#' # *** line 2 of `undefined.cases':
+#' # bad value of 'virginica' for attribute 'Species'
 #' @method predict cubist 
 #' @export 
 predict.cubist <- function (object, newdata = NULL, neighbors = 0, ...) {
@@ -103,15 +118,6 @@ predict.cubist <- function (object, newdata = NULL, neighbors = 0, ...) {
           pred = double(nrow(newdata)),    
           output = character(1),
           PACKAGE = "Cubist")
-  
-  if(all(Z$pred == 0))
-    stop(Z$output, call. = FALSE)
-  if(nchar(Z$output) > 0) {
-    bad_att_rows <- bad_att_index(Z$output)
-    if(length(bad_att_rows))
-      Z$pred[bad_att_rows] <- NA
-    warning(Z$output, "\n Setting to NA", call. = FALSE)
-  }
   Z$pred
 }
 
