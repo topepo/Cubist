@@ -406,8 +406,8 @@ void AttributeUsage(void)
     if (!BestAtt)
       break;
 
-    sprintf(U1, "%3g%%", rint((100.0 * SumCond[BestAtt]) / SumCases));
-    sprintf(U2, "%3g%%", rint((100.0 * SumModel[BestAtt]) / SumCases));
+    sprintf(U1, "%3.0f%%", rint((100.0 * SumCond[BestAtt]) / SumCases));
+    sprintf(U2, "%3.0f%%", rint((100.0 * SumModel[BestAtt]) / SumCases));
 
     fprintf(Of, "\t  %4s   %4s    %s\n",
             (SumCond[BestAtt] >= 0.01 * SumCases ? U1 : " "),
