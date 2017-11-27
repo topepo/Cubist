@@ -18,8 +18,8 @@
 #'  modifications be Steve Weston
 #' @details Note that the predictions can fail for various reasons. 
 #'  For example, as shown in the examples, if the model uses a
-#'  qualitative predictor and the predictoin data has a new level
-#'  of that predictor, the function will throw an error. 
+#'  qualitative predictor and the prediction data has a new level
+#'  of that predictor, the function will throw an error.  
 #' @seealso [cubist()], [cubistControl()], [summary.cubist()],
 #'  [predict.cubist()], [dotplot.cubist()]
 #' @references Quinlan. Learning with continuous classes.

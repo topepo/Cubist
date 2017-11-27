@@ -30,7 +30,7 @@ using the approach of Quinlan (1993).
 \details{
 Note that the predictions can fail for various reasons.
 For example, as shown in the examples, if the model uses a
-qualitative predictor and the predictoin data has a new level
+qualitative predictor and the prediction data has a new level
 of that predictor, the function will throw an error.
 }
 \examples{

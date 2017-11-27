@@ -94,7 +94,7 @@ model_tree</code></pre></div>
 ## cubist.default(x = train_pred, y = train_resp)
 ## 
 ## 
-## Cubist [Release 2.07 GPL Edition]  Fri Nov 24 12:58:23 2017
+## Cubist [Release 2.07 GPL Edition]  Mon Nov 27 11:12:20 2017
 ## ---------------------------------
 ## 
 ##     Target attribute `outcome'
@@ -185,7 +185,7 @@ com_model &lt;-<span class="st"> </span><span class="kw"><a href="../reference/c
 ## cubist.default(x = train_pred, y = train_resp, committees = 5)
 ## 
 ## 
-## Cubist [Release 2.07 GPL Edition]  Fri Nov 24 12:58:23 2017
+## Cubist [Release 2.07 GPL Edition]  Mon Nov 27 11:12:20 2017
 ## ---------------------------------
 ## 
 ##     Target attribute `outcome'
@@ -504,7 +504,7 @@ com_model &lt;-<span class="st"> </span><span class="kw"><a href="../reference/c
 <span class="kw">cor</span>(inst_pred, test_resp)<span class="op">^</span><span class="dv">2</span></code></pre></div>
 <pre><code>## [1] 0.911</code></pre>
 <p>Note that the previous models used the implicit default of <code>neighbors = 0</code> for their predictions.</p>
-<p>To tune the model over different values of <code>neighbors</code> and <code>committees</code>, the <code>train</code> function in the <a href="hhttps://CRAN.R-project.org/package=caret">`caret</a> package can be used to optimize these parameters. For example:</p>
+<p>To tune the model over different values of <code>neighbors</code> and <code>committees</code>, the <code>train</code> function in the <a href="https://CRAN.R-project.org/package=caret">`caret</a> package can be used to optimize these parameters. For example:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(caret)
 
 grid &lt;-<span class="st"> </span><span class="kw">expand.grid</span>(<span class="dt">committees =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">50</span>, <span class="dv">100</span>),
@@ -577,7 +577,7 @@ predictions<span class="op">$</span>committees &lt;-<span class="st"> </span><sp
 ## cubist.default(x = train_pred, y = train_resp)
 ## 
 ## 
-## Cubist [Release 2.07 GPL Edition]  Fri Nov 24 12:58:23 2017
+## Cubist [Release 2.07 GPL Edition]  Mon Nov 27 11:12:20 2017
 ## ---------------------------------
 ## 
 ##     Target attribute `outcome'

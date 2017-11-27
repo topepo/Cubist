@@ -113,6 +113,13 @@ currently used)</p></td>
 
     <p>a numeric vector is returned</p>
     
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Note that the predictions can fail for various reasons.
+For example, as shown in the examples, if the model uses a
+qualitative predictor and the prediction data has a new level
+of that predictor, the function will throw an error.</p>
+    
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>Quinlan. Learning with continuous classes.
@@ -141,7 +148,17 @@ Morgan Kaufmann Publishers Inc. San Francisco, CA
 <span class='fu'>predict</span>(<span class='no'>mod1</span>, <span class='no'>BostonHousing</span>[<span class='fl'>1</span>:<span class='fl'>4</span>, -<span class='fl'>14</span>])</div><div class='output co'>#&gt; [1] 29.00493 22.19729 34.17934 32.97410</div><div class='input'>
 <span class='co'>## now add instances</span>
 <span class='fu'>predict</span>(<span class='no'>mod1</span>, <span class='no'>BostonHousing</span>[<span class='fl'>1</span>:<span class='fl'>4</span>, -<span class='fl'>14</span>], <span class='kw'>neighbors</span> <span class='kw'>=</span> <span class='fl'>5</span>)</div><div class='output co'>#&gt; [1] 26.07685 21.67079 33.87119 34.64103</div><div class='input'>
-</div></pre>
+<span class='co'># Example error </span>
+<span class='no'>iris_test</span> <span class='kw'>&lt;-</span> <span class='no'>iris</span>
+<span class='no'>iris_test</span>$<span class='no'>Species</span> <span class='kw'>&lt;-</span> <span class='fu'>as.character</span>(<span class='no'>iris_test</span>$<span class='no'>Species</span>)
+
+<span class='no'>mod</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='cubist.default.html'>cubist</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='no'>iris_test</span>[<span class='fl'>1</span>:<span class='fl'>99</span>, <span class='fl'>2</span>:<span class='fl'>5</span>],
+              <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>iris_test</span>$<span class='no'>Sepal.Length</span>[<span class='fl'>1</span>:<span class='fl'>99</span>])
+
+<span class='co'># predict(mod, iris_test[100:151, 2:5])</span>
+<span class='co'># Error: </span>
+<span class='co'># *** line 2 of `undefined.cases':</span>
+<span class='co'># bad value of 'virginica' for attribute 'Species'</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -149,6 +166,8 @@ Morgan Kaufmann Publishers Inc. San Francisco, CA
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#details">Details</a></li>
 
       <li><a href="#references">References</a></li>
 
