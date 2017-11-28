@@ -8,7 +8,7 @@ Authors@R: c(
     person("Weston", "Steve", role = "ctb"),
     person("Keefer", "Chris", role = "ctb"),
     person("Coulter", "Nathan", role = "ctb"),
-    person("Quinlan", "Ross", role = "aut", comment = "Author of imported C code"))
+    person("Ross", "Quinlan", role = "aut", comment = "Author of imported C code"))
 Maintainer: Max Kuhn <mxkuhn@gmail.com>
 Description: Regression modeling using rules with added instance-based corrections.
 Depends: lattice
