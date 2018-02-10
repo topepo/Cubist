@@ -3,6 +3,21 @@
 \newcommand{\cpkg}{\href{https://CRAN.R-project.org/package=#1}{\pkg{#1}}}
 \newcommand{\issue}{\href{https://github.com/topepo/cubist/issues/#1}{(issue #1)}}
 
+\section{Changes in version 0.2.1}{
+\itemize{ 
+\item Fixed a bug in the code that escapes improper characters. 
+ }  
+}
+
+\section{Changes in version 0.2.0}{
+\itemize{ 
+\item Converted documentation to \code{roxygen2}.
+\item Revised some compiler options to reduce \code{R CMD check} warnings. 
+ }  
+}
+
+
+
 \section{Changes in version 0.0.19}{
 \itemize{ 
 \item A bug was fixed, found by Duncan Murdoch. 
