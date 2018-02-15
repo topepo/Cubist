@@ -94,7 +94,7 @@ model_tree</code></pre></div>
 ## cubist.default(x = train_pred, y = train_resp)
 ## 
 ## 
-## Cubist [Release 2.07 GPL Edition]  Mon Nov 27 11:12:20 2017
+## Cubist [Release 2.07 GPL Edition]  Thu Feb 15 13:44:46 2018
 ## ---------------------------------
 ## 
 ##     Target attribute `outcome'
@@ -185,7 +185,7 @@ com_model &lt;-<span class="st"> </span><span class="kw"><a href="../reference/c
 ## cubist.default(x = train_pred, y = train_resp, committees = 5)
 ## 
 ## 
-## Cubist [Release 2.07 GPL Edition]  Mon Nov 27 11:12:20 2017
+## Cubist [Release 2.07 GPL Edition]  Thu Feb 15 13:44:46 2018
 ## ---------------------------------
 ## 
 ##     Target attribute `outcome'
@@ -550,7 +550,6 @@ boston_tuned</code></pre></div>
 ## The final values used for the model were committees = 100 and neighbors
 ##  = 5.</code></pre>
 <p>The next figure shows the profiles of the tuning parameters produced using <code>ggplot(boston_tuned)</code>.</p>
-<pre><code>## Warning: Ignoring unknown aesthetics: shape</code></pre>
 <p><img src="cubist_files/figure-html/plot-tune-1.png" width="672"></p>
 <p>It may also be useful to see how the different models fit a single predictor:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lstat_df &lt;-<span class="st"> </span>train_pred[, <span class="st">"lstat"</span>, drop =<span class="st"> </span><span class="ot">FALSE</span>]
@@ -577,7 +576,7 @@ predictions<span class="op">$</span>committees &lt;-<span class="st"> </span><sp
 ## cubist.default(x = train_pred, y = train_resp)
 ## 
 ## 
-## Cubist [Release 2.07 GPL Edition]  Mon Nov 27 11:12:20 2017
+## Cubist [Release 2.07 GPL Edition]  Thu Feb 15 13:44:46 2018
 ## ---------------------------------
 ## 
 ##     Target attribute `outcome'
@@ -717,11 +716,11 @@ predictions<span class="op">$</span>committees &lt;-<span class="st"> </span><sp
 
 
       <footer><div class="copyright">
-  <p>Developed by Max Kuhn, Quinlan Ross.</p>
+  <p>Developed by Max Kuhn, Ross Quinlan.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>
