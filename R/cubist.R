@@ -165,9 +165,10 @@ cubist.default <- function(x, y,
   if (committees < 1 | committees > 100)
     stop("number of committees must be between 1 and 100", call. = FALSE)
   
-  if (!is.data.frame(x) &
-      !is.matrix(x))
+  if (!is.data.frame(x) & !is.matrix(x))
     stop("x must be a matrix or data frame", call. = FALSE)
+  if(inherits(x, "tbl_df"))
+    x <- as.data.frame(x)
   
   if (!is.null(weights) && !is.numeric(weights))
     stop("case weights must be numeric", call. = FALSE)
