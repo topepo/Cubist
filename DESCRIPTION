@@ -1,12 +1,12 @@
 Package: Cubist
 Type: Package
 Title: Rule- And Instance-Based Regression Modeling
-Version: 0.2.1
+Version: 0.2.2
 Authors@R: c(
     person("Max", "Kuhn", , "mxkuhn@gmail.com", c("aut", "cre")),
-    person("Weston", "Steve", role = "ctb"),
-    person("Keefer", "Chris", role = "ctb"),
-    person("Coulter", "Nathan", role = "ctb"),
+    person("Steve", "Weston", role = "ctb"),
+    person("Chris", "Keefer", role = "ctb"),
+    person("Nathan", "Coulter", role = "ctb"),
     person("Ross", "Quinlan", role = "aut", comment = "Author of imported C code"),
     person("Rulequest Research Pty Ltd.", role = "cph", comment = "Copyright holder of imported C code"))
 Maintainer: Max Kuhn <mxkuhn@gmail.com>
