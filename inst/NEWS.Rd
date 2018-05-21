@@ -3,6 +3,12 @@
 \newcommand{\cpkg}{\href{https://CRAN.R-project.org/package=#1}{\pkg{#1}}}
 \newcommand{\issue}{\href{https://github.com/topepo/cubist/issues/#1}{(issue #1)}}
 
+\section{Changes in version 0.2.2}{
+\itemize{ 
+\item Maintenance release to fix CRAN issues for C string buffers
+ }  
+}
+
 \section{Changes in version 0.2.1}{
 \itemize{ 
 \item Fixed a bug in the code that escapes improper characters. 

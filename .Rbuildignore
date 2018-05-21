@@ -3,3 +3,6 @@
 ^pkgdown$
 ^_pkgdown\.yml$
 ^README.md$
+revdep/*.noindex
+.DS_Store
+revdep/data.sqlite
