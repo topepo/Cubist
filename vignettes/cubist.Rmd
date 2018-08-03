@@ -1,4 +1,4 @@
----
+  ---
 title: "Cubist Regresion Models"
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
@@ -10,6 +10,7 @@ output:
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library("magrittr")
 library(caret)
 library(Cubist)
 theme_set(theme_bw())
@@ -168,6 +169,51 @@ varImp(model_tree)
 ``` 
 
 It should be noted that this variable importance measure does not capture the influence of the predictors when using the instance--based correction.
+
+## Tidy rules
+
+Rules from a Cubist model can be viewed using `summary` as follows:
+
+```{r summary}
+summary(model_tree)
+```
+
+The `tidy_rules` function returns rules in a tibble(an extension of dataframe) with one row per rule. The tibble provides these information about the rule: support, mean, min, max, error, lhs, rhs and committees. The values in lhs and rhs columns are strings which can be parsed as R expressions. These can be pasted inside the parenthesis of `dplyr::filter()` to obtain the rows of the data corresponding to the rule and evaluate the response variable.
+
+```{r tidy_rules_example}
+data("attrition", package = "rsample")
+attrition <- tibble::as_tibble(attrition)
+
+# lets predict monthly income
+attrition_x <- attrition %>% dplyr::select(-MonthlyIncome, -Attrition)
+attrition_y <- attrition %>% dplyr::select(MonthlyIncome) %>% unlist()
+
+model_tree_attrition <- cubist(x = attrition_x, y = attrition_y)
+
+tr <- tidy_rules(model_tree_attrition)
+tr
+tr[, c("lhs", "rhs")]
+
+# lets look at 7th rule
+tr[7, "lhs"]
+tr[7, "rhs"]
+
+# LHS and RHS can be used to query the data
+attrition %>%
+  # filter the data corresponding to rule 7
+  dplyr::filter(tr[7, "lhs"] %>%
+                  unlist() %>%
+                  parse(text = .) %>%
+                  eval()
+                ) %>%
+  # evaluate the estimated MonthlyIncome
+  dplyr::mutate(MonthlyIncome_est = tr[7, "rhs"] %>%
+                                    unlist() %>%
+                                    parse(text = .) %>% 
+                                    eval()
+                ) %>% 
+  dplyr::select(MonthlyIncome, MonthlyIncome_est)
+```
 
 
 ## Exporting the Model
