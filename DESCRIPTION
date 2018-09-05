@@ -1,14 +1,15 @@
 Package: Cubist
 Type: Package
 Title: Rule- And Instance-Based Regression Modeling
-Version: 0.2.2
+Version: 0.2.3
 Authors@R: c(
     person("Max", "Kuhn", , "mxkuhn@gmail.com", c("aut", "cre")),
     person("Steve", "Weston", role = "ctb"),
     person("Chris", "Keefer", role = "ctb"),
     person("Nathan", "Coulter", role = "ctb"),
     person("Ross", "Quinlan", role = "aut", comment = "Author of imported C code"),
-    person("Rulequest Research Pty Ltd.", role = "cph", comment = "Copyright holder of imported C code"))
+    person("Rulequest Research Pty Ltd.", role = "cph", comment = "Copyright holder of imported C code"),
+    person("Srikanth", "KS", role = "ctb"))
 Maintainer: Max Kuhn <mxkuhn@gmail.com>
 Description: Regression modeling using rules with added instance-based corrections.
 Depends: lattice
@@ -23,7 +24,8 @@ Suggests:
   mlbench,
   caret,
   knitr,
-  rsample (>= 0.0.2)
+  rsample (>= 0.0.2),
+  AmesHousing (>= 0.0.3),
 URL: https://topepo.github.io/Cubist
 BugReports: https://github.com/topepo/Cubist/issues
 License: GPL-3

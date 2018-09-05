@@ -17,10 +17,11 @@ tidy_rules <- function(object, ...){
 #' @title Obtain rules as a tidy tibble from a cubist model
 #' @description Each row corresponds to a rule. A rule can be copied into
 #'   `dplyr::filter` to filter the observations corresponding to a rule
+#' @author Srikanth KS, \email{sri.teach@@gmail.com}
 #' @param object Fitted model object with rules
 #' @param ... Other arguments (currently unused)
 #' @return A tibble where each row corresponds to a rule. The columns are:
-#'   support, mean, min, max, error, lhs, rhs and committees
+#'   support, mean, min, max, error, lhs, rhs and committee
 #' @examples
 #' data("attrition", package = "rsample")
 #' attrition <- tibble::as_tibble(attrition)
@@ -40,11 +41,60 @@ tidy_rules <- function(object, ...){
 #'                  )
 #' summary(cubist_model_commitees)
 #' tidy_rules(cubist_model_commitees)
+#' 
+#' # column names with spaces are handled with adding '`' quotes to it in the rules
+#' ames <- AmesHousing::make_ames()
+#' 
+#' ames2 <- 
+#'   ames %>%
+#'   dplyr::rename(`Gr Liv Area` = Gr_Liv_Area) %>%
+#'   dplyr::rename(`Gr Liv` = Latitude) %>% 
+#'   dplyr::mutate(
+#'     Overall_Qual = gsub("_", " ", as.character(Overall_Qual)),
+#'     MS_SubClass = gsub("_", " ", as.character(MS_SubClass))
+#'     )
+#' 
+#' 
+#' colnames(ames2)
+#' 
+#' cb_mod <- 
+#'   cubist(
+#'     x = ames2 %>% dplyr::select(-Sale_Price),
+#'     y = log10(ames2$Sale_Price),
+#'     committees = 3
+#'     ) 
+#' 
+#' tr <- tidy_rules(cb_mod)
+#' tr
+#' tr$rhs[[1]]
 #' @export
 tidy_rules.cubist <- function(object, ...){
   
   remove_empty_lines <- function(strings){
     strings[!(strings == "")]
+  }
+  
+  # get column names
+  columnNames <- object[["names"]] %>% 
+    stringr::str_split("\\n") %>% 
+    unlist() %>% 
+    utils::tail(-5) %>% 
+    lapply(function(string) stringr::str_split(string, ":")[[1]][[1]]) %>% 
+    unlist() %>% 
+    stringr::str_replace_all("\\\\", "") %>% 
+    remove_empty_lines()
+  
+  # handle column names with spaces
+  namesWithSpace <- columnNames[(stringr::str_detect(columnNames, "\\s"))]
+  
+  # ordering is required because we do not want to replace smaller strings
+  # ex: suppose 'hello world' and 'hello world india' are two columns
+  # First replacement of 'hello world' by 'hello_world' will prevent
+  # 'hello_world_india' from replacing 'hello world india'
+  if(length(namesWithSpace) > 0){
+    namesWithSpace  <- namesWithSpace[order(stringr::str_length(namesWithSpace)
+                                            , decreasing = TRUE)]
+    namesWithSpace_ <- stringr::str_replace_all(namesWithSpace, "\\s", "_")
   }
   
   # split by newline and remove emptylines
@@ -169,7 +219,16 @@ tidy_rules.cubist <- function(object, ...){
     afterThen <- seq(which(trimws(single_raw_rule) == "then") + 1
                      , length(single_raw_rule)
                      )
-    
+    if(length(namesWithSpace) > 0){
+      for(i in 1:length(namesWithSpace)){
+        single_raw_rule[afterThen] <- 
+          stringr::str_replace_all(single_raw_rule[afterThen]
+                                   , namesWithSpace[i]
+                                   , namesWithSpace_[i]
+                                   )
+      }
+    }
+
     res[["rhs"]] <- single_raw_rule[afterThen] %>% 
       stringr::str_trim() %>% 
       stringr::str_c(collapse = " ") %>% 
@@ -183,6 +242,17 @@ tidy_rules.cubist <- function(object, ...){
     
     res[["rhs"]] <- stringr::str_c("(", res[["rhs"]], ")") %>% 
       stringr::str_replace("\\(\\)\\s\\-\\s\\(", "(-")
+    
+    if(length(namesWithSpace) > 0){
+      for(i in 1:length(namesWithSpace_)){
+        res[["rhs"]] <- 
+          stringr::str_replace_all(res[["rhs"]]
+                                   , namesWithSpace_[i]
+                                   , stringr::str_c("`", namesWithSpace[i], "`")
+                                   )
+      }  
+    }
+    
     return(res)
 }
   
@@ -214,7 +284,7 @@ tidy_rules.cubist <- function(object, ...){
     lapply(get_rules_cubist) %>% 
     lapply(tibble::as_tibble) %>% 
     dplyr::bind_rows() %>% 
-    dplyr::mutate(committees = committees)
+    dplyr::mutate(committee = committees)
   
   return(tidydf)
 }

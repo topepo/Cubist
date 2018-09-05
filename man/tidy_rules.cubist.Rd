@@ -13,7 +13,7 @@
 }
 \value{
 A tibble where each row corresponds to a rule. The columns are:
-support, mean, min, max, error, lhs, rhs and committees
+support, mean, min, max, error, lhs, rhs and committee
 }
 \description{
 Each row corresponds to a rule. A rule can be copied into
@@ -38,4 +38,33 @@ cubist_model_commitees <-
                  )
 summary(cubist_model_commitees)
 tidy_rules(cubist_model_commitees)
+
+# column names with spaces are handled with adding '`' quotes to it in the rules
+ames <- AmesHousing::make_ames()
+
+ames2 <- 
+  ames \%>\%
+  dplyr::rename(`Gr Liv Area` = Gr_Liv_Area) \%>\%
+  dplyr::rename(`Gr Liv` = Latitude) \%>\% 
+  dplyr::mutate(
+    Overall_Qual = gsub("_", " ", as.character(Overall_Qual)),
+    MS_SubClass = gsub("_", " ", as.character(MS_SubClass))
+    )
+
+
+colnames(ames2)
+
+cb_mod <- 
+  cubist(
+    x = ames2 \%>\% dplyr::select(-Sale_Price),
+    y = log10(ames2$Sale_Price),
+    committees = 3
+    ) 
+
+tr <- tidy_rules(cb_mod)
+tr
+tr$rhs[[1]]
+}
+\author{
+Srikanth KS, \email{sri.teach@gmail.com}
 }
