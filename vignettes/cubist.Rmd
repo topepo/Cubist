@@ -1,4 +1,4 @@
----
+  ---
 title: "Cubist Regresion Models"
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
@@ -10,6 +10,7 @@ output:
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library("magrittr")
 library(caret)
 library(Cubist)
 theme_set(theme_bw())
@@ -168,6 +169,16 @@ varImp(model_tree)
 ``` 
 
 It should be noted that this variable importance measure does not capture the influence of the predictors when using the instance--based correction.
+
+## Tidy rules
+
+Rules from a Cubist model can be viewed using `summary` as follows:
+
+```{r summary}
+summary(model_tree)
+```
+
+add tidyrules package and tidypredict
 
 
 ## Exporting the Model
