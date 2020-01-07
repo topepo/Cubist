@@ -1,4 +1,4 @@
-  ---
+---
 title: "Cubist Regresion Models"
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
@@ -10,9 +10,11 @@ output:
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library("magrittr")
 library(caret)
 library(Cubist)
+library(dplyr)
+library(rlang)
+library(tidyrules)
 theme_set(theme_bw())
 options(digits = 3)
 ```
@@ -174,14 +176,63 @@ It should be noted that this variable importance measure does not capture the in
 
 Rules from a Cubist model can be viewed using `summary` as follows:
 
-```{r summary}
+```{r summary-tree}
 summary(model_tree)
 ```
 
-add tidyrules package and tidypredict
+The `tidyRules` function in the [`tidyrules` package](https://talegari.github.io/tidyrules/) returns rules in a tibble (an extension of dataframe) with one row per rule. The tibble provides these information about the rule: `support`, `mean`, `min`, `max`, `error`, `LHS`, `RHS` and `committee`. The values in `LHS` and `RHS` columns are strings which can be parsed as R expressions. These can be pasted inside the parenthesis of `dplyr::filter()` to obtain the rows of the data corresponding to the rule and evaluate the response variable.
 
+```{r tidy_rules_example}
+library(dplyr)
+library(modeldata)
+data("attrition")
+attrition <- as_tibble(attrition)
 
-## Exporting the Model
+# lets predict monthly income
+attrition_x <- attrition %>% dplyr::select(-MonthlyIncome, -Attrition)
+attrition_y <- attrition %>% dplyr::select(MonthlyIncome) %>% unlist()
+
+model_tree_attrition <- cubist(x = attrition_x, y = attrition_y)
+
+library(tidyrules)
+
+tr <- tidyRules(model_tree_attrition)
+tr
+tr[, c("LHS", "RHS")]
+
+# lets look at 7th rule
+tr$LHS[7]
+tr$RHS[7]
+```
+
+These results can be used to look at specific parts of the data. For example, the 7th rule predictions are:
+
+```{r rule-7}
+library(dplyr)
+library(rlang)
+
+char_to_expr <- function(x, index = 1, model = TRUE) {
+  x <- x %>% dplyr::slice(index) 
+  if (model) {
+    x <- x %>% dplyr::pull(RHS) %>% rlang::parse_expr()
+  } else {
+    x <- x %>% dplyr::pull(LHS) %>% rlang::parse_expr()
+  }
+  x
+}
+
+rule_expr  <- char_to_expr(tr, 7, model = FALSE)
+model_expr <- char_to_expr(tr, 7, model = TRUE)
+
+# filter the data corresponding to rule 7
+attrition %>% 
+  dplyr::filter(eval_tidy(rule_expr, attrition)) %>%
+  # evaluate the estimated MonthlyIncome
+  dplyr::mutate(MonthlyIncome_est = eval_tidy(model_expr, .)) %>%
+  dplyr::select(MonthlyIncome, MonthlyIncome_est)
+```
+
+## Exporting the Model Using the RuleQuest file format 
 
 As previously mentioned, this code is a port of the command--line `C` code. To run the `C` code, the training set data must be converted to a specific file format as detailed on the RuleQuest website. Two files are created. The `file.data` file is a header--less, comma delimited version of the data (the `file` part is a name given by the user). The `file.names` file provides information about the columns (eg. levels for categorical data and so on). After running the `C` program, another text file called `file.models`, which contains the information needed for prediction. 
 

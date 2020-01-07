@@ -14,16 +14,15 @@ Description: Regression modeling using rules with added instance-based correctio
 Depends: lattice
 Imports: 
   reshape2,
-  dplyr (>= 0.7.4),
-  stringr (>= 1.3.0),
-  tibble (>= 1.4.2),
-  magrittr (>= 1.5),
   utils
 Suggests: 
   mlbench,
   caret,
   knitr,
-  modeldata
+  modeldata,
+  dplyr (>= 0.7.4),
+  rlang,
+  tidyrules
 URL: https://topepo.github.io/Cubist
 BugReports: https://github.com/topepo/Cubist/issues
 License: GPL-3
