@@ -61,7 +61,7 @@ extern ContValue *AttMean, *AttSD, *AttMaxVal, *AttMinVal, *AttPref, Ceiling,
 
 extern float ErrReduction;
 
-double *AttUnit;
+extern double *AttUnit;
 
 extern int *AttPrec;
 

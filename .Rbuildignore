@@ -5,3 +5,5 @@
 ^README.md$
 ^revdep$
 .DS_Store
+^.*\.Rproj$
+^\.Rproj\.user$

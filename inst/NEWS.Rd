@@ -3,6 +3,12 @@
 \newcommand{\cpkg}{\href{https://CRAN.R-project.org/package=#1}{\pkg{#1}}}
 \newcommand{\issue}{\href{https://github.com/topepo/cubist/issues/#1}{(issue #1)}}
 
+\section{Changes in the development version}{
+\itemize{
+\item Maintenance release to fix CRAN issues for GCC 10 -fno-common flag.
+ }  
+}
+
 \section{Changes in version 0.2.2}{
 \itemize{ 
 \item Maintenance release to fix CRAN issues for C string buffers
