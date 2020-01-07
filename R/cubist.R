@@ -40,14 +40,14 @@ cubist <-  function(x, ...) UseMethod("cubist")
 
 
 #' Fit a Cubist model
-#' 
+#'
 #' This function fits the rule-based model described in Quinlan
 #'  (1992) (aka M5) with additional corrections based on nearest
 #'  neighbors in the training set, as described in Quinlan (1993a).
-#' 
+#'
 #' Cubist is a prediction-oriented regression model that combines
 #'  the ideas in Quinlan (1992) and Quinlan (1993).
-#' 
+#'
 #' Although it initially creates a tree structure, it collapses
 #'  each path through the tree into a rule. A regression model is
 #'  fit for each rule based on the data subset defined by the rules.
@@ -56,25 +56,25 @@ cubist <-  function(x, ...) UseMethod("cubist")
 #'  predictors that were used in the parts of the rule that were
 #'  pruned away. This part of the algorithm is consistent with the
 #'  "M5" or Model Tree approach.
-#' 
+#'
 #' Cubist generalizes this model to add boosting (when
 #'  `committees > 1`) and instance based corrections (see
 #'  [predict.cubist()]). The number of instances is set at
 #'  prediction time by the user and is not needed for model
 #'  building.
-#' 
+#'
 #' This function links R to the GPL version of the C code given on
 #'  the RuleQuest website.
-#' 
+#'
 #' The RuleQuest code differentiates missing values from values
 #'  that are not applicable. Currently, this packages does not make
 #'  such a distinction (all values are treated as missing). This
 #'  will produce slightly different results.
-#' 
+#'
 #' To tune the cubist model over the number of committees and
 #'  neighbors, the [caret::train()] function in the `caret` package
 #'  has bindings to find appropriate settings of these parameters.
-#' 
+#'
 #' @aliases cubist cubist.default
 #' @param x a matrix or data frame of predictor variables. Missing
 #'  data are allowed but (at this time) only numeric, character and
@@ -84,15 +84,15 @@ cubist <-  function(x, ...) UseMethod("cubist")
 #'  boosting iterations) should be used?
 #' @param control options that control details of the `cubist`
 #'  algorithm. See [cubistControl()]
-#' @param weights an optional vector of case weights (the same 
+#' @param weights an optional vector of case weights (the same
 #'  length as `y`) for how much each instance should contribute to
 #'  the model fit. From the RuleQuest website: "The relative
 #'  weight assigned to each case is its value of this attribute
-#'  divided by the average value; if the value is undefined, not 
-#'  applicable, or is less than or equal to zero, the case's 
+#'  divided by the average value; if the value is undefined, not
+#'  applicable, or is less than or equal to zero, the case's
 #'  relative weight is set to 1."
 #' @param \dots optional arguments to pass (not currently used)
-#' @return an object of class `cubist` with elements: 
+#' @return an object of class `cubist` with elements:
 #'  \item{data, names, model}{character strings that correspond to
 #'  their counterparts for the command-line program available from
 #'  RuleQuest}
@@ -102,13 +102,13 @@ cubist <-  function(x, ...) UseMethod("cubist")
 #'  \item{control}{a list of control parameters passed in by the
 #'  user}
 #'  \item{composite, neighbors, committees}{mirrors of the values to
-#'  these arguments that were passed in by the user} 
+#'  these arguments that were passed in by the user}
 #'  \item{dims}{the output if `dim(x)`}
 #'  \item{splits}{information about the variables and values used in
 #'  the rule conditions}
 #'  \item{call}{the function call}
 #'  \item{coefs}{a data frame of regression coefficients for each
-#'  rule within each committee} 
+#'  rule within each committee}
 #'  \item{vars}{a list with elements `all` and `used` listing the
 #'  predictors passed into the function and used by any rule or
 #'  model}
@@ -123,56 +123,57 @@ cubist <-  function(x, ...) UseMethod("cubist")
 #' @references Quinlan. Learning with continuous classes.
 #'  Proceedings of the 5th Australian Joint Conference On Artificial
 #'  Intelligence (1992) pp. 343-348
-#' 
+#'
 #'   Quinlan. Combining instance-based and model-based learning.
 #'  Proceedings of the Tenth International Conference on Machine
 #'  Learning (1993a) pp. 236-243
-#' 
+#'
 #'   Quinlan. \strong{C4.5: Programs For Machine Learning} (1993b)
 #'  Morgan Kaufmann Publishers Inc. San Francisco, CA
-#' 
+#'
 #'   Wang and Witten. Inducing model trees for continuous classes.
 #'  Proceedings of the Ninth European Conference on Machine Learning
 #'  (1997) pp. 128-137
-#' 
+#'
 #' \url{http://rulequest.com/cubist-info.html}
 #' @keywords models
 #' @useDynLib Cubist
 #' @examples
-#' 
+#'
 #' library(mlbench)
 #' data(BostonHousing)
-#' 
+#'
 #' ## 1 committee, so just an M5 fit:
 #' mod1 <- cubist(x = BostonHousing[, -14], y = BostonHousing$medv)
 #' mod1
-#' 
+#'
 #' ## Now with 10 committees
 #' mod2 <- cubist(x = BostonHousing[, -14], y = BostonHousing$medv, committees = 10)
 #' mod2
-#' 
-#' @export 
+#'
+#' @export
 #' @method cubist default
 cubist.default <- function(x, y,
                            committees = 1,
                            control = cubistControl(),
-                           weights = NULL, 
+                           weights = NULL,
                            ...) {
   funcCall <- match.call(expand.dots = TRUE)
   if (!is.numeric(y))
     stop("cubist models require a numeric outcome", call. = FALSE)
-  
+
   if (committees < 1 | committees > 100)
     stop("number of committees must be between 1 and 100", call. = FALSE)
-  
+
   if (!is.data.frame(x) & !is.matrix(x))
     stop("x must be a matrix or data frame", call. = FALSE)
-  if(inherits(x, "tbl_df"))
+  if (inherits(x, "tbl_df")) {
     x <- as.data.frame(x)
-  
+  }
+
   if (!is.null(weights) && !is.numeric(weights))
     stop("case weights must be numeric", call. = FALSE)
-  
+
   namesString <-
     makeNamesFile(x, y, w = weights, label = control$label, comments = TRUE)
   dataString <- makeDataFile(x, y, weights)
@@ -200,7 +201,7 @@ cubist.default <- function(x, y,
     Z$output <- gsub("__Sample", "sample", Z$output)
     Z$model <- gsub("__Sample", "sample", Z$model)
   }
-  
+
   splits <- getSplits(Z$model)
   if (!is.null(splits)) {
     splits$percentile <- NA
@@ -220,7 +221,7 @@ cubist.default <- function(x, y,
          "insts=\"0\"",
          Z$model)
   maxd <- as.double(maxd)
-  
+
   usage <- varUsage(Z$output)
   if (is.null(usage) || nrow(usage) < ncol(x)) {
     xNames <- colnames(x)
@@ -236,7 +237,7 @@ cubist.default <- function(x, y,
       usage <- rbind(usage, usage2)
     }
   }
-  
+
 
   out <- list(data = dataString,
               names = namesString,
@@ -249,30 +250,30 @@ cubist.default <- function(x, y,
               dims = dim(x),
               splits = splits,
               usage = usage,
-              call = funcCall)  
+              call = funcCall)
   coefs <- coef.cubist(out, varNames = colnames(x))
   out$coefficients <- coefs
-  
+
   tmp <-
-    apply(coefs[,-(1:3), drop = FALSE], 2, 
+    apply(coefs[,-(1:3), drop = FALSE], 2,
           function(x) any(!is.na(x)))
   tmp <- names(tmp)[tmp]
   xInfo <- list(all = colnames(x),
                 used = union(as.character(splits$variable), tmp))
-  
+
   out$vars <- xInfo
   class(out) <- "cubist"
   out
 }
- 
+
 
 
 
 #' Various parameters that control aspects of the Cubist fit.
-#' 
+#'
 #' Most of these values are discussed at length in
 #'  \url{http://rulequest.com/cubist-unix.html}
-#' 
+#'
 #' @param unbiased a logical: should unbiased rules be used?
 #' @param rules an integer (or `NA`): define an explicit limit to
 #'  the number of rules used (`NA` let's Cubist decide).
@@ -295,20 +296,20 @@ cubist.default <- function(x, y,
 #' @references Quinlan. Learning with continuous classes.
 #'  Proceedings of the 5th Australian Joint Conference On Artificial
 #'  Intelligence (1992) pp. 343-348
-#' 
+#'
 #'   Quinlan. Combining instance-based and model-based learning.
 #'  Proceedings of the Tenth International Conference on Machine
 #'  Learning (1993) pp. 236-243
-#' 
+#'
 #'   Quinlan. \strong{C4.5: Programs For Machine Learning} (1993)
 #'  Morgan Kaufmann Publishers Inc. San Francisco, CA
-#' 
+#'
 #' \url{http://rulequest.com/cubist-info.html}
 #' @keywords utilities
 #' @examples
-#' 
+#'
 #' cubistControl()
-#' 
+#'
 #' @export cubistControl
 cubistControl <- function(
   unbiased = FALSE,
@@ -324,7 +325,7 @@ cubistControl <- function(
     stop("percent extrapolation must between 0 and 100", call. = FALSE)
   if (sample < 0.0 | sample > 99.9)
     stop("sampling percentage must be between 0.0 and 99.9", call. = FALSE)
-  
+
   list(
     unbiased = unbiased,
     rules = rules,
@@ -339,19 +340,19 @@ cubistControl <- function(
 #' @export
 print.cubist <- function(x, ...) {
   cat("\nCall:\n", truncateText(deparse(x$call, width.cutoff = 500)), "\n\n", sep = "")
-  
-  
+
+
   nRules <- countRules(x$model)
-  
+
   cat("Number of samples:",
       x$dims[1],
       "\nNumber of predictors:",
       x$dims[2],
       "\n\n")
-  
+
   if(x$caseWeights)
     cat("Case weights used\n\n")
-  
+
   cat("Number of committees:", length(nRules), "\n")
   if (length(nRules) > 1) {
     ruleText <-
@@ -374,7 +375,7 @@ print.cubist <- function(x, ...) {
                       ))
   if (x$control$sample > 0)
     otherOptions <- c(otherOptions,
-                      paste(round(100 * x$control$sample, 1), 
+                      paste(round(100 * x$control$sample, 1),
                             "% sub-sampling", sep = ""))
   if (!is.null(otherOptions))
     cat("Other options:", paste(otherOptions, collapse = ", "))
@@ -382,12 +383,12 @@ print.cubist <- function(x, ...) {
 }
 
 #' Summarizing Cubist Fits
-#' 
-#' 
+#'
+#'
 #' This function echoes the output of the RuleQuest C code,
 #'  including the rules, the resulting linear models as well as the
 #'  variable usage summaries.
-#' 
+#'
 #' The Cubist output contains variable usage statistics. It gives
 #'  the percentage of times where each variable was used in a
 #'  condition and/or a linear model. Note that this output will
@@ -402,10 +403,10 @@ print.cubist <- function(x, ...) {
 #'  percentages shown in the Cubist output reflects all the models
 #'  involved in prediction (as opposed to the terminal models shown
 #'  in the output).
-#' 
+#'
 #' @param object a [cubist()] object
 #' @param \dots other options (not currently used)
-#' @return an object of class `summary.cubist` with elements 
+#' @return an object of class `summary.cubist` with elements
 #'  \item{output }{a text string of the output}
 #'  \item{call }{the original call to [cubist()]}
 #' @author R code by Max Kuhn, original C sources by R Quinlan and
@@ -415,46 +416,46 @@ print.cubist <- function(x, ...) {
 #' @references Quinlan. Learning with continuous classes.
 #'  Proceedings of the 5th Australian Joint Conference On Artificial
 #'  Intelligence (1992) pp. 343-348
-#' 
+#'
 #'   Quinlan. Combining instance-based and model-based learning.
 #'  Proceedings of the Tenth International Conference on Machine
 #'  Learning (1993) pp. 236-243
-#' 
+#'
 #'   Quinlan. \strong{C4.5: Programs For Machine Learning} (1993)
 #'  Morgan Kaufmann Publishers Inc. San Francisco, CA
-#' 
+#'
 #' \url{http://rulequest.com/cubist-info.html}
 #' @keywords models
 #' @examples
-#' 
+#'
 #' library(mlbench)
 #' data(BostonHousing)
-#' 
+#'
 #' ## 1 committee and no instance-based correction, so just an M5 fit:
 #' mod1 <- cubist(x = BostonHousing[, -14], y = BostonHousing$medv)
 #' summary(mod1)
-#' 
+#'
 #' ## example output:
-#' 
+#'
 #' ## Cubist [Release 2.07 GPL Edition]  Sun Apr 10 17:36:56 2011
 #' ## ---------------------------------
-#' ## 
+#' ##
 #' ##     Target attribute `outcome'
-#' ## 
+#' ##
 #' ## Read 506 cases (14 attributes) from undefined.data
-#' ## 
+#' ##
 #' ## Model:
-#' ## 
+#' ##
 #' ##   Rule 1: [101 cases, mean 13.84, range 5 to 27.5, est err 1.98]
-#' ## 
+#' ##
 #' ##     if
 #' ##     nox > 0.668
 #' ##     then
 #' ##     outcome = -1.11 + 2.93 dis + 21.4 nox - 0.33 lstat + 0.008 b
 #' ##               - 0.13 ptratio - 0.02 crim - 0.003 age + 0.1 rm
-#' ## 
+#' ##
 #' ##   Rule 2: [203 cases, mean 19.42, range 7 to 31, est err 2.10]
-#' ## 
+#' ##
 #' ##     if
 #' ##     nox <= 0.668
 #' ##     lstat > 9.59
@@ -462,18 +463,18 @@ print.cubist <- function(x, ...) {
 #' ##     outcome = 23.57 + 3.1 rm - 0.81 dis - 0.71 ptratio - 0.048 age
 #' ##               - 0.15 lstat + 0.01 b - 0.0041 tax - 5.2 nox + 0.05 crim
 #' ##               + 0.02 rad
-#' ## 
+#' ##
 #' ##   Rule 3: [43 cases, mean 24.00, range 11.9 to 50, est err 2.56]
-#' ## 
+#' ##
 #' ##     if
 #' ##     rm <= 6.226
 #' ##     lstat <= 9.59
 #' ##     then
 #' ##     outcome = 1.18 + 3.83 crim + 4.3 rm - 0.06 age - 0.11 lstat - 0.003 tax
 #' ##               - 0.09 dis - 0.08 ptratio
-#' ## 
+#' ##
 #' ##   Rule 4: [163 cases, mean 31.46, range 16.5 to 50, est err 2.78]
-#' ## 
+#' ##
 #' ##     if
 #' ##     rm > 6.226
 #' ##     lstat <= 9.59
@@ -481,18 +482,18 @@ print.cubist <- function(x, ...) {
 #' ##     outcome = -4.71 + 2.22 crim + 9.2 rm - 0.83 lstat - 0.0182 tax
 #' ##               - 0.72 ptratio - 0.71 dis - 0.04 age + 0.03 rad - 1.7 nox
 #' ##               + 0.008 zn
-#' ## 
-#' ## 
+#' ##
+#' ##
 #' ## Evaluation on training data (506 cases):
-#' ## 
+#' ##
 #' ##     Average  |error|               2.07
 #' ##     Relative |error|               0.31
 #' ##     Correlation coefficient        0.94
-#' ## 
-#' ## 
+#' ##
+#' ##
 #' ##     Attribute usage:
 #' ##       Conds  Model
-#' ## 
+#' ##
 #' ##        80%   100%    lstat
 #' ##        60%    92%    nox
 #' ##        40%   100%    rm
@@ -504,13 +505,13 @@ print.cubist <- function(x, ...) {
 #' ##               72%    rad
 #' ##               60%    b
 #' ##               32%    zn
-#' ## 
-#' ## 
+#' ##
+#' ##
 #' ## Time: 0.0 secs
-#' 
-#' 
+#'
+#'
 #' @method summary cubist
-#' @export 
+#' @export
 summary.cubist <- function(object, ...) {
   out <- list(output = object$output, call = object$call)
   class(out) <- "summary.cubist"
@@ -520,9 +521,9 @@ summary.cubist <- function(object, ...) {
 #' @export
 print.summary.cubist <- function(x, ...) {
   cat(
-    "\nCall:\n", 
-    truncateText(deparse(x$call, width.cutoff = 500)), 
-    "\n\n", 
+    "\nCall:\n",
+    truncateText(deparse(x$call, width.cutoff = 500)),
+    "\n\n",
     sep = ""
   )
   cat(x$output)
@@ -536,13 +537,13 @@ truncateText <- function(x) {
   w <- options("width")$width
   if (nchar(x) <= w)
     return(x)
-  
+
   cont <- TRUE
   out <- x
   while (cont) {
     tmp <- out[length(out)]
     tmp2 <- substring(tmp, 1, w)
-    
+
     spaceIndex <- gregexpr("[[:space:]]", tmp2)[[1]]
     stopIndex <- spaceIndex[length(spaceIndex) - 1] - 1
     tmp <- c(substring(tmp2, 1, stopIndex),
@@ -555,7 +556,7 @@ truncateText <- function(x) {
     if (all(nchar(out) <= w))
       cont <- FALSE
   }
-  
+
   paste(out, collapse = "\n")
 }
 

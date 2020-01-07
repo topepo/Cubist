@@ -5,8 +5,7 @@
 \alias{cubist}
 \title{Fit a Cubist model}
 \usage{
-\method{cubist}{default}(x, y, committees = 1, control = cubistControl(),
-  weights = NULL, ...)
+\method{cubist}{default}(x, y, committees = 1, control = cubistControl(), weights = NULL, ...)
 }
 \arguments{
 \item{x}{a matrix or data frame of predictor variables. Missing

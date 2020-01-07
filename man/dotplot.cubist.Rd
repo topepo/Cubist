@@ -4,8 +4,7 @@
 \alias{dotplot.cubist}
 \title{Visualization of Cubist Rules and Equations}
 \usage{
-\method{dotplot}{cubist}(x, data = NULL, what = "splits",
-  committee = NULL, rule = NULL, ...)
+\method{dotplot}{cubist}(x, data = NULL, what = "splits", committee = NULL, rule = NULL, ...)
 }
 \arguments{
 \item{x}{a \code{\link[=cubist]{cubist()}} object}

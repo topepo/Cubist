@@ -4,8 +4,14 @@
 \alias{cubistControl}
 \title{Various parameters that control aspects of the Cubist fit.}
 \usage{
-cubistControl(unbiased = FALSE, rules = 100, extrapolation = 100,
-  sample = 0, seed = sample.int(4096, size = 1) - 1L, label = "outcome")
+cubistControl(
+  unbiased = FALSE,
+  rules = 100,
+  extrapolation = 100,
+  sample = 0,
+  seed = sample.int(4096, size = 1) - 1L,
+  label = "outcome"
+)
 }
 \arguments{
 \item{unbiased}{a logical: should unbiased rules be used?}

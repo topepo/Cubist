@@ -66,5 +66,9 @@ QuinlanAttributes.matrix <-
 #' @rdname QuinlanAttributes
 #' @method QuinlanAttributes data.frame
 QuinlanAttributes.data.frame <-
-  function(object, ...)
+  function(object, ...) {
+    if (inherits(object, "tbl_df")) {
+      object <- as.data.frame(object)
+    }
     unlist(lapply(object,  QuinlanAttributes))
+}

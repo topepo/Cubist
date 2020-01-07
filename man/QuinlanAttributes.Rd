@@ -57,8 +57,8 @@ A textual representation of the data.
 }
 \description{
 This class converts different types of data to a format
-required for \href{http://www.rulequest.com/cubist-unix.html}{Cubist}
-and \href{http://www.rulequest.com/see5-unix.html}{C5,0}.
+required for \href{http://www.rulequest.com/cubist-unix.html}{\code{Cubist}}
+and \href{http://www.rulequest.com/see5-unix.html}{\verb{C5,0}}.
 }
 \keyword{external}
 \keyword{internal}

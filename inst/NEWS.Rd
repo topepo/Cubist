@@ -3,82 +3,84 @@
 \newcommand{\cpkg}{\href{https://CRAN.R-project.org/package=#1}{\pkg{#1}}}
 \newcommand{\issue}{\href{https://github.com/topepo/cubist/issues/#1}{(issue #1)}}
 
-\section{Changes in the development version}{
+\section{Changes in version 0.2.3}{
 \itemize{
 \item Maintenance release to fix CRAN issues for GCC 10 -fno-common flag.
- }  
+\item \code{tidy_rules()} was removed since the code is now in the \cpkg{tidyrules} package. 
+\item Changes to better work with tibble inputs. 
+ }
 }
 
 \section{Changes in version 0.2.2}{
-\itemize{ 
+\itemize{
 \item Maintenance release to fix CRAN issues for C string buffers
- }  
+ }
 }
 
 \section{Changes in version 0.2.1}{
-\itemize{ 
-\item Fixed a bug in the code that escapes improper characters. 
- }  
+\itemize{
+\item Fixed a bug in the code that escapes improper characters.
+ }
 }
 
 \section{Changes in version 0.2.0}{
-\itemize{ 
+\itemize{
 \item Converted documentation to \code{roxygen2}.
-\item Revised some compiler options to reduce \code{R CMD check} warnings. 
- }  
+\item Revised some compiler options to reduce \code{R CMD check} warnings.
+ }
 }
 
 
 
 \section{Changes in version 0.0.19}{
-\itemize{ 
-\item A bug was fixed, found by Duncan Murdoch. 
+\itemize{
+\item A bug was fixed, found by Duncan Murdoch.
 \item A bug in predictions when sampling was used was fixed by Laurae (a random data witch/magician) \issue{1}
- }  
+ }
 }
 
 
 \section{Changes in version 0.0.17}{
-\itemize{ 
+\itemize{
 
 \item Memory allocation bugs in the R version of the C code, which lead to segmentation faults, were fixed.
 
- }  
+ }
 }
 
 \section{Changes in version 0.0.15}{
-\itemize{ 
+\itemize{
 
 \item A bug was fixed where the model failed if no predictors were
-included in the model (thanks to Gabe Gershenfeld for the find). 
+included in the model (thanks to Gabe Gershenfeld for the find).
 
- }  
+ }
 }
 
 \section{Changes in version 0.0.14}{
-\itemize{ 
+\itemize{
 
 \item The Windows build configuration was updated.
 
-\item Some files were synced with the \cpkg{C50} package. 
+\item Some files were synced with the \cpkg{C50} package.
 
- }  
+ }
 }
 
 \section{Changes in version 0.0.13}{
-\itemize{ 
+\itemize{
 
 \item More efficient code was borrowed from the C50 package to write
 the data file to a string.
 
-\item A bug related to column names found by David Clifford was fixed. 
+\item A bug related to column names found by David Clifford was fixed.
 
- }  
+ }
 }
 
 
 \section{Changes in version 0.0.12}{
-\itemize{ 
+\itemize{
 
 \item A bug was fixed that occurred when splits were determined in
 models with a categorical variable involving more than two categories
@@ -87,13 +89,13 @@ models with a categorical variable involving more than two categories
 \item Also, a bug was found in the variable importances calculations
  when a variable was used only in the conditions and not the model.
 
-\item The 'doc' directory was moved into the "vignettes" directory  
+\item The 'doc' directory was moved into the "vignettes" directory
 
- }  
+ }
 }
 
 \section{Changes in version 0.0.11}{
-\itemize{ 
+\itemize{
 
 \item cubist uses a string buffer to capture the output files that
   would normally get saved to external files. The package was failing
@@ -105,18 +107,18 @@ models with a categorical variable involving more than two categories
 \item Also, work-arounds were added to the C sources because of R CMD
 check issues. \code{printf()}, \code{assert()} and \code{exist()}
 statements were removed or redefined.
- } 
+ }
 }
 
 \section{Changes in version 0.0.8}{
-\itemize{ 
+\itemize{
 \item A bug was fixed for the \code{coef} method.
- } 
+ }
 }
 
 
 \section{Changes in version 0.0.6}{
-\itemize{ 
+\itemize{
 \item The GPL version was revised to be version 3 (thanks to Ross
 Quinlan for the note).
 \item The variable usage statistics were saved to a data frame in
@@ -127,7 +129,7 @@ variable, an error occurred. This was fixed.
 \item The vignette was also expanded to show how \cpkg{caret} can be
 used to tune the model and a technical error was corrected about the
 boosting algorithm (thanks again to Ross Quinlan).
- } 
+ }
 }
 
 
