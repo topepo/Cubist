@@ -21,3 +21,4 @@ revdep/*.noindex
 .DS_Store
 revdep/data.sqlite
 .Rproj.user
+.Rhistory

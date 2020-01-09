@@ -92,7 +92,6 @@ void initglobals(void)
   MaxInstance = -1;
   KDTree = Nil;
 
-  /* GNNEnv;  This is a struct, which I'm not going to initialize */
   RSPredVal = Nil;
 
   /*************************************************************************/
@@ -102,7 +101,6 @@ void initglobals(void)
   /*                                                                       */
   /*************************************************************************/
 
-  /* GEnv;  This is a struct, which I'm not going to initialize */
 
   TempMT = Nil;
 
