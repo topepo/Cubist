@@ -73,7 +73,7 @@ cor(model_tree_pred, test_resp)^2
 
 ## Ensembles By Committees
 
-The Cubist model can also use a boosting-like scheme called _committees_ where iterative model trees are created in sequence. The first tree follows the procedure described in the last section. Subsequent trees are created using adjusted versions to the training set outcome: if the model over-predicted a value, the response is adjusted downward for the next model (and so on). Unlike traditional boosting, stage weights for each committee are not used to average the predictions from each model tree; the final prediction is a simple average of the predictions from each model tree.
+The Cubist model can also use a boosting-like scheme called _committees_ where iterative model trees are created in sequence. The first tree follows the procedure described in the last section. Subsequent trees are created using adjusted versions to the training set outcome: if the model over-predicted a value, the response is adjusted downward for the next model (and so on, see [this blog post](https://rviews.rstudio.com/2020/05/21/modern-rule-based-models)). Unlike traditional boosting, stage weights for each committee are not used to average the predictions from each model tree; the final prediction is a simple average of the predictions from each model tree.
 
 The `committee` option can be used to control number of model trees:
 
@@ -95,7 +95,7 @@ cor(com_pred, test_resp)^2
 
 ## Instance-Based Corrections
 
-Another innovation in Cubist using nearest-neighbors to adjust the predictions from the rule-based model. First, a model tree (with or without committees) is created. Once a sample is predicted by this model, Cubist can find it's nearest neighbors and determine the average of these training set points. See Quinlan (1993a) for the details of the adjustment.
+Another innovation in Cubist using nearest-neighbors to adjust the predictions from the rule-based model. First, a model tree (with or without committees) is created. Once a sample is predicted by this model, Cubist can find it's nearest neighbors and determine the average of these training set points. See Quinlan (1993a) for the details of the adjustment as well as [this blog post](https://rviews.rstudio.com/2020/05/21/modern-rule-based-models).
 
 The development of rules and committees is independent of the choice of using instances. The original `C` code allowed the program to choose whether to use instances, not use them or let the program decide. Our approach is to build a model with the `cubist()` function that is ignorant to the decision about instances. When samples are predicted, the argument `neighbors` can be used to adjust the rule-based model predictions (or not). 
 
@@ -182,16 +182,14 @@ The raw usage statistics are contained in a data frame called `usage` in the `cu
 
 The `caret` and `vip` packages have general variable importance functions `caret::varImp()` and `vip::vi()`. When using this function on a `cubist` argument, the variable importance is a linear combination of the usage in the rule conditions and the model. 
 
-For example:
+For example, to compute the scores: 
 
-```{r vimp, message = FALSE, warning = FALSE}
-summary(model_tree)
-model_tree$usage
-library(caret)
-varImp(model_tree)
+```{r vimp, eval = FALSE}
+caret::varImp(model_tree)
 
 # or 
-# vip::vi(model_tree)
+
+vip::vi(model_tree)
 ``` 
 
 ## Exporting the Model Using the RuleQuest file format 
