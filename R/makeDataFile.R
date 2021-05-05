@@ -3,8 +3,9 @@
 #' @keywords external
 #' @rdname QuinlanAttributes
 makeDataFile <- function(x, y, w = NULL) {
-  if (!is.data.frame(x))
+  if (!is.data.frame(x) || inherits(x, "tbl_df")) {
     x <- as.data.frame(x)
+  }
   convert <-
     unlist(lapply(x, function(x)
       is.factor(x) | is.character(x)))

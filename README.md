@@ -2,6 +2,7 @@
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/Cubist)](http://cran.r-project.org/web/packages/Cubist)
 [![Downloads](http://cranlogs.r-pkg.org/badges/Cubist)](http://cran.rstudio.com/package=Cubist)
 ![](https://img.shields.io/badge/lifecycle-maturing-blue.svg)
+[![R-CMD-check](https://github.com/topepo/Cubist/workflows/R-CMD-check/badge.svg)](https://github.com/topepo/Cubist/actions)
 
 The `Cubist` R package fits Quinlan's Cubist regression model based on the source of from [`www.rulequest.com`](http://www.rulequest.com/cubist-info.html). Some of the functionality is based on 
 
@@ -9,7 +10,7 @@ The `Cubist` R package fits Quinlan's Cubist regression model based on the sourc
 
 * Quinlan. [Combining instance-based and model-based learning](https://scholar.google.com/scholar?hl=en&as_sdt=0%2C7&q=%22Combining+instance-based+and+model-based+learning%22&btnG=). _Proceedings of the Tenth International Conference on Machine Learning_ (1993) pp. 236-243
 
-More details on Cubist can be found in [_Applied Predictive Modeling_](http://appliedpredictivemodeling.com/). A presentation on the model can be found [here](https://www.dropbox.com/s/2vf3swfbk48lfdc/RulesRulesRules.pdf?dl=0). 
+More details on Cubist can be found in [_Applied Predictive Modeling_](http://appliedpredictivemodeling.com/). A presentation on the model can be found [here](https://www.dropbox.com/s/2vf3swfbk48lfdc/RulesRulesRules.pdf?dl=0). This [R Views blog post](https://rviews.rstudio.com/2020/05/21/modern-rule-based-models/) has information on Cubist and compares it to RuleFit. 
 
 To install the production version of the package, use:
 
@@ -23,7 +24,3 @@ and to install the development version, use
 require("devtools")
 install_github("topepo/Cubist")
 ```
-
-
-
-

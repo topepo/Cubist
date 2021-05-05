@@ -47,12 +47,14 @@ makeNamesFile <-
            w = NULL,
            label = "outcome",
            comments = TRUE) {
-    
+    if (!is.data.frame(x) || inherits(x, "tbl_df")) {
+      x <- as.data.frame(x)
+    }
     # See issue #5
     has_sample <- grep("^sample", colnames(x))
-    if(length(has_sample)) 
+    if(length(has_sample))
       colnames(x) <- gsub("^sample", "__Sample", colnames(x))
-    
+
     if (comments) {
       call <- match.call()
       out <- paste0(
@@ -64,7 +66,7 @@ makeNamesFile <-
       )
     } else
       out <- ""
-    
+
     if (is.numeric(y)) {
       outcomeInfo <- ": continuous."
     } else {
@@ -78,13 +80,13 @@ makeNamesFile <-
                            paste(lvls, collapse = ","),
                            ".", sep = "")
     }
-    
+
     out <- paste(out,
                  "\n", label, ".\n",
                  "\n", label, outcomeInfo,
                  sep = "")
     varData <- QuinlanAttributes(x)
-    if (!is.null(w)) 
+    if (!is.null(w))
       varData <- c(varData, "case weight" = "continuous.")
     varData <-
       paste(escapes(names(varData)),
@@ -99,6 +101,6 @@ makeNamesFile <-
 escapes <- function(x, chars = c(":", ";", "|")) {
   for (i in chars)
     x <- gsub(i, paste("\\", i, sep = ""), x, fixed = TRUE)
-  gsub("([^[:alnum:]^[:space:]])", "\\\\\\1", x, useBytes = TRUE)  
+  gsub("([^[:alnum:]^[:space:]])", "\\\\\\1", x, useBytes = TRUE)
 }
 
