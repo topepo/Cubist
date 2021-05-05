@@ -17,10 +17,10 @@
 
 \item{rule}{which rules to plot}
 
-\item{\dots}{options to pass to \code{\link[lattice:dotplot]{lattice::dotplot()}}}
+\item{\dots}{options to pass to \code{\link[lattice:xyplot]{lattice::dotplot()}}}
 }
 \value{
-a \code{\link[lattice:dotplot]{lattice::dotplot()}} object
+a \code{\link[lattice:xyplot]{lattice::dotplot()}} object
 }
 \description{
 Lattice dotplots of the rule conditions or the linear model
@@ -78,7 +78,7 @@ Morgan Kaufmann Publishers Inc. San Francisco, CA
 \seealso{
 \code{\link[=cubist]{cubist()}}, \code{\link[=cubistControl]{cubistControl()}},
 \code{\link[=predict.cubist]{predict.cubist()}}, \code{\link[=summary.cubist]{summary.cubist()}},
-\code{\link[=predict.cubist]{predict.cubist()}}, \code{\link[lattice:dotplot]{lattice::dotplot()}}
+\code{\link[=predict.cubist]{predict.cubist()}}, \code{\link[lattice:xyplot]{lattice::dotplot()}}
 }
 \author{
 R code by Max Kuhn, original C sources by R Quinlan and

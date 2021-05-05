@@ -3,11 +3,18 @@
 \newcommand{\cpkg}{\href{https://CRAN.R-project.org/package=#1}{\pkg{#1}}}
 \newcommand{\issue}{\href{https://github.com/topepo/cubist/issues/#1}{(issue #1)}}
 
+\section{Changes in version 0.2.4}{
+\itemize{
+\item Maintenance release to fix CRAN issues by adding rmarkdown to Suggests.
+
+ }
+}
+
 \section{Changes in version 0.2.3}{
 \itemize{
 \item Maintenance release to fix CRAN issues for GCC 10 -fno-common flag.
-\item \code{tidy_rules()} was removed since the code is now in the \cpkg{tidyrules} package. 
-\item Changes to better work with tibble inputs. 
+\item \code{tidy_rules()} was removed since the code is now in the \cpkg{tidyrules} package.
+\item Changes to better work with tibble inputs.
  }
 }
 
