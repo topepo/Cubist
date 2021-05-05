@@ -1,7 +1,7 @@
 Package: Cubist
 Type: Package
 Title: Rule- And Instance-Based Regression Modeling
-Version: 0.2.3
+Version: 0.2.4
 Authors@R: c(
     person("Max", "Kuhn", , "mxkuhn@gmail.com", c("aut", "cre")),
     person("Steve", "Weston", role = "ctb"),
@@ -16,18 +16,17 @@ Imports:
   reshape2,
   utils
 Suggests: 
-  mlbench,
-  caret,
   knitr,
   modeldata,
   dplyr (>= 0.7.4),
   rlang,
-  tidyrules
+  tidyrules,
+  rmarkdown
 URL: https://topepo.github.io/Cubist
 BugReports: https://github.com/topepo/Cubist/issues
 License: GPL-3
 LazyLoad: yes
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.0.2.9000
+RoxygenNote: 7.1.1.9001
 VignetteBuilder: knitr
 Encoding: UTF-8
