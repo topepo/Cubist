@@ -1,7 +1,7 @@
 Package: Cubist
 Type: Package
 Title: Rule- And Instance-Based Regression Modeling
-Version: 0.2.4
+Version: 0.2.3.9000
 Authors@R: c(
     person("Max", "Kuhn", , "mxkuhn@gmail.com", c("aut", "cre")),
     person("Steve", "Weston", role = "ctb"),
@@ -15,6 +15,7 @@ Depends: lattice
 Imports: 
   reshape2,
   utils
+Config/Needs/website: pkgdown, caret  
 Suggests: 
   knitr,
   modeldata,
