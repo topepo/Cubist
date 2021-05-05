@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
-          remotes::install_deps(dependencies = "Config/Needs/website")
+          remotes::install_cran(c("caret", "tidymodels", "rules"))
           install.packages("pkgdown", type = "binary")
         shell: Rscript {0}
 
