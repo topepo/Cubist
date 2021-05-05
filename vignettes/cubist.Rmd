@@ -59,7 +59,7 @@ model_tree
 summary(model_tree)
 ``` 
 
-There is no formula method for `cubist`; the predictors are specified as matrix or data frame, The outcome is a numeric vector.
+There is no formula method for `cubist()`; the predictors are specified as matrix or data frame, The outcome is a numeric vector.
 
 There is a predict method for the model:
 
@@ -97,7 +97,7 @@ cor(com_pred, test_resp)^2
 
 Another innovation in Cubist using nearest-neighbors to adjust the predictions from the rule-based model. First, a model tree (with or without committees) is created. Once a sample is predicted by this model, Cubist can find it's nearest neighbors and determine the average of these training set points. See Quinlan (1993a) for the details of the adjustment.
 
-The development of rules and committees is independent of the choice of using instances. The original `C` code allowed the program to choose whether to use instances, not use them or let the program decide. Our approach is to build a model with the `cubist` function that is ignorant to the decision about instances. When samples are predicted, the argument `neighbors` can be used to adjust the rule-based model predictions (or not). 
+The development of rules and committees is independent of the choice of using instances. The original `C` code allowed the program to choose whether to use instances, not use them or let the program decide. Our approach is to build a model with the `cubist()` function that is ignorant to the decision about instances. When samples are predicted, the argument `neighbors` can be used to adjust the rule-based model predictions (or not). 
 
 We can add instances to the previously fit committee model:
 
@@ -176,7 +176,7 @@ ames %>%
 
 ## Variable Importance
 
-The `modelTree` method for Cubist shows the usage of each variable in either the rule conditions or the (terminal) linear model. In actuality, many more linear models are used in prediction that are shown in the output.  Because of this,  the variable usage statistics shown at the end of the output of the `summary` function will probably be inconsistent with the rules also shown in the output. At each split of the tree, Cubist saves a linear model (after feature selection) that is allowed to have terms for each variable used in the current split or any split above it. Quinlan (1992) discusses a smoothing algorithm where each model prediction is a linear combination of the parent and child model along the tree. As such, the final prediction is a function of all the linear models from the initial node to the terminal node. The percentages shown in the Cubist output reflects all the models involved in prediction (as opposed to the terminal models shown in the output).
+The `summary()` method for Cubist shows the usage of each variable in either the rule conditions or the (terminal) linear model. In actuality, many more linear models are used in prediction that are shown in the output.  Because of this,  the variable usage statistics shown at the end of the output of the `summary()` function will probably be inconsistent with the rules also shown in the output. At each split of the tree, Cubist saves a linear model (after feature selection) that is allowed to have terms for each variable used in the current split or any split above it. Quinlan (1992) discusses a smoothing algorithm where each model prediction is a linear combination of the parent and child model along the tree. As such, the final prediction is a function of all the linear models from the initial node to the terminal node. The percentages shown in the Cubist output reflects all the models involved in prediction (as opposed to the terminal models shown in the output).
 
 The raw usage statistics are contained in a data frame called `usage` in the `cubist` object. 
 
