@@ -1,0 +1,156 @@
+---
+title: "Tuning Cubist Models"
+output:
+  knitr:::html_vignette:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The main two parameters for this model are the number of committees as well as the number of neighbors (if any) to use to adjust the model predictions. We'll use two different packages for model tuning. Each will split and resample the data with different code. Their results will be very similar but will not be equal. 
+
+Before starting, we'll use the Ames housing data again. 
+
+```{r data}
+data(ames, package = "modeldata")
+# model the data on the log10 scale
+ames$Sale_Price <- log10(ames$Sale_Price)
+
+predictors <- 
+  c("Lot_Area", "Alley", "Lot_Shape", "Neighborhood", "Bldg_Type", 
+    "Year_Built", "Total_Bsmt_SF", "Central_Air", "Gr_Liv_Area", 
+    "Bsmt_Full_Bath", "Bsmt_Half_Bath", "Full_Bath", "Half_Bath", 
+    "TotRms_AbvGrd",  "Year_Sold", "Longitude", "Latitude")
+ames$Sale_Price <- log10(ames$Sale_Price)
+
+ames <- ames[, colnames(ames) %in% c("Sale_Price", predictors)]
+``` 
+
+## Model Tuning via caret
+
+To tune the model over different values of `neighbors` and `committees`, the `train` function in the
+[`caret`](https://CRAN.R-project.org/package=caret) package can be used to optimize these parameters. For example, to split the data:
+
+```{r caret-split, message = FALSE}
+library(caret)
+
+set.seed(1)
+in_train <- createDataPartition(ames$Sale_Price, times = 1, list = FALSE)
+caret_train <- ames[ in_train,]
+caret_test  <- ames[-in_train,]
+```
+
+We'll use basic 10-fold cross-validation to tune the models over the two parameters. Although `train()` can make its own grid, we'll use a regular grid with four values per parameter:
+
+```{r caret-tune, warning = FALSE}
+grid <- expand.grid(committees = c(1, 10, 50, 100), neighbors = c(0, 1, 5, 9))
+
+set.seed(2)
+caret_grid <- train(
+  x = subset(caret_train, select = -Sale_Price),
+  y = caret_train$Sale_Price,
+  method = "cubist",
+  tuneGrid = grid,
+  trControl = trainControl(method = "cv")
+  )
+caret_grid
+``` 
+
+Note that the x/y interface was used. This keeps factor predictors intact; if the formula method had been used, factor predictors like `Neighborhood` would have been converted to binary indicator columns. That would not cause an error, but Cubist usually works better without the indicators columns. 
+
+The next figure shows the profiles of the tuning parameters produced using `ggplot(caret_grid)`.
+
+```{r plot-tune, echo = FALSE, fig = TRUE, width = 6, height = 4.25}
+ggplot(caret_grid) + 
+  theme(legend.position = "top")
+``` 
+
+The `caret_grid` object selected and fit the final model (with the best results). The test data are predicted using:
+
+```{r caret-test}
+predict(caret_grid, head(caret_test))
+```
+
+
+## Model Tuning via tidymodels
+
+The tidymodels packages have a slightly different approach to package development. Whereas `caret` contains a large number of functions, tidymodels splits the code into small packages that do a few common tasks (e.g. resampling, performance estimation). To start, load the `tidymodels` package and this will attach the main set of core packages: 
+
+```{r tm-load, warning = FALSE}
+library(tidymodels)
+tidymodels_prefer()
+```
+
+`tidymodels_prefer()` resolves the naming conflicts between it and `caret` functions. For example, invoking `sensitivity` will now point towards the tidymodels version (but the other function can be used via `caret::sensitivity()`). 
+
+If you are new to tidymodels, we suggest taking a look at [`tidymodels.org`](https://www.tidymodels.org/) or the book [_Tidy Modeling with R_](https://www.tmwr.org/). 
+
+We'll split the data into training and test data sets, then use the `vfold_cv()` function to create cross-validation folds. There are stored in a tibble object( basically a data frame): 
+
+```{r tm-split}
+set.seed(3)
+split <- initial_split(ames, strata = Sale_Price)
+tm_train <- training(split)
+tm_test  <- testing(split)
+
+set.seed(4)
+cv_folds <- vfold_cv(tm_train, strata = Sale_Price)
+cv_folds
+```
+
+To use this model, we define the _model specification object_ and tag which parameters that we want to tune for this model (with a value of `tune()`). the package that contains the model functions for rule-based models is called `rules`; we load that first. 
+
+```{r tm-model}
+library(rules)
+
+cubist_spec <- 
+  cubist_rules(committees = tune(), neighbors = tune()) %>% 
+  set_engine("Cubist")
+cubist_spec
+```
+
+Now we can use the `tune_grid()` function to estimate performance for all of the parameters in the `grid` data frame: 
+
+```{r tm-tune}
+tm_grid <- 
+  cubist_spec %>% 
+  tune_grid(Sale_Price ~ ., resamples = cv_folds, grid = grid)
+tm_grid
+```
+
+The results can be sown as a table or a plot: 
+
+```{r tm-autoplot}
+collect_metrics(tm_grid)
+autoplot(tm_grid, metric = "rmse")
+```
+
+We can select a parameter combination as the final configuration and update our model specification object with those values. 
+
+```{r finalize}
+cubist_fit <- 
+  cubist_spec %>% 
+  finalize_model(select_best(tm_grid, metric = "rmse")) %>% 
+  fit(Sale_Price ~ ., data = tm_train)
+
+predict(cubist_fit, head(tm_test))
+```
+
+This can be more easily done with `last_fit()`: 
+
+```{r last}
+cubist_results <- 
+  cubist_spec %>% 
+  finalize_model(select_best(tm_grid, metric = "rmse")) %>% 
+  last_fit(Sale_Price ~ ., split = split)
+
+cubist_results
+
+# test set results:
+collect_metrics(cubist_results)
+
+# test set predictions:
+collect_predictions(cubist_results)
+```
