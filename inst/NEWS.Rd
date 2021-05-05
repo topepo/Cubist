@@ -5,7 +5,8 @@
 
 \section{Changes in version 0.2.4}{
 \itemize{
-\item Maintenance release to fix CRAN issues by adding rmarkdown to Suggests
+\item Maintenance release to fix CRAN issues by adding rmarkdown to Suggests.
+
  }
 }
 
