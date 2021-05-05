@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>http://topepo.github.io/Cubist/index.html</loc>
+  </url>
+  <url>
+    <loc>http://topepo.github.io/Cubist/reference/QuinlanAttributes.html</loc>
+  </url>
+  <url>
+    <loc>http://topepo.github.io/Cubist/reference/cubist.default.html</loc>
+  </url>
+  <url>
+    <loc>http://topepo.github.io/Cubist/reference/cubistControl.html</loc>
+  </url>
+  <url>
+    <loc>http://topepo.github.io/Cubist/reference/dotplot.cubist.html</loc>
+  </url>
+  <url>
+    <loc>http://topepo.github.io/Cubist/reference/exportCubistFiles.html</loc>
+  </url>
+  <url>
+    <loc>http://topepo.github.io/Cubist/reference/predict.cubist.html</loc>
+  </url>
+  <url>
+    <loc>http://topepo.github.io/Cubist/reference/summary.cubist.html</loc>
+  </url>
+  <url>
+    <loc>http://topepo.github.io/Cubist/articles/cubist.html</loc>
+  </url>
+</urlset>
