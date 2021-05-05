@@ -51,6 +51,7 @@ makeNamesFile <-
       x <- as.data.frame(x)
     }
     # See issue #5
+    check_names(x)
     has_sample <- grep("^sample", colnames(x))
     if(length(has_sample))
       colnames(x) <- gsub("^sample", "__Sample", colnames(x))

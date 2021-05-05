@@ -174,6 +174,7 @@ cubist.default <- function(x, y,
   if (!is.null(weights) && !is.numeric(weights))
     stop("case weights must be numeric", call. = FALSE)
 
+  check_names(x)
   namesString <-
     makeNamesFile(x, y, w = weights, label = control$label, comments = TRUE)
   dataString <- makeDataFile(x, y, weights)
@@ -224,7 +225,9 @@ cubist.default <- function(x, y,
 
   usage <- varUsage(Z$output)
   if (is.null(usage) || nrow(usage) < ncol(x)) {
+    check_names(x)
     xNames <- colnames(x)
+
     uNames <-
       if (!is.null(usage))
         as.character(usage$Variable)
@@ -560,3 +563,10 @@ truncateText <- function(x) {
   paste(out, collapse = "\n")
 }
 
+check_names <- function(x) {
+  cn <- colnames(x)
+  if (is.null(cn)) {
+    stop("The data should have column names")
+  }
+  invisible(NULL)
+}
