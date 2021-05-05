@@ -17,6 +17,7 @@ Imports:
   utils
 Config/Needs/website: pkgdown, caret  
 Suggests: 
+  mlbench,
   knitr,
   modeldata,
   dplyr (>= 0.7.4),
