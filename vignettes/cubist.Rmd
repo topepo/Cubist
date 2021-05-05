@@ -121,7 +121,7 @@ After the initial use of the instance-based correction, there is very little cha
 
 ## Model tuning
 
-R modeling packages such as `caret`, `tidymodels`, and `mlr3` can be used to tune the model. See the examples here for more details. 
+R modeling packages such as `caret`, `tidymodels`, and `mlr3` can be used to tune the model. See the [examples here](https://topepo.github.io/Cubist/articles/extras/tuning.html) for more details. 
 
 It should be noted that this variable importance measure does not capture the influence of the predictors when using the instance-based correction.
 

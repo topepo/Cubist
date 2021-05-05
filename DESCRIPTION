@@ -15,7 +15,7 @@ Depends: lattice
 Imports: 
   reshape2,
   utils
-Config/Needs/website: pkgdown, caret  
+Config/Needs/website: pkgdown, caret, tidymodels, rules  
 Suggests: 
   mlbench,
   knitr,

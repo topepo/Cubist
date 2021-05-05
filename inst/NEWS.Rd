@@ -6,7 +6,7 @@
 \section{Changes in version 0.2.4}{
 \itemize{
 \item Maintenance release to fix CRAN issues by adding rmarkdown to Suggests.
-
+\item Re-wrote parts of the vignettes and added another for model tuning.
  }
 }
 

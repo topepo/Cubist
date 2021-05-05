@@ -6,7 +6,9 @@ template:
 
 navbar:
   left:
-  - text: Introduction 
-    href: articles/cubist.html         
+  - text: Introduction
+    href: articles/cubist.html
+  - text: Tuning
+    href: articles/extras/tuning.html
   - text: Reference
     href: reference/index.html
