@@ -78,7 +78,7 @@ cubist <-  function(x, ...) UseMethod("cubist")
 #' @aliases cubist cubist.default
 #' @param x a matrix or data frame of predictor variables. Missing
 #'  data are allowed but (at this time) only numeric, character and
-#'  factor values are allowed.
+#'  factor values are allowed. Must have column names.
 #' @param y a numeric vector of outcome
 #' @param committees an integer: how many committee models (e.g..
 #'  boosting iterations) should be used?

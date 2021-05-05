@@ -8,7 +8,7 @@
 #'
 #' @param object an object of class `cubist`
 #' @param newdata a data frame of predictors (in the same order as
-#'  the original training data)
+#'  the original training data). Must have column names.
 #' @param neighbors an integer from 0 to 9: how many instances to
 #'  use to correct the rule-based prediction?
 #' @param \dots other options to pass through the function (not
@@ -65,6 +65,7 @@ predict.cubist <- function (object, newdata = NULL, neighbors = 0, ...) {
     stop("newdata must be non-null", call. = FALSE)
 
   ## check order of data to make sure that it is the same
+  check_names(newdata)
   newdata <- newdata[, object$vars$all, drop = FALSE]
 
   if (length(neighbors) > 1)
@@ -95,7 +96,6 @@ predict.cubist <- function (object, newdata = NULL, neighbors = 0, ...) {
     newdata$case_weight_pred <- NA
 
   ## make cases file
-  check_names(newdata)
   caseString <- makeDataFile(x = newdata, y = NULL)
 
   ## fix breaking predictions when using sample parameter

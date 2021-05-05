@@ -10,7 +10,7 @@
 \arguments{
 \item{x}{a matrix or data frame of predictor variables. Missing
 data are allowed but (at this time) only numeric, character and
-factor values are allowed.}
+factor values are allowed. Must have column names.}
 
 \item{y}{a numeric vector of outcome}
 
