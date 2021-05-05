@@ -22,7 +22,8 @@ Suggests:
   modeldata,
   dplyr (>= 0.7.4),
   rlang,
-  tidyrules
+  tidyrules,
+  rmarkdown
 URL: https://topepo.github.io/Cubist
 BugReports: https://github.com/topepo/Cubist/issues
 License: GPL-3
