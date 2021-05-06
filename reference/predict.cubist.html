@@ -138,7 +138,7 @@ using the approach of Quinlan (1993).</p>
     <tr>
       <th>newdata</th>
       <td><p>a data frame of predictors (in the same order as
-the original training data)</p></td>
+the original training data). Must have column names.</p></td>
     </tr>
     <tr>
       <th>neighbors</th>
@@ -193,15 +193,15 @@ modifications be Steve Weston</p>
 <span class='co'>## now add instances</span>
 <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>mod1</span>, <span class='va'>BostonHousing</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span>, <span class='op'>-</span><span class='fl'>14</span><span class='op'>]</span>, neighbors <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; [1] 26.07685 21.67079 33.87119 34.64103</div><div class='input'>
-<span class='co'># Example error </span>
+<span class='co'># Example error</span>
 <span class='va'>iris_test</span> <span class='op'>&lt;-</span> <span class='va'>iris</span>
 <span class='va'>iris_test</span><span class='op'>$</span><span class='va'>Species</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span><span class='op'>(</span><span class='va'>iris_test</span><span class='op'>$</span><span class='va'>Species</span><span class='op'>)</span>
 
-<span class='va'>mod</span> <span class='op'>&lt;-</span> <span class='fu'><a href='cubist.default.html'>cubist</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>iris_test</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>99</span>, <span class='fl'>2</span><span class='op'>:</span><span class='fl'>5</span><span class='op'>]</span>, 
+<span class='va'>mod</span> <span class='op'>&lt;-</span> <span class='fu'><a href='cubist.default.html'>cubist</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>iris_test</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>99</span>, <span class='fl'>2</span><span class='op'>:</span><span class='fl'>5</span><span class='op'>]</span>,
               y <span class='op'>=</span> <span class='va'>iris_test</span><span class='op'>$</span><span class='va'>Sepal.Length</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>99</span><span class='op'>]</span><span class='op'>)</span>
-              
+
 <span class='co'># predict(mod, iris_test[100:151, 2:5])</span>
-<span class='co'># Error: </span>
+<span class='co'># Error:</span>
 <span class='co'># *** line 2 of `undefined.cases':</span>
 <span class='co'># bad value of 'virginica' for attribute 'Species'</span>
 </div></pre>
