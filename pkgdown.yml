@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   cubist: cubist.html
   extras/tuning: tuning.html
-last_built: 2021-05-06T14:31Z
+last_built: 2021-05-06T14:48Z
 urls:
   reference: http://topepo.github.io/Cubist/reference
   article: http://topepo.github.io/Cubist/articles
