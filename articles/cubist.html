@@ -86,7 +86,7 @@
 <p>This is explained better in Quinlan (1992). Wang and Witten (1997) attempted to recreate this model using a “rational reconstruction” of Quinlan (1992) that is the basis for the <code>M5P</code> model in <code>Weka</code> (and the R package <code>RWeka</code>).</p>
 <p>An example of a model tree can be illustrated using the Ames housing data in the <code>modeldata</code> package.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://topepo.github.io/Cubist">Cubist</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://topepo.github.io/Cubist//">Cubist</a></span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">ames</span>, package <span class="op">=</span> <span class="st">"modeldata"</span><span class="op">)</span>
 <span class="co"># model the data on the log10 scale</span>
@@ -127,7 +127,7 @@
 ## cubist.default(x = train_pred, y = train_resp)
 ## 
 ## 
-## Cubist [Release 2.07 GPL Edition]  Thu May  6 14:48:37 2021
+## Cubist [Release 2.07 GPL Edition]  Thu May  6 16:37:40 2021
 ## ---------------------------------
 ## 
 ##     Target attribute `outcome'
@@ -309,7 +309,7 @@
 ## cubist.default(x = train_pred, y = train_resp, committees = 3)
 ## 
 ## 
-## Cubist [Release 2.07 GPL Edition]  Thu May  6 14:48:37 2021
+## Cubist [Release 2.07 GPL Edition]  Thu May  6 16:37:40 2021
 ## ---------------------------------
 ## 
 ##     Target attribute `outcome'
@@ -721,7 +721,7 @@
 ##             7%    Year_Sold
 ## 
 ## 
-## Time: 0.2 secs</code></pre>
+## Time: 0.1 secs</code></pre>
 <p>For this model:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">com_pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">com_model</span>, <span class="va">test_pred</span><span class="op">)</span>
@@ -770,7 +770,7 @@
 ## cubist.default(x = train_pred, y = train_resp)
 ## 
 ## 
-## Cubist [Release 2.07 GPL Edition]  Thu May  6 14:48:37 2021
+## Cubist [Release 2.07 GPL Edition]  Thu May  6 16:37:40 2021
 ## ---------------------------------
 ## 
 ##     Target attribute `outcome'
