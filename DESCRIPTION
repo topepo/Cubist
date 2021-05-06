@@ -24,7 +24,7 @@ Suggests:
   rlang,
   tidyrules,
   rmarkdown
-URL: http://topepo.github.io/Cubist, https://topepo.github.io/Cubist
+URL: https://topepo.github.io/Cubist//, https://topepo.github.io/Cubist/
 BugReports: https://github.com/topepo/Cubist/issues
 License: GPL-3
 LazyLoad: yes
