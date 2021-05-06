@@ -10,7 +10,7 @@
 \item{object}{an object of class \code{cubist}}
 
 \item{newdata}{a data frame of predictors (in the same order as
-the original training data)}
+the original training data). Must have column names.}
 
 \item{neighbors}{an integer from 0 to 9: how many instances to
 use to correct the rule-based prediction?}
@@ -45,15 +45,15 @@ predict(mod1, BostonHousing[1:4, -14])
 ## now add instances
 predict(mod1, BostonHousing[1:4, -14], neighbors = 5)
 
-# Example error 
+# Example error
 iris_test <- iris
 iris_test$Species <- as.character(iris_test$Species)
 
-mod <- cubist(x = iris_test[1:99, 2:5], 
+mod <- cubist(x = iris_test[1:99, 2:5],
               y = iris_test$Sepal.Length[1:99])
-              
+
 # predict(mod, iris_test[100:151, 2:5])
-# Error: 
+# Error:
 # *** line 2 of `undefined.cases':
 # bad value of 'virginica' for attribute 'Species'
 }
