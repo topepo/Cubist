@@ -162,7 +162,7 @@
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidymodels.tidymodels.org">tidymodels</a></span><span class="op">)</span></code></pre></div>
 <pre><code>## ── Attaching packages ────────────────────────────────────── tidymodels 0.1.3 ──</code></pre>
-<pre><code>## ✔ broom        0.7.6      ✔ rsample      0.0.9 
+<pre><code>## ✔ broom        0.7.6      ✔ rsample      0.1.0 
 ## ✔ dials        0.0.9      ✔ tibble       3.1.1 
 ## ✔ dplyr        1.0.6      ✔ tidyr        1.1.3 
 ## ✔ infer        0.5.4      ✔ tune         0.1.5 
@@ -199,16 +199,16 @@
 ## # A tibble: 10 x 2
 ##    splits             id    
 ##    &lt;list&gt;             &lt;chr&gt; 
-##  1 &lt;split [1978/221]&gt; Fold01
-##  2 &lt;split [1978/221]&gt; Fold02
-##  3 &lt;split [1978/221]&gt; Fold03
-##  4 &lt;split [1978/221]&gt; Fold04
-##  5 &lt;split [1978/221]&gt; Fold05
-##  6 &lt;split [1979/220]&gt; Fold06
-##  7 &lt;split [1980/219]&gt; Fold07
-##  8 &lt;split [1980/219]&gt; Fold08
-##  9 &lt;split [1981/218]&gt; Fold09
-## 10 &lt;split [1981/218]&gt; Fold10</code></pre>
+##  1 &lt;split [1976/221]&gt; Fold01
+##  2 &lt;split [1976/221]&gt; Fold02
+##  3 &lt;split [1976/221]&gt; Fold03
+##  4 &lt;split [1976/221]&gt; Fold04
+##  5 &lt;split [1977/220]&gt; Fold05
+##  6 &lt;split [1977/220]&gt; Fold06
+##  7 &lt;split [1978/219]&gt; Fold07
+##  8 &lt;split [1978/219]&gt; Fold08
+##  9 &lt;split [1979/218]&gt; Fold09
+## 10 &lt;split [1980/217]&gt; Fold10</code></pre>
 <p>To use this model, we define the <em>model specification object</em> and tag which parameters that we want to tune for this model (with a value of <code>tune()</code>). the package that contains the model functions for rule-based models is called <code>rules</code>; we load that first.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tidymodels/rules">rules</a></span><span class="op">)</span>
@@ -235,32 +235,32 @@
 ## # A tibble: 10 x 4
 ##    splits             id     .metrics              .notes              
 ##    &lt;list&gt;             &lt;chr&gt;  &lt;list&gt;                &lt;list&gt;              
-##  1 &lt;split [1978/221]&gt; Fold01 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
-##  2 &lt;split [1978/221]&gt; Fold02 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
-##  3 &lt;split [1978/221]&gt; Fold03 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
-##  4 &lt;split [1978/221]&gt; Fold04 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
-##  5 &lt;split [1978/221]&gt; Fold05 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
-##  6 &lt;split [1979/220]&gt; Fold06 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
-##  7 &lt;split [1980/219]&gt; Fold07 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
-##  8 &lt;split [1980/219]&gt; Fold08 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
-##  9 &lt;split [1981/218]&gt; Fold09 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
-## 10 &lt;split [1981/218]&gt; Fold10 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;</code></pre>
+##  1 &lt;split [1976/221]&gt; Fold01 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
+##  2 &lt;split [1976/221]&gt; Fold02 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
+##  3 &lt;split [1976/221]&gt; Fold03 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
+##  4 &lt;split [1976/221]&gt; Fold04 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
+##  5 &lt;split [1977/220]&gt; Fold05 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
+##  6 &lt;split [1977/220]&gt; Fold06 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
+##  7 &lt;split [1978/219]&gt; Fold07 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
+##  8 &lt;split [1978/219]&gt; Fold08 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
+##  9 &lt;split [1979/218]&gt; Fold09 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
+## 10 &lt;split [1980/217]&gt; Fold10 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;</code></pre>
 <p>The results can be sown as a table or a plot:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">collect_metrics</span><span class="op">(</span><span class="va">tm_grid</span><span class="op">)</span></code></pre></div>
 <pre><code>## # A tibble: 32 x 8
 ##    committees neighbors .metric .estimator    mean     n  std_err .config       
 ##         &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;        &lt;dbl&gt; &lt;int&gt;    &lt;dbl&gt; &lt;chr&gt;         
-##  1          1         0 rmse    standard   0.00622    10 0.000212 Preprocessor1…
-##  2          1         0 rsq     standard   0.824      10 0.00822  Preprocessor1…
-##  3          1         1 rmse    standard   0.00699    10 0.000177 Preprocessor1…
-##  4          1         1 rsq     standard   0.788      10 0.00706  Preprocessor1…
-##  5          1         5 rmse    standard   0.00595    10 0.000211 Preprocessor1…
-##  6          1         5 rsq     standard   0.840      10 0.00855  Preprocessor1…
-##  7          1         9 rmse    standard   0.00584    10 0.000215 Preprocessor1…
-##  8          1         9 rsq     standard   0.845      10 0.00840  Preprocessor1…
-##  9         10         0 rmse    standard   0.00593    10 0.000297 Preprocessor1…
-## 10         10         0 rsq     standard   0.840      10 0.0121   Preprocessor1…
+##  1          1         0 rmse    standard   0.00700    10 0.000425 Preprocessor1…
+##  2          1         0 rsq     standard   0.778      10 0.0224   Preprocessor1…
+##  3          1         1 rmse    standard   0.00776    10 0.000404 Preprocessor1…
+##  4          1         1 rsq     standard   0.744      10 0.0202   Preprocessor1…
+##  5          1         5 rmse    standard   0.00668    10 0.000403 Preprocessor1…
+##  6          1         5 rsq     standard   0.799      10 0.0210   Preprocessor1…
+##  7          1         9 rmse    standard   0.00666    10 0.000410 Preprocessor1…
+##  8          1         9 rsq     standard   0.800      10 0.0213   Preprocessor1…
+##  9         10         0 rmse    standard   0.00625    10 0.000371 Preprocessor1…
+## 10         10         0 rsq     standard   0.823      10 0.0198   Preprocessor1…
 ## # … with 22 more rows</code></pre>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">autoplot</span><span class="op">(</span><span class="va">tm_grid</span>, metric <span class="op">=</span> <span class="st">"rmse"</span><span class="op">)</span></code></pre></div>
@@ -276,11 +276,11 @@
 <pre><code>## # A tibble: 6 x 1
 ##   .pred
 ##   &lt;dbl&gt;
-## 1 0.716
-## 2 0.728
-## 3 0.727
-## 4 0.725
-## 5 0.722
+## 1 0.723
+## 2 0.725
+## 3 0.720
+## 4 0.759
+## 5 0.744
 ## 6 0.729</code></pre>
 <p>This can be more easily done with <code>last_fit()</code>:</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
@@ -302,25 +302,25 @@
 <pre><code>## # A tibble: 2 x 4
 ##   .metric .estimator .estimate .config             
 ##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
-## 1 rmse    standard     0.00537 Preprocessor1_Model1
-## 2 rsq     standard     0.872   Preprocessor1_Model1</code></pre>
+## 1 rmse    standard     0.00576 Preprocessor1_Model1
+## 2 rsq     standard     0.857   Preprocessor1_Model1</code></pre>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># test set predictions:</span>
 <span class="fu">collect_predictions</span><span class="op">(</span><span class="va">cubist_results</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 731 x 5
+<pre><code>## # A tibble: 733 x 5
 ##    id               .pred  .row Sale_Price .config             
 ##    &lt;chr&gt;            &lt;dbl&gt; &lt;int&gt;      &lt;dbl&gt; &lt;chr&gt;               
-##  1 train/test split 0.716     3      0.719 Preprocessor1_Model1
-##  2 train/test split 0.728     4      0.731 Preprocessor1_Model1
-##  3 train/test split 0.727     7      0.727 Preprocessor1_Model1
-##  4 train/test split 0.725    10      0.722 Preprocessor1_Model1
-##  5 train/test split 0.722    14      0.719 Preprocessor1_Model1
-##  6 train/test split 0.729    15      0.726 Preprocessor1_Model1
-##  7 train/test split 0.707    19      0.712 Preprocessor1_Model1
-##  8 train/test split 0.715    25      0.714 Preprocessor1_Model1
-##  9 train/test split 0.723    29      0.721 Preprocessor1_Model1
-## 10 train/test split 0.697    30      0.697 Preprocessor1_Model1
-## # … with 721 more rows</code></pre>
+##  1 train/test split 0.723     5      0.723 Preprocessor1_Model1
+##  2 train/test split 0.725    10      0.722 Preprocessor1_Model1
+##  3 train/test split 0.720    11      0.720 Preprocessor1_Model1
+##  4 train/test split 0.760    16      0.758 Preprocessor1_Model1
+##  5 train/test split 0.744    18      0.748 Preprocessor1_Model1
+##  6 train/test split 0.730    20      0.726 Preprocessor1_Model1
+##  7 train/test split 0.726    23      0.727 Preprocessor1_Model1
+##  8 train/test split 0.708    27      0.708 Preprocessor1_Model1
+##  9 train/test split 0.712    34      0.714 Preprocessor1_Model1
+## 10 train/test split 0.744    37      0.746 Preprocessor1_Model1
+## # … with 723 more rows</code></pre>
 </div>
   </div>
 
