@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">Cubist</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.40</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.40.9000</span>
       </span>
     </div>
 
@@ -163,7 +163,7 @@
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidymodels.tidymodels.org">tidymodels</a></span><span class="op">)</span></code></pre></div>
 <pre><code>## ── Attaching packages ────────────────────────────────────── tidymodels 0.1.3 ──</code></pre>
 <pre><code>## ✔ broom        0.7.6      ✔ rsample      0.1.0 
-## ✔ dials        0.0.9      ✔ tibble       3.1.1 
+## ✔ dials        0.0.9      ✔ tibble       3.1.2 
 ## ✔ dplyr        1.0.6      ✔ tidyr        1.1.3 
 ## ✔ infer        0.5.4      ✔ tune         0.1.5 
 ## ✔ modeldata    0.1.0      ✔ workflows    0.2.2 
@@ -233,18 +233,18 @@
 <pre><code>## # Tuning results
 ## # 10-fold cross-validation using stratification 
 ## # A tibble: 10 x 4
-##    splits             id     .metrics              .notes              
-##    &lt;list&gt;             &lt;chr&gt;  &lt;list&gt;                &lt;list&gt;              
-##  1 &lt;split [1976/221]&gt; Fold01 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
-##  2 &lt;split [1976/221]&gt; Fold02 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
-##  3 &lt;split [1976/221]&gt; Fold03 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
-##  4 &lt;split [1976/221]&gt; Fold04 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
-##  5 &lt;split [1977/220]&gt; Fold05 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
-##  6 &lt;split [1977/220]&gt; Fold06 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
-##  7 &lt;split [1978/219]&gt; Fold07 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
-##  8 &lt;split [1978/219]&gt; Fold08 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
-##  9 &lt;split [1979/218]&gt; Fold09 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;
-## 10 &lt;split [1980/217]&gt; Fold10 &lt;tibble[,6] [32 × 6]&gt; &lt;tibble[,1] [0 × 1]&gt;</code></pre>
+##    splits             id     .metrics          .notes          
+##    &lt;list&gt;             &lt;chr&gt;  &lt;list&gt;            &lt;list&gt;          
+##  1 &lt;split [1976/221]&gt; Fold01 &lt;tibble [32 × 6]&gt; &lt;tibble [0 × 1]&gt;
+##  2 &lt;split [1976/221]&gt; Fold02 &lt;tibble [32 × 6]&gt; &lt;tibble [0 × 1]&gt;
+##  3 &lt;split [1976/221]&gt; Fold03 &lt;tibble [32 × 6]&gt; &lt;tibble [0 × 1]&gt;
+##  4 &lt;split [1976/221]&gt; Fold04 &lt;tibble [32 × 6]&gt; &lt;tibble [0 × 1]&gt;
+##  5 &lt;split [1977/220]&gt; Fold05 &lt;tibble [32 × 6]&gt; &lt;tibble [0 × 1]&gt;
+##  6 &lt;split [1977/220]&gt; Fold06 &lt;tibble [32 × 6]&gt; &lt;tibble [0 × 1]&gt;
+##  7 &lt;split [1978/219]&gt; Fold07 &lt;tibble [32 × 6]&gt; &lt;tibble [0 × 1]&gt;
+##  8 &lt;split [1978/219]&gt; Fold08 &lt;tibble [32 × 6]&gt; &lt;tibble [0 × 1]&gt;
+##  9 &lt;split [1979/218]&gt; Fold09 &lt;tibble [32 × 6]&gt; &lt;tibble [0 × 1]&gt;
+## 10 &lt;split [1980/217]&gt; Fold10 &lt;tibble [32 × 6]&gt; &lt;tibble [0 × 1]&gt;</code></pre>
 <p>The results can be sown as a table or a plot:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">collect_metrics</span><span class="op">(</span><span class="va">tm_grid</span><span class="op">)</span></code></pre></div>
@@ -293,9 +293,9 @@
 <pre><code>## # Resampling results
 ## # Manual resampling 
 ## # A tibble: 1 x 6
-##   splits       id         .metrics       .notes       .predictions     .workflow
-##   &lt;list&gt;       &lt;chr&gt;      &lt;list&gt;         &lt;list&gt;       &lt;list&gt;           &lt;list&gt;   
-## 1 &lt;split [219… train/tes… &lt;tibble[,4] [… &lt;tibble[,1]… &lt;tibble[,4] [73… &lt;workflo…</code></pre>
+##   splits        id           .metrics      .notes      .predictions    .workflow
+##   &lt;list&gt;        &lt;chr&gt;        &lt;list&gt;        &lt;list&gt;      &lt;list&gt;          &lt;list&gt;   
+## 1 &lt;split [2197… train/test … &lt;tibble [2 ×… &lt;tibble [0… &lt;tibble [733 ×… &lt;workflo…</code></pre>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># test set results:</span>
 <span class="fu">collect_metrics</span><span class="op">(</span><span class="va">cubist_results</span><span class="op">)</span></code></pre></div>
