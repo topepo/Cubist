@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">Cubist</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.40.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -161,13 +161,16 @@
 <p>The tidymodels packages have a slightly different approach to package development. Whereas <code>caret</code> contains a large number of functions, tidymodels splits the code into small packages that do a few common tasks (e.g. resampling, performance estimation). To start, load the <code>tidymodels</code> package and this will attach the main set of core packages:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidymodels.tidymodels.org">tidymodels</a></span><span class="op">)</span></code></pre></div>
+<pre><code>## Registered S3 method overwritten by 'tune':
+##   method                   from   
+##   required_pkgs.model_spec parsnip</code></pre>
 <pre><code>## ── Attaching packages ────────────────────────────────────── tidymodels 0.1.3 ──</code></pre>
 <pre><code>## ✔ broom        0.7.6      ✔ rsample      0.1.0 
 ## ✔ dials        0.0.9      ✔ tibble       3.1.2 
 ## ✔ dplyr        1.0.6      ✔ tidyr        1.1.3 
 ## ✔ infer        0.5.4      ✔ tune         0.1.5 
 ## ✔ modeldata    0.1.0      ✔ workflows    0.2.2 
-## ✔ parsnip      0.1.5      ✔ workflowsets 0.0.2 
+## ✔ parsnip      0.1.6      ✔ workflowsets 0.0.2 
 ## ✔ purrr        0.3.4      ✔ yardstick    0.0.8 
 ## ✔ recipes      0.1.16</code></pre>
 <pre><code>## ── Conflicts ───────────────────────────────────────── tidymodels_conflicts() ──
@@ -181,12 +184,12 @@
 ## ✖ yardstick::specificity() masks caret::specificity()
 ## ✖ recipes::step()          masks stats::step()
 ## • Use tidymodels_prefer() to resolve common conflicts.</code></pre>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://tidymodels.tidymodels.org/reference/tidymodels_prefer.html">tidymodels_prefer</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><code><a href="https://tidymodels.tidymodels.org/reference/tidymodels_prefer.html">tidymodels_prefer()</a></code> resolves the naming conflicts between it and <code>caret</code> functions. For example, invoking <code>sensitivity</code> will now point towards the tidymodels version (but the other function can be used via <code><a href="https://rdrr.io/pkg/caret/man/sensitivity.html">caret::sensitivity()</a></code>).</p>
 <p>If you are new to tidymodels, we suggest taking a look at <a href="https://www.tidymodels.org/"><code>tidymodels.org</code></a> or the book <a href="https://www.tmwr.org/"><em>Tidy Modeling with R</em></a>.</p>
 <p>We’ll split the data into training and test data sets, then use the <code>vfold_cv()</code> function to create cross-validation folds. There are stored in a tibble object( basically a data frame):</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>
 <span class="va">split</span> <span class="op">&lt;-</span> <span class="fu">initial_split</span><span class="op">(</span><span class="va">ames</span>, strata <span class="op">=</span> <span class="va">Sale_Price</span><span class="op">)</span>
 <span class="va">tm_train</span> <span class="op">&lt;-</span> <span class="fu">training</span><span class="op">(</span><span class="va">split</span><span class="op">)</span>
@@ -210,7 +213,7 @@
 ##  9 &lt;split [1979/218]&gt; Fold09
 ## 10 &lt;split [1980/217]&gt; Fold10</code></pre>
 <p>To use this model, we define the <em>model specification object</em> and tag which parameters that we want to tune for this model (with a value of <code>tune()</code>). the package that contains the model functions for rule-based models is called <code>rules</code>; we load that first.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tidymodels/rules">rules</a></span><span class="op">)</span>
 
 <span class="va">cubist_spec</span> <span class="op">&lt;-</span> 
@@ -225,7 +228,7 @@
 ## 
 ## Computational engine: Cubist</code></pre>
 <p>Now we can use the <code>tune_grid()</code> function to estimate performance for all of the parameters in the <code>grid</code> data frame:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tm_grid</span> <span class="op">&lt;-</span> 
   <span class="va">cubist_spec</span> <span class="op">%&gt;%</span> 
   <span class="fu">tune_grid</span><span class="op">(</span><span class="va">Sale_Price</span> <span class="op">~</span> <span class="va">.</span>, resamples <span class="op">=</span> <span class="va">cv_folds</span>, grid <span class="op">=</span> <span class="va">grid</span><span class="op">)</span>
@@ -246,7 +249,7 @@
 ##  9 &lt;split [1979/218]&gt; Fold09 &lt;tibble [32 × 6]&gt; &lt;tibble [0 × 1]&gt;
 ## 10 &lt;split [1980/217]&gt; Fold10 &lt;tibble [32 × 6]&gt; &lt;tibble [0 × 1]&gt;</code></pre>
 <p>The results can be sown as a table or a plot:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">collect_metrics</span><span class="op">(</span><span class="va">tm_grid</span><span class="op">)</span></code></pre></div>
 <pre><code>## # A tibble: 32 x 8
 ##    committees neighbors .metric .estimator    mean     n  std_err .config       
@@ -262,11 +265,11 @@
 ##  9         10         0 rmse    standard   0.00625    10 0.000371 Preprocessor1…
 ## 10         10         0 rsq     standard   0.823      10 0.0198   Preprocessor1…
 ## # … with 22 more rows</code></pre>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">autoplot</span><span class="op">(</span><span class="va">tm_grid</span>, metric <span class="op">=</span> <span class="st">"rmse"</span><span class="op">)</span></code></pre></div>
 <p><img src="tuning_files/figure-html/tm-autoplot-1.png" width="700"></p>
 <p>We can select a parameter combination as the final configuration and update our model specification object with those values.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cubist_fit</span> <span class="op">&lt;-</span> 
   <span class="va">cubist_spec</span> <span class="op">%&gt;%</span> 
   <span class="fu">finalize_model</span><span class="op">(</span><span class="fu">select_best</span><span class="op">(</span><span class="va">tm_grid</span>, metric <span class="op">=</span> <span class="st">"rmse"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
@@ -283,7 +286,7 @@
 ## 5 0.744
 ## 6 0.729</code></pre>
 <p>This can be more easily done with <code>last_fit()</code>:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cubist_results</span> <span class="op">&lt;-</span> 
   <span class="va">cubist_spec</span> <span class="op">%&gt;%</span> 
   <span class="fu">finalize_model</span><span class="op">(</span><span class="fu">select_best</span><span class="op">(</span><span class="va">tm_grid</span>, metric <span class="op">=</span> <span class="st">"rmse"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
@@ -296,7 +299,7 @@
 ##   splits        id           .metrics      .notes      .predictions    .workflow
 ##   &lt;list&gt;        &lt;chr&gt;        &lt;list&gt;        &lt;list&gt;      &lt;list&gt;          &lt;list&gt;   
 ## 1 &lt;split [2197… train/test … &lt;tibble [2 ×… &lt;tibble [0… &lt;tibble [733 ×… &lt;workflo…</code></pre>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># test set results:</span>
 <span class="fu">collect_metrics</span><span class="op">(</span><span class="va">cubist_results</span><span class="op">)</span></code></pre></div>
 <pre><code>## # A tibble: 2 x 4
@@ -304,7 +307,7 @@
 ##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;               
 ## 1 rmse    standard     0.00576 Preprocessor1_Model1
 ## 2 rsq     standard     0.857   Preprocessor1_Model1</code></pre>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># test set predictions:</span>
 <span class="fu">collect_predictions</span><span class="op">(</span><span class="va">cubist_results</span><span class="op">)</span></code></pre></div>
 <pre><code>## # A tibble: 733 x 5
