@@ -205,7 +205,9 @@ cubist.default <- function(x, y,
 
   # TODO: figure out how to compress a string in R so this holds less memory
   if (control$composite | control$neighbors > 0 | grepl("nearest neighbors", output, fixed = TRUE)){
-    dataString = dataString
+    dataString <- dataString
+  } else {
+    dataString <- ""
   }
 
   splits <- getSplits(Z$model)
@@ -218,6 +220,12 @@ cubist.default <- function(x, y,
           sum(x[, as.character(splits$variable[i])] <= splits$value[i]) / nrow(x)
     }
   }
+
+  tmp <- strsplit(Z$model, "\\n")[[1]]
+  tmp <- tmp[grep("maxd", tmp)]
+  tmp <- strsplit(tmp, "\"")[[1]]
+  maxd <- tmp[grep("maxd", tmp) + 1]
+  maxd <- as.double(maxd)
 
   usage <- varUsage(Z$output)
   if (is.null(usage) || nrow(usage) < ncol(x)) {
@@ -245,6 +253,7 @@ cubist.default <- function(x, y,
               output = Z$output,
               control = control,
               committees = committees,
+              maxd = maxd,
               dims = dim(x),
               splits = splits,
               usage = usage,
