@@ -2,15 +2,11 @@
 #'
 #'
 #'Prediction using the parametric model are calculated using the
-#'  method of Quinlan (1992). If `neighbors` is greater than zero,
-#'  these predictions are adjusted by training set instances nearby
-#'  using the approach of Quinlan (1993).
+#'  method of Quinlan (1992).
 #'
 #' @param object an object of class `cubist`
 #' @param newdata a data frame of predictors (in the same order as
 #'  the original training data). Must have column names.
-#' @param neighbors an integer from 0 to 9: how many instances to
-#'  use to correct the rule-based prediction?
 #' @param \dots other options to pass through the function (not
 #'  currently used)
 #' @return a numeric vector is returned
@@ -45,7 +41,7 @@
 #' predict(mod1, BostonHousing[1:4, -14])
 #'
 #' ## now add instances
-#' predict(mod1, BostonHousing[1:4, -14], neighbors = 5)
+#' predict(mod1, BostonHousing[1:4, -14])
 #'
 #' # Example error
 #' iris_test <- iris
@@ -60,32 +56,13 @@
 #' # bad value of 'virginica' for attribute 'Species'
 #' @method predict cubist
 #' @export
-predict.cubist <- function (object, newdata = NULL, neighbors = 0, ...) {
+predict.cubist <- function (object, newdata = NULL, ...) {
   if (is.null(newdata))
     stop("newdata must be non-null", call. = FALSE)
 
   ## check order of data to make sure that it is the same
   check_names(newdata)
   newdata <- newdata[, object$vars$all, drop = FALSE]
-
-  if (length(neighbors) > 1)
-    stop("only a single value of neighbors is allowed")
-  if (neighbors > 9)
-    stop("'neighbors' must be less than 10")
-  if (neighbors > 0) {
-    object$model <- gsub(
-      "insts=\"0\"",
-      paste(
-        "insts=\"1\" nn=\"",
-        neighbors,
-        "\" maxd=\"",
-        object$maxd,
-        "\"",
-        sep = ""
-      ),
-      object$model
-    )
-  }
 
   ## If there are case weights used during training, the C code
   ## will expect a column of weights in the new data but the
@@ -123,7 +100,7 @@ predict.cubist <- function (object, newdata = NULL, neighbors = 0, ...) {
 }
 
 # There are occations when a new sample is predicted that has a
-# different categoriucal value than what was in the training set.
+# different categorical value than what was in the training set.
 # The C code does nto return a status integer and only issues
 # errors in Z$output so we parse that and set these cases to NA
 

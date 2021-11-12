@@ -183,8 +183,8 @@ cubist.default <- function(x, y,
           as.character(namesString),
           as.character(dataString),
           as.logical(control$unbiased),     # -u : generate unbiased rules
-          "yes",                            # -i and -a : how to combine these?
-          as.integer(1),                    # -n : set the number of nearest neighbors (1 to 9)
+          control$composite,                # -i and -a : how to combine these?
+          as.integer(control$neighbors),    # -n : set the number of nearest neighbors (1 to 9)
           as.integer(committees),           # -c : construct a committee model
           as.double(control$sample),        # -S : use a sample of x% for training
                                             #      and a disjoint sample for testing
@@ -203,25 +203,21 @@ cubist.default <- function(x, y,
     Z$model <- gsub("__Sample", "sample", Z$model)
   }
 
+  # TODO: figure out how to compress a string in R so this holds less memory
+  if (control$composite | control$neighbors > 0 | grepl("nearest neighbors", output, fixed = TRUE)){
+    dataString = dataString
+  }
+
   splits <- getSplits(Z$model)
   if (!is.null(splits)) {
     splits$percentile <- NA
     for (i in 1:nrow(splits)) {
       if (!is.na(splits$value[i]))
+        # TODO: change this so that the direction comes from the rule and not <=
         splits$percentile[i] <-
           sum(x[, as.character(splits$variable[i])] <= splits$value[i]) / nrow(x)
     }
   }
-
-  tmp <- strsplit(Z$model, "\\n")[[1]]
-  tmp <- tmp[grep("maxd", tmp)]
-  tmp <- strsplit(tmp, "\"")[[1]]
-  maxd <- tmp[grep("maxd", tmp) + 1]
-  Z$model <-
-    gsub(paste("insts=\"1\" nn=\"1\" ", "maxd=\"", maxd, "\"", sep = ""),
-         "insts=\"0\"",
-         Z$model)
-  maxd <- as.double(maxd)
 
   usage <- varUsage(Z$output)
   if (is.null(usage) || nrow(usage) < ncol(x)) {
@@ -249,7 +245,6 @@ cubist.default <- function(x, y,
               output = Z$output,
               control = control,
               committees = committees,
-              maxd = maxd,
               dims = dim(x),
               splits = splits,
               usage = usage,
@@ -278,14 +273,18 @@ cubist.default <- function(x, y,
 #'  \url{http://rulequest.com/cubist-unix.html}
 #'
 #' @param unbiased a logical: should unbiased rules be used?
+#' @param composite a logical (or `NA`): should a composite 
+#'  model be used? (`NA` lets Cubist decide)
 #' @param rules an integer (or `NA`): define an explicit limit to
-#'  the number of rules used (`NA` let's Cubist decide).
+#'  the number of rules used (`NA` lets Cubist decide).
+#' @param neighbors an integer (or `NA`): set the number of nearest-
+#'  neighbors or instance-based correction (only applicable when 
+#'  composite is set to TRUE or NA)
 #' @param extrapolation a number between 0 and 100: since Cubist
 #'  uses linear models, predictions can be outside of the outside of
 #'  the range seen the training set. This parameter controls how
 #'  much rule predictions are adjusted to be consistent with the
 #'  training set.
-
 #' @param sample a number between 0 and 99.9: this is the
 #'  percentage of the data set to be randomly selected for model
 #'  building (not for out-of-bag type evaluation).
@@ -316,12 +315,27 @@ cubist.default <- function(x, y,
 #' @export cubistControl
 cubistControl <- function(
   unbiased = FALSE,
+  composite = FALSE,
   rules = 100,
+  neighbors = NA,
   extrapolation = 100,
   sample = 0.0,
   seed = sample.int(4096, size=1) - 1L,
   label = "outcome"
 ) {
+  if !(composite %in% c(TRUE, FALSE, NA))
+    stop("composite parameters must be TRUE, FALSE, or NA")
+  composite = switch(composite, TRUE = 'yes', FALSE = 'no', NA = 'auto')
+
+  if (neighbors) {
+    if (composite != FALSE)
+      stop(neighbors should not be set when composite=FALSE)
+    if (length(neighbors) > 1)
+      stop("only a single value of neighbors is allowed")
+    if (neighbors < 0 | neighbors > 9)
+      stop("'neighbors' must be greater than 0 or less than 10")
+  }
+  
   if (!is.na(rules) & (rules < 1 | rules > 1000000))
     stop("number of rules must be between 1 and 1000000", call. = FALSE)
   if (extrapolation < 0 | extrapolation > 100)
@@ -331,7 +345,9 @@ cubistControl <- function(
 
   list(
     unbiased = unbiased,
+    composite = composite,
     rules = rules,
+    neighbors = neighbors,
     extrapolation = extrapolation / 100,
     sample = sample / 100,
     label = label,
