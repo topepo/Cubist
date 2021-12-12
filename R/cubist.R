@@ -205,7 +205,7 @@ cubist.default <- function(x, y,
 
   # TODO: figure out how to compress a string in R so this holds less memory
   if (control$composite | control$neighbors > 0 | grepl("nearest neighbors", output, fixed = TRUE)){
-    dataString <- dataString
+    dataString <- dataString # memCompress(dataString, type='')
   } else {
     dataString <- ""
   }
@@ -215,9 +215,9 @@ cubist.default <- function(x, y,
     splits$percentile <- NA
     for (i in 1:nrow(splits)) {
       if (!is.na(splits$value[i]))
-        # TODO: change this so that the direction comes from the rule and not <=
+        comparison_op <- operators(splits$dir[i])
         splits$percentile[i] <-
-          sum(x[, as.character(splits$variable[i])] <= splits$value[i]) / nrow(x)
+          sum(comparison_op(x[, as.character(splits$variable[i])], splits$value[i])) / nrow(x)
     }
   }
 
@@ -332,17 +332,24 @@ cubistControl <- function(
   seed = sample.int(4096, size=1) - 1L,
   label = "outcome"
 ) {
-  if !(composite %in% c(TRUE, FALSE, NA))
-    stop("composite parameters must be TRUE, FALSE, or NA")
-  composite = switch(composite, TRUE = 'yes', FALSE = 'no', NA = 'auto')
-
+  
   if (neighbors) {
-    if (composite != FALSE)
-      stop(neighbors should not be set when composite=FALSE)
-    if (length(neighbors) > 1)
+    if (composite == FALSE){
+      stop("neighbors should not be set when composite=FALSE")
+    } else if (length(neighbors) > 1) {
       stop("only a single value of neighbors is allowed")
-    if (neighbors < 0 | neighbors > 9)
-      stop("'neighbors' must be greater than 0 or less than 10")
+    } else if (neighbors < 1 | neighbors > 9) {
+      stop("'neighbors' must be between 1 and 9")
+  } else {
+    neighbors = 0
+  }
+
+  if (!(composite %in% c(TRUE, FALSE, 'auto')))
+    stop("composite parameters must be TRUE, FALSE, or 'auto")
+  if (composite == TRUE){
+    composite = 'yes'
+  } else if (composite == FALSE){
+    composite = 'no'
   }
   
   if (!is.na(rules) & (rules < 1 | rules > 1000000))

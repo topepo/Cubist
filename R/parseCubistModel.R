@@ -1,6 +1,27 @@
 ## TODO:
 ## 3) R function to write R prediction function
 
+op_lt <- function(a, b){
+  return(a < b)
+}
+op_le <- function(a, b){
+  return(a <= b)
+}
+op_gt <- function(a, b){
+  return(a > b)
+}
+op_ge <- function(a, b){
+  return(a >= b)
+}
+op_eq <- function(a, b){
+  return(a == b)
+}
+
+operators <- list(">"  = op_gt, 
+                  ">=" = op_ge,
+                  "<"  = op_lt,
+                  "<=" = op_le,
+                  "==" = op_eq)
 
 countRules <- function(x)
   {
