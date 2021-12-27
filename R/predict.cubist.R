@@ -56,7 +56,7 @@
 #' # bad value of 'virginica' for attribute 'Species'
 #' @method predict cubist
 #' @export
-predict.cubist <- function (object, newdata = NULL, ...) {
+predict.cubist <- function (object, newdata = NULL, neighbors = NULL, ...) {
   if (is.null(newdata))
     stop("newdata must be non-null", call. = FALSE)
 
