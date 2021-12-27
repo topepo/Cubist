@@ -6,7 +6,9 @@
 \usage{
 cubistControl(
   unbiased = FALSE,
+  composite = TRUE,
   rules = 100,
+  neighbors = NA,
   extrapolation = 100,
   sample = 0,
   seed = sample.int(4096, size = 1) - 1L,
@@ -16,8 +18,15 @@ cubistControl(
 \arguments{
 \item{unbiased}{a logical: should unbiased rules be used?}
 
+\item{composite}{a logical (or \code{auto}): should a composite
+model be used? (\code{auto} lets Cubist decide)}
+
 \item{rules}{an integer (or \code{NA}): define an explicit limit to
-the number of rules used (\code{NA} let's Cubist decide).}
+the number of rules used (\code{NA} lets Cubist decide).}
+
+\item{neighbors}{an integer (or \code{NA}): set the number of nearest-
+neighbors or instance-based correction (only applicable when
+composite is set to TRUE or NA)}
 
 \item{extrapolation}{a number between 0 and 100: since Cubist
 uses linear models, predictions can be outside of the outside of
