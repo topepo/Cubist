@@ -20,7 +20,7 @@ cubist <-  function(x, ...) UseMethod("cubist")
 #  strings that mimic the formats that one would use with the
 #  command line version and get back the textual representation
 #  that would be saved to the .model file also as a string. The
-#  predicton function would then pass the model text string (and
+#  prediction function would then pass the model text string (and
 #  the data text string if instances are used) to the C code for
 #  prediction.
 
@@ -183,7 +183,7 @@ cubist.default <- function(x, y,
           as.character(namesString),
           as.character(dataString),
           as.logical(control$unbiased),     # -u : generate unbiased rules
-          control$composite,                # -i and -a : how to combine these?
+          control$composite,                # -i and -a : use/not rules or auto
           as.integer(control$neighbors),    # -n : set the number of nearest neighbors (1 to 9)
           as.integer(committees),           # -c : construct a committee model
           as.double(control$sample),        # -S : use a sample of x% for training
@@ -203,29 +203,45 @@ cubist.default <- function(x, y,
     Z$model <- gsub("__Sample", "sample", Z$model)
   }
 
-  # TODO: figure out how to compress a string in R so this holds less memory
-  if (control$composite | control$neighbors > 0 | grepl("nearest neighbors", output, fixed = TRUE)){
-    dataString <- dataString # memCompress(dataString, type='')
-  } else {
+
+  if (grepl("Recommend using rules only", Z$output, fixed = TRUE)){
+    cat("Cubist recommends using rules only (i.e. set composite=False)\n")
+  }
+
+  # compress dataString and namesString so they hold less memory, also discard
+  # the datastring if we're not using instance-based correction
+  if (!(
+    (control$composite == "yes") |
+    (control$neighbors > 0) |
+    grepl("nearest neighbors", Z$output, fixed = TRUE))){
     dataString <- ""
   }
+
+  namesString <- memCompress(charToRaw(namesString), type = "b")
+  dataString <- memCompress(charToRaw(dataString), type = "b")
 
   splits <- getSplits(Z$model)
   if (!is.null(splits)) {
     splits$percentile <- NA
     for (i in 1:nrow(splits)) {
       if (!is.na(splits$value[i]))
-        comparison_op <- operators(splits$dir[i])
-        splits$percentile[i] <-
-          sum(comparison_op(x[, as.character(splits$variable[i])], splits$value[i])) / nrow(x)
+        if (splits$value[i] != ""){
+          comparison_op <- operators(splits$dir[i])
+          splits$percentile[i] <-
+            sum(comparison_op(x[, as.character(splits$variable[i])], splits$value[i])) / nrow(x)
+        }
     }
   }
 
-  tmp <- strsplit(Z$model, "\\n")[[1]]
-  tmp <- tmp[grep("maxd", tmp)]
-  tmp <- strsplit(tmp, "\"")[[1]]
-  maxd <- tmp[grep("maxd", tmp) + 1]
-  maxd <- as.double(maxd)
+  if (grepl("maxd", Z$model, fixed = TRUE)){
+    tmp <- strsplit(Z$model, "\\n")[[1]]
+    tmp <- tmp[grep("maxd", tmp)]
+    tmp <- strsplit(tmp, "\"")[[1]]
+    maxd <- tmp[grep("maxd", tmp) + 1]
+    maxd <- as.double(maxd)
+  } else {
+    maxd <- NA
+  }
 
   usage <- varUsage(Z$output)
   if (is.null(usage) || nrow(usage) < ncol(x)) {
@@ -282,12 +298,12 @@ cubist.default <- function(x, y,
 #'  \url{http://rulequest.com/cubist-unix.html}
 #'
 #' @param unbiased a logical: should unbiased rules be used?
-#' @param composite a logical (or `NA`): should a composite 
-#'  model be used? (`NA` lets Cubist decide)
+#' @param composite a logical (or `auto`): should a composite
+#'  model be used? (`auto` lets Cubist decide)
 #' @param rules an integer (or `NA`): define an explicit limit to
 #'  the number of rules used (`NA` lets Cubist decide).
 #' @param neighbors an integer (or `NA`): set the number of nearest-
-#'  neighbors or instance-based correction (only applicable when 
+#'  neighbors or instance-based correction (only applicable when
 #'  composite is set to TRUE or NA)
 #' @param extrapolation a number between 0 and 100: since Cubist
 #'  uses linear models, predictions can be outside of the outside of
@@ -324,7 +340,7 @@ cubist.default <- function(x, y,
 #' @export cubistControl
 cubistControl <- function(
   unbiased = FALSE,
-  composite = FALSE,
+  composite = TRUE,
   rules = 100,
   neighbors = NA,
   extrapolation = 100,
@@ -332,15 +348,19 @@ cubistControl <- function(
   seed = sample.int(4096, size=1) - 1L,
   label = "outcome"
 ) {
-  
-  if (neighbors) {
+
+  if (!is.na(neighbors)) {
     if (composite == FALSE){
       stop("neighbors should not be set when composite=FALSE")
     } else if (length(neighbors) > 1) {
       stop("only a single value of neighbors is allowed")
     } else if (neighbors < 1 | neighbors > 9) {
       stop("'neighbors' must be between 1 and 9")
+    }
   } else {
+    if (isTRUE(composite)){
+      cat("Cubist will choose an appropriate value for neigbors as this parameter is not set\n")
+    }
     neighbors = 0
   }
 
@@ -351,7 +371,7 @@ cubistControl <- function(
   } else if (composite == FALSE){
     composite = 'no'
   }
-  
+
   if (!is.na(rules) & (rules < 1 | rules > 1000000))
     stop("number of rules must be between 1 and 1000000", call. = FALSE)
   if (extrapolation < 0 | extrapolation > 100)

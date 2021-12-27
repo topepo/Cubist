@@ -88,10 +88,14 @@ predict.cubist <- function (object, newdata = NULL, ...) {
                       ),
                       object$model)
 
+  # decompress stored namesString and dataString
+  namesString <- rawToChar(memDecompress(object$names, type = "b"))
+  dataString <- rawToChar(memDecompress(object$data, type = "b"))
+
   Z <- .C("predictions",
           as.character(caseString),
-          as.character(object$names),
-          as.character(object$data),
+          as.character(namesString),
+          as.character(dataString),
           as.character(caseModel),
           pred = double(nrow(newdata)),
           output = character(1),
