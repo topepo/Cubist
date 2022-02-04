@@ -1,6 +1,6 @@
 
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/Cubist)](https://CRAN.R-project.org/package=Cubist)
-[![Downloads](http://cranlogs.r-pkg.org/badges/Cubist)](https://CRAN.rstudio.com/package=Cubist)
+[![Downloads](http://cranlogs.r-pkg.org/badges/Cubist)](https://CRAN.r-project.org/package=Cubist)
 ![](https://img.shields.io/badge/lifecycle-maturing-blue.svg)
 [![R-CMD-check](https://github.com/topepo/Cubist/workflows/R-CMD-check/badge.svg)](https://github.com/topepo/Cubist/actions)
 
