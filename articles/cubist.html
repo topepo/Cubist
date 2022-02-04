@@ -20,6 +20,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -32,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Cubist</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0.9000</span>
       </span>
     </div>
 
@@ -50,7 +52,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/topepo/Cubist/">
+  <a href="https://github.com/topepo/Cubist/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -71,37 +73,37 @@
       <h1 data-toc-skip>Cubist Regresion Models</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/topepo/Cubist/blob/master/vignettes/cubist.Rmd"><code>vignettes/cubist.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/topepo/Cubist/blob/HEAD/vignettes/cubist.Rmd" class="external-link"><code>vignettes/cubist.Rmd</code></a></small>
       <div class="hidden name"><code>cubist.Rmd</code></div>
 
     </div>
 
     
     
-<p><code>Cubist</code> is an <code>R</code> port of the Cubist GPL <code>C</code> code released by RuleQuest at <a href="http://rulequest.com/cubist-info.html"><code>http://rulequest.com/cubist-info.html</code></a>. See the last section of this document for information on the porting. The other parts describes the functionality of the <code>R</code> package.</p>
-<div id="model-trees" class="section level2">
-<h2 class="hasAnchor">
-<a href="#model-trees" class="anchor"></a>Model Trees</h2>
+<p><code>Cubist</code> is an <code>R</code> port of the Cubist GPL <code>C</code> code released by RuleQuest at <a href="http://rulequest.com/cubist-info.html" class="external-link"><code>http://rulequest.com/cubist-info.html</code></a>. See the last section of this document for information on the porting. The other parts describes the functionality of the <code>R</code> package.</p>
+<div class="section level2">
+<h2 id="model-trees">Model Trees<a class="anchor" aria-label="anchor" href="#model-trees"></a>
+</h2>
 <p>Cubist is a rule-based model that is an extension of Quinlan’s M5 model tree. A tree is grown where the terminal leaves contain linear regression models. These models are based on the predictors used in previous splits. Also, there are intermediate linear models at each step of the tree. A prediction is made using the linear regression model at the terminal node of the tree, but is “smoothed” by taking into account the prediction from the linear model in the previous node of the tree (which also occurs recursively up the tree). The tree is reduced to a set of rules, which initially are paths from the top of the tree to the bottom. Rules are eliminated via pruning and/or combined for simplification.</p>
 <p>This is explained better in Quinlan (1992). Wang and Witten (1997) attempted to recreate this model using a “rational reconstruction” of Quinlan (1992) that is the basis for the <code>M5P</code> model in <code>Weka</code> (and the R package <code>RWeka</code>).</p>
 <p>An example of a model tree can be illustrated using the Ames housing data in the <code>modeldata</code> package.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://topepo.github.io/Cubist//">Cubist</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://topepo.github.io/Cubist//" class="external-link">Cubist</a></span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">ames</span>, package <span class="op">=</span> <span class="st">"modeldata"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ames</span>, package <span class="op">=</span> <span class="st">"modeldata"</span><span class="op">)</span>
 <span class="co"># model the data on the log10 scale</span>
-<span class="va">ames</span><span class="op">$</span><span class="va">Sale_Price</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log10</a></span><span class="op">(</span><span class="va">ames</span><span class="op">$</span><span class="va">Sale_Price</span><span class="op">)</span>
+<span class="va">ames</span><span class="op">$</span><span class="va">Sale_Price</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">ames</span><span class="op">$</span><span class="va">Sale_Price</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">11</span><span class="op">)</span>
-<span class="va">in_train_set</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">ames</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">floor</a></span><span class="op">(</span><span class="fl">.8</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">ames</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">11</span><span class="op">)</span>
+<span class="va">in_train_set</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">ames</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">floor</a></span><span class="op">(</span><span class="fl">.8</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">ames</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 
 <span class="va">predictors</span> <span class="op">&lt;-</span> 
-  <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Lot_Area"</span>, <span class="st">"Alley"</span>, <span class="st">"Lot_Shape"</span>, <span class="st">"Neighborhood"</span>, <span class="st">"Bldg_Type"</span>, 
+  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lot_Area"</span>, <span class="st">"Alley"</span>, <span class="st">"Lot_Shape"</span>, <span class="st">"Neighborhood"</span>, <span class="st">"Bldg_Type"</span>, 
     <span class="st">"Year_Built"</span>, <span class="st">"Total_Bsmt_SF"</span>, <span class="st">"Central_Air"</span>, <span class="st">"Gr_Liv_Area"</span>, 
     <span class="st">"Bsmt_Full_Bath"</span>, <span class="st">"Bsmt_Half_Bath"</span>, <span class="st">"Full_Bath"</span>, <span class="st">"Half_Bath"</span>, 
     <span class="st">"TotRms_AbvGrd"</span>,  <span class="st">"Year_Sold"</span>, <span class="st">"Longitude"</span>, <span class="st">"Latitude"</span><span class="op">)</span>
 
-<span class="va">ames</span><span class="op">$</span><span class="va">Sale_Price</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log10</a></span><span class="op">(</span><span class="va">ames</span><span class="op">$</span><span class="va">Sale_Price</span><span class="op">)</span>
+<span class="va">ames</span><span class="op">$</span><span class="va">Sale_Price</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log10</a></span><span class="op">(</span><span class="va">ames</span><span class="op">$</span><span class="va">Sale_Price</span><span class="op">)</span>
 
 <span class="va">train_pred</span> <span class="op">&lt;-</span> <span class="va">ames</span><span class="op">[</span> <span class="va">in_train_set</span>, <span class="va">predictors</span><span class="op">]</span>
 <span class="va">test_pred</span>  <span class="op">&lt;-</span> <span class="va">ames</span><span class="op">[</span><span class="op">-</span><span class="va">in_train_set</span>, <span class="va">predictors</span><span class="op">]</span>
@@ -111,875 +113,875 @@
 
 <span class="va">model_tree</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cubist.default.html">cubist</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">train_pred</span>, y <span class="op">=</span> <span class="va">train_resp</span><span class="op">)</span>
 <span class="va">model_tree</span></code></pre></div>
-<pre><code>## 
-## Call:
-## cubist.default(x = train_pred, y = train_resp)
-## 
-## Number of samples: 2344 
-## Number of predictors: 17 
-## 
-## Number of committees: 1 
-## Number of rules: 11</code></pre>
+<pre><code><span class="co">## </span>
+<span class="co">## Call:</span>
+<span class="co">## cubist.default(x = train_pred, y = train_resp)</span>
+<span class="co">## </span>
+<span class="co">## Number of samples: 2344 </span>
+<span class="co">## Number of predictors: 17 </span>
+<span class="co">## </span>
+<span class="co">## Number of committees: 1 </span>
+<span class="co">## Number of rules: 11</span></code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">model_tree</span><span class="op">)</span></code></pre></div>
-<pre><code>## 
-## Call:
-## cubist.default(x = train_pred, y = train_resp)
-## 
-## 
-## Cubist [Release 2.07 GPL Edition]  Fri May 28 16:18:26 2021
-## ---------------------------------
-## 
-##     Target attribute `outcome'
-## 
-## Read 2344 cases (18 attributes) from undefined.data
-## 
-## Model:
-## 
-##   Rule 1: [107 cases, mean 0.6922308, range 0.6135074 to 0.725238, est err 0.0086873]
-## 
-##     if
-##  Year_Built &lt;= 1952
-##  Central_Air = N
-##  Gr_Liv_Area &lt;= 1692
-##     then
-##  outcome = 2.8339713 + 2.89e-05 Gr_Liv_Area - 0.0011 Year_Sold
-##            + 2e-05 Year_Built + 1.1e-06 Total_Bsmt_SF
-##            + 0.0003 Bsmt_Full_Bath
-## 
-##   Rule 2: [333 cases, mean 0.7065404, range 0.6720027 to 0.7540954, est err 0.0054064]
-## 
-##     if
-##  Neighborhood in {Old_Town, Edwards, Gilbert, Sawyer, Sawyer_West,
-##                          Brookside, Iowa_DOT_and_Rail_Road, Timberland,
-##                          South_and_West_of_Iowa_State_University}
-##  Year_Built &lt;= 1952
-##  Central_Air = Y
-##     then
-##  outcome = 0.4666239 + 1.87e-05 Gr_Liv_Area + 0.00011 Year_Built
-##            + 3.4e-06 Total_Bsmt_SF + 0.0009 Bsmt_Full_Bath
-##            + 7e-08 Lot_Area
-## 
-##   Rule 3: [176 cases, mean 0.7106560, range 0.6802335 to 0.7269588, est err 0.0030744]
-## 
-##     if
-##  Neighborhood in {College_Creek, Edwards, Somerset, Northridge_Heights,
-##                          Gilbert, Sawyer_West, Mitchell, Iowa_DOT_and_Rail_Road,
-##                          Timberland, Clear_Creek, Meadow_Village, Briardale,
-##                          Blueste, Landmark}
-##  Year_Built &gt; 1952
-##  Total_Bsmt_SF &lt;= 765
-##  Gr_Liv_Area &lt;= 1692
-##     then
-##  outcome = 0.01018 + 0.00034 Year_Built + 1.79e-05 Gr_Liv_Area
-##            + 2.2e-06 Total_Bsmt_SF + 0.0006 Bsmt_Full_Bath
-## 
-##   Rule 4: [87 cases, mean 0.7109181, range 0.6841727 to 0.7294574, est err 0.0049527]
-## 
-##     if
-##  Neighborhood in {North_Ames, Crawford}
-##  Year_Built &lt;= 1952
-##  Gr_Liv_Area &lt;= 1692
-##     then
-##  outcome = 0.6804143 + 1.45e-05 Gr_Liv_Area + 7e-06 Year_Built
-##            + 4e-07 Total_Bsmt_SF
-## 
-##   Rule 5: [35 cases, mean 0.7117702, range 0.6949773 to 0.7293048, est err 0.0047720]
-## 
-##     if
-##  Neighborhood in {North_Ames, Old_Town, Sawyer, Northwest_Ames, Crawford,
-##                          Green_Hills}
-##  Year_Built &gt; 1952
-##  Total_Bsmt_SF &lt;= 765
-##  Gr_Liv_Area &lt;= 1692
-##     then
-##  outcome = 0.2370069 + 0.000232 Year_Built + 1.16e-05 Gr_Liv_Area
-##            + 8.4e-06 Total_Bsmt_SF + 0.0013 Bsmt_Full_Bath
-## 
-##   Rule 6: [1428 cases, mean 0.7131603, range 0.6135074 to 0.7540954, est err 0.0043013]
-## 
-##     if
-##  Neighborhood in {North_Ames, College_Creek, Old_Town, Edwards, Gilbert,
-##                          Sawyer, Northwest_Ames, Sawyer_West, Mitchell,
-##                          Iowa_DOT_and_Rail_Road, Timberland,
-##                          South_and_West_of_Iowa_State_University,
-##                          Meadow_Village, Veenker}
-##  Bldg_Type in {OneFam, TwoFmCon, TwnhsE}
-##  Year_Built &lt;= 2004
-##     then
-##  outcome = 0.3519752 + 1.26e-05 Gr_Liv_Area + 0.000171 Year_Built
-##            + 7.2e-06 Total_Bsmt_SF + 1.8e-07 Lot_Area
-## 
-##   Rule 7: [54 cases, mean 0.7134706, range 0.6808683 to 0.7362626, est err 0.0044510]
-## 
-##     if
-##  Bldg_Type in {Duplex, Twnhs}
-##  Gr_Liv_Area &gt; 1692
-##     then
-##  outcome = 0.3791743 + 1.48e-05 Gr_Liv_Area + 0.000151 Year_Built
-##            + 4.7e-06 Total_Bsmt_SF + 1.3e-07 Lot_Area
-##            + 0.0004 Bsmt_Full_Bath
-## 
-##   Rule 8: [997 cases, mean 0.7173781, range 0.6792599 to 0.74771, est err 0.0034352]
-## 
-##     if
-##  Year_Built &gt; 1952
-##  Total_Bsmt_SF &gt; 765
-##  Gr_Liv_Area &lt;= 1692
-##     then
-##  outcome = 0.3008866 + 1.41e-05 Gr_Liv_Area + 0.000195 Year_Built
-##            + 9e-06 Total_Bsmt_SF + 0.0026 Bsmt_Full_Bath + 5e-08 Lot_Area
-## 
-##   Rule 9: [166 cases, mean 0.7354736, range 0.711188 to 0.7687976, est err 0.0044621]
-## 
-##     if
-##  Neighborhood in {Somerset, Northridge_Heights, Brookside, Crawford,
-##                          Northridge, Stone_Brook, Clear_Creek}
-##  Year_Built &lt;= 2004
-##  Gr_Liv_Area &gt; 1692
-##     then
-##  outcome = 0.451118 + 1.11e-05 Gr_Liv_Area + 0.000126 Year_Built
-##            + 7.5e-06 Total_Bsmt_SF + 4e-08 Lot_Area
-## 
-##   Rule 10: [128 cases, mean 0.7408611, range 0.7227189 to 0.7608459, est err 0.0035555]
-## 
-##     if
-##  Year_Built &gt; 2004
-##  Total_Bsmt_SF &lt;= 2024
-##  Gr_Liv_Area &gt; 1692
-##     then
-##  outcome = 0.1972512 + 0.000248 Year_Built + 1.44e-05 Gr_Liv_Area
-##            + 9.1e-06 Total_Bsmt_SF + 1.7e-07 Lot_Area
-##            + 0.0018 Bsmt_Full_Bath
-## 
-##   Rule 11: [20 cases, mean 0.7468034, range 0.7163473 to 0.7624165, est err 0.0068615]
-## 
-##     if
-##  Year_Built &gt; 2004
-##  Total_Bsmt_SF &gt; 2024
-##     then
-##  outcome = 0.7741479 - 1e-05 Gr_Liv_Area
-## 
-## 
-## Evaluation on training data (2344 cases):
-## 
-##     Average  |error|          0.0045926
-##     Relative |error|               0.40
-##     Correlation coefficient        0.89
-## 
-## 
-##  Attribute usage:
-##    Conds  Model
-## 
-##     98%    99%    Year_Built
-##     63%           Neighborhood
-##     50%   100%    Gr_Liv_Area
-##     42%           Bldg_Type
-##     38%    99%    Total_Bsmt_SF
-##     12%           Central_Air
-##            88%    Lot_Area
-##            52%    Bsmt_Full_Bath
-##             3%    Year_Sold
-## 
-## 
-## Time: 0.1 secs</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">model_tree</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## </span>
+<span class="co">## Call:</span>
+<span class="co">## cubist.default(x = train_pred, y = train_resp)</span>
+<span class="co">## </span>
+<span class="co">## </span>
+<span class="co">## Cubist [Release 2.07 GPL Edition]  Fri Feb  4 19:38:15 2022</span>
+<span class="co">## ---------------------------------</span>
+<span class="co">## </span>
+<span class="co">##     Target attribute `outcome'</span>
+<span class="co">## </span>
+<span class="co">## Read 2344 cases (18 attributes) from undefined.data</span>
+<span class="co">## </span>
+<span class="co">## Model:</span>
+<span class="co">## </span>
+<span class="co">##   Rule 1: [107 cases, mean 0.6922308, range 0.6135074 to 0.725238, est err 0.0086873]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Year_Built &lt;= 1952</span>
+<span class="co">##  Central_Air = N</span>
+<span class="co">##  Gr_Liv_Area &lt;= 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 2.8339713 + 2.89e-05 Gr_Liv_Area - 0.0011 Year_Sold</span>
+<span class="co">##            + 2e-05 Year_Built + 1.1e-06 Total_Bsmt_SF</span>
+<span class="co">##            + 0.0003 Bsmt_Full_Bath</span>
+<span class="co">## </span>
+<span class="co">##   Rule 2: [333 cases, mean 0.7065404, range 0.6720027 to 0.7540954, est err 0.0054064]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {Old_Town, Edwards, Gilbert, Sawyer, Sawyer_West,</span>
+<span class="co">##                          Brookside, Iowa_DOT_and_Rail_Road, Timberland,</span>
+<span class="co">##                          South_and_West_of_Iowa_State_University}</span>
+<span class="co">##  Year_Built &lt;= 1952</span>
+<span class="co">##  Central_Air = Y</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.4666239 + 1.87e-05 Gr_Liv_Area + 0.00011 Year_Built</span>
+<span class="co">##            + 3.4e-06 Total_Bsmt_SF + 0.0009 Bsmt_Full_Bath</span>
+<span class="co">##            + 7e-08 Lot_Area</span>
+<span class="co">## </span>
+<span class="co">##   Rule 3: [176 cases, mean 0.7106560, range 0.6802335 to 0.7269588, est err 0.0030744]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {College_Creek, Edwards, Somerset, Northridge_Heights,</span>
+<span class="co">##                          Gilbert, Sawyer_West, Mitchell, Iowa_DOT_and_Rail_Road,</span>
+<span class="co">##                          Timberland, Clear_Creek, Meadow_Village, Briardale,</span>
+<span class="co">##                          Blueste, Landmark}</span>
+<span class="co">##  Year_Built &gt; 1952</span>
+<span class="co">##  Total_Bsmt_SF &lt;= 765</span>
+<span class="co">##  Gr_Liv_Area &lt;= 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.01018 + 0.00034 Year_Built + 1.79e-05 Gr_Liv_Area</span>
+<span class="co">##            + 2.2e-06 Total_Bsmt_SF + 0.0006 Bsmt_Full_Bath</span>
+<span class="co">## </span>
+<span class="co">##   Rule 4: [87 cases, mean 0.7109181, range 0.6841727 to 0.7294574, est err 0.0049527]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {North_Ames, Crawford}</span>
+<span class="co">##  Year_Built &lt;= 1952</span>
+<span class="co">##  Gr_Liv_Area &lt;= 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.6804143 + 1.45e-05 Gr_Liv_Area + 7e-06 Year_Built</span>
+<span class="co">##            + 4e-07 Total_Bsmt_SF</span>
+<span class="co">## </span>
+<span class="co">##   Rule 5: [35 cases, mean 0.7117702, range 0.6949773 to 0.7293048, est err 0.0047720]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {North_Ames, Old_Town, Sawyer, Northwest_Ames, Crawford,</span>
+<span class="co">##                          Green_Hills}</span>
+<span class="co">##  Year_Built &gt; 1952</span>
+<span class="co">##  Total_Bsmt_SF &lt;= 765</span>
+<span class="co">##  Gr_Liv_Area &lt;= 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.2370069 + 0.000232 Year_Built + 1.16e-05 Gr_Liv_Area</span>
+<span class="co">##            + 8.4e-06 Total_Bsmt_SF + 0.0013 Bsmt_Full_Bath</span>
+<span class="co">## </span>
+<span class="co">##   Rule 6: [1428 cases, mean 0.7131603, range 0.6135074 to 0.7540954, est err 0.0043013]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {North_Ames, College_Creek, Old_Town, Edwards, Gilbert,</span>
+<span class="co">##                          Sawyer, Northwest_Ames, Sawyer_West, Mitchell,</span>
+<span class="co">##                          Iowa_DOT_and_Rail_Road, Timberland,</span>
+<span class="co">##                          South_and_West_of_Iowa_State_University,</span>
+<span class="co">##                          Meadow_Village, Veenker}</span>
+<span class="co">##  Bldg_Type in {OneFam, TwoFmCon, TwnhsE}</span>
+<span class="co">##  Year_Built &lt;= 2004</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.3519752 + 1.26e-05 Gr_Liv_Area + 0.000171 Year_Built</span>
+<span class="co">##            + 7.2e-06 Total_Bsmt_SF + 1.8e-07 Lot_Area</span>
+<span class="co">## </span>
+<span class="co">##   Rule 7: [54 cases, mean 0.7134706, range 0.6808683 to 0.7362626, est err 0.0044510]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Bldg_Type in {Duplex, Twnhs}</span>
+<span class="co">##  Gr_Liv_Area &gt; 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.3791743 + 1.48e-05 Gr_Liv_Area + 0.000151 Year_Built</span>
+<span class="co">##            + 4.7e-06 Total_Bsmt_SF + 1.3e-07 Lot_Area</span>
+<span class="co">##            + 0.0004 Bsmt_Full_Bath</span>
+<span class="co">## </span>
+<span class="co">##   Rule 8: [997 cases, mean 0.7173781, range 0.6792599 to 0.74771, est err 0.0034352]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Year_Built &gt; 1952</span>
+<span class="co">##  Total_Bsmt_SF &gt; 765</span>
+<span class="co">##  Gr_Liv_Area &lt;= 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.3008866 + 1.41e-05 Gr_Liv_Area + 0.000195 Year_Built</span>
+<span class="co">##            + 9e-06 Total_Bsmt_SF + 0.0026 Bsmt_Full_Bath + 5e-08 Lot_Area</span>
+<span class="co">## </span>
+<span class="co">##   Rule 9: [166 cases, mean 0.7354736, range 0.711188 to 0.7687976, est err 0.0044621]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {Somerset, Northridge_Heights, Brookside, Crawford,</span>
+<span class="co">##                          Northridge, Stone_Brook, Clear_Creek}</span>
+<span class="co">##  Year_Built &lt;= 2004</span>
+<span class="co">##  Gr_Liv_Area &gt; 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.451118 + 1.11e-05 Gr_Liv_Area + 0.000126 Year_Built</span>
+<span class="co">##            + 7.5e-06 Total_Bsmt_SF + 4e-08 Lot_Area</span>
+<span class="co">## </span>
+<span class="co">##   Rule 10: [128 cases, mean 0.7408611, range 0.7227189 to 0.7608459, est err 0.0035555]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Year_Built &gt; 2004</span>
+<span class="co">##  Total_Bsmt_SF &lt;= 2024</span>
+<span class="co">##  Gr_Liv_Area &gt; 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.1972512 + 0.000248 Year_Built + 1.44e-05 Gr_Liv_Area</span>
+<span class="co">##            + 9.1e-06 Total_Bsmt_SF + 1.7e-07 Lot_Area</span>
+<span class="co">##            + 0.0018 Bsmt_Full_Bath</span>
+<span class="co">## </span>
+<span class="co">##   Rule 11: [20 cases, mean 0.7468034, range 0.7163473 to 0.7624165, est err 0.0068615]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Year_Built &gt; 2004</span>
+<span class="co">##  Total_Bsmt_SF &gt; 2024</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.7741479 - 1e-05 Gr_Liv_Area</span>
+<span class="co">## </span>
+<span class="co">## </span>
+<span class="co">## Evaluation on training data (2344 cases):</span>
+<span class="co">## </span>
+<span class="co">##     Average  |error|          0.0045926</span>
+<span class="co">##     Relative |error|               0.40</span>
+<span class="co">##     Correlation coefficient        0.89</span>
+<span class="co">## </span>
+<span class="co">## </span>
+<span class="co">##  Attribute usage:</span>
+<span class="co">##    Conds  Model</span>
+<span class="co">## </span>
+<span class="co">##     98%    99%    Year_Built</span>
+<span class="co">##     63%           Neighborhood</span>
+<span class="co">##     50%   100%    Gr_Liv_Area</span>
+<span class="co">##     42%           Bldg_Type</span>
+<span class="co">##     38%    99%    Total_Bsmt_SF</span>
+<span class="co">##     12%           Central_Air</span>
+<span class="co">##            88%    Lot_Area</span>
+<span class="co">##            52%    Bsmt_Full_Bath</span>
+<span class="co">##             3%    Year_Sold</span>
+<span class="co">## </span>
+<span class="co">## </span>
+<span class="co">## Time: 0.1 secs</span></code></pre>
 <p>There is no formula method for <code><a href="../reference/cubist.default.html">cubist()</a></code>; the predictors are specified as matrix or data frame, The outcome is a numeric vector.</p>
 <p>There is a predict method for the model:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">model_tree_pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">model_tree</span>, <span class="va">test_pred</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">model_tree_pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">model_tree</span>, <span class="va">test_pred</span><span class="op">)</span>
 <span class="co">## Test set RMSE</span>
-<span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">model_tree_pred</span> <span class="op">-</span> <span class="va">test_resp</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.00635</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">model_tree_pred</span> <span class="op">-</span> <span class="va">test_resp</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] 0.00635</span></code></pre>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Test set R^2</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">model_tree_pred</span>, <span class="va">test_resp</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span></code></pre></div>
-<pre><code>## [1] 0.813</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">model_tree_pred</span>, <span class="va">test_resp</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span></code></pre></div>
+<pre><code><span class="co">## [1] 0.813</span></code></pre>
 </div>
-<div id="ensembles-by-committees" class="section level2">
-<h2 class="hasAnchor">
-<a href="#ensembles-by-committees" class="anchor"></a>Ensembles By Committees</h2>
-<p>The Cubist model can also use a boosting-like scheme called <em>committees</em> where iterative model trees are created in sequence. The first tree follows the procedure described in the last section. Subsequent trees are created using adjusted versions to the training set outcome: if the model over-predicted a value, the response is adjusted downward for the next model (and so on, see <a href="https://rviews.rstudio.com/2020/05/21/modern-rule-based-models">this blog post</a>). Unlike traditional boosting, stage weights for each committee are not used to average the predictions from each model tree; the final prediction is a simple average of the predictions from each model tree.</p>
+<div class="section level2">
+<h2 id="ensembles-by-committees">Ensembles By Committees<a class="anchor" aria-label="anchor" href="#ensembles-by-committees"></a>
+</h2>
+<p>The Cubist model can also use a boosting-like scheme called <em>committees</em> where iterative model trees are created in sequence. The first tree follows the procedure described in the last section. Subsequent trees are created using adjusted versions to the training set outcome: if the model over-predicted a value, the response is adjusted downward for the next model (and so on, see <a href="https://rviews.rstudio.com/2020/05/21/modern-rule-based-models" class="external-link">this blog post</a>). Unlike traditional boosting, stage weights for each committee are not used to average the predictions from each model tree; the final prediction is a simple average of the predictions from each model tree.</p>
 <p>The <code>committee</code> option can be used to control number of model trees:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
 <span class="va">com_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cubist.default.html">cubist</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">train_pred</span>, y <span class="op">=</span> <span class="va">train_resp</span>, committees <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">com_model</span><span class="op">)</span></code></pre></div>
-<pre><code>## 
-## Call:
-## cubist.default(x = train_pred, y = train_resp, committees = 3)
-## 
-## 
-## Cubist [Release 2.07 GPL Edition]  Fri May 28 16:18:26 2021
-## ---------------------------------
-## 
-##     Target attribute `outcome'
-## 
-## Read 2344 cases (18 attributes) from undefined.data
-## 
-## Model 1:
-## 
-##   Rule 1/1: [107 cases, mean 0.6922308, range 0.6135074 to 0.725238, est err 0.0086873]
-## 
-##     if
-##  Year_Built &lt;= 1952
-##  Central_Air = N
-##  Gr_Liv_Area &lt;= 1692
-##     then
-##  outcome = 2.8339713 + 2.89e-05 Gr_Liv_Area - 0.0011 Year_Sold
-##            + 2e-05 Year_Built + 1.1e-06 Total_Bsmt_SF
-##            + 0.0003 Bsmt_Full_Bath
-## 
-##   Rule 1/2: [333 cases, mean 0.7065404, range 0.6720027 to 0.7540954, est err 0.0054064]
-## 
-##     if
-##  Neighborhood in {Old_Town, Edwards, Gilbert, Sawyer, Sawyer_West,
-##                          Brookside, Iowa_DOT_and_Rail_Road, Timberland,
-##                          South_and_West_of_Iowa_State_University}
-##  Year_Built &lt;= 1952
-##  Central_Air = Y
-##     then
-##  outcome = 0.4666239 + 1.87e-05 Gr_Liv_Area + 0.00011 Year_Built
-##            + 3.4e-06 Total_Bsmt_SF + 0.0009 Bsmt_Full_Bath
-##            + 7e-08 Lot_Area
-## 
-##   Rule 1/3: [176 cases, mean 0.7106560, range 0.6802335 to 0.7269588, est err 0.0030744]
-## 
-##     if
-##  Neighborhood in {College_Creek, Edwards, Somerset, Northridge_Heights,
-##                          Gilbert, Sawyer_West, Mitchell, Iowa_DOT_and_Rail_Road,
-##                          Timberland, Clear_Creek, Meadow_Village, Briardale,
-##                          Blueste, Landmark}
-##  Year_Built &gt; 1952
-##  Total_Bsmt_SF &lt;= 765
-##  Gr_Liv_Area &lt;= 1692
-##     then
-##  outcome = 0.01018 + 0.00034 Year_Built + 1.79e-05 Gr_Liv_Area
-##            + 2.2e-06 Total_Bsmt_SF + 0.0006 Bsmt_Full_Bath
-## 
-##   Rule 1/4: [87 cases, mean 0.7109181, range 0.6841727 to 0.7294574, est err 0.0049527]
-## 
-##     if
-##  Neighborhood in {North_Ames, Crawford}
-##  Year_Built &lt;= 1952
-##  Gr_Liv_Area &lt;= 1692
-##     then
-##  outcome = 0.6804143 + 1.45e-05 Gr_Liv_Area + 7e-06 Year_Built
-##            + 4e-07 Total_Bsmt_SF
-## 
-##   Rule 1/5: [35 cases, mean 0.7117702, range 0.6949773 to 0.7293048, est err 0.0047720]
-## 
-##     if
-##  Neighborhood in {North_Ames, Old_Town, Sawyer, Northwest_Ames, Crawford,
-##                          Green_Hills}
-##  Year_Built &gt; 1952
-##  Total_Bsmt_SF &lt;= 765
-##  Gr_Liv_Area &lt;= 1692
-##     then
-##  outcome = 0.2370069 + 0.000232 Year_Built + 1.16e-05 Gr_Liv_Area
-##            + 8.4e-06 Total_Bsmt_SF + 0.0013 Bsmt_Full_Bath
-## 
-##   Rule 1/6: [1428 cases, mean 0.7131603, range 0.6135074 to 0.7540954, est err 0.0043013]
-## 
-##     if
-##  Neighborhood in {North_Ames, College_Creek, Old_Town, Edwards, Gilbert,
-##                          Sawyer, Northwest_Ames, Sawyer_West, Mitchell,
-##                          Iowa_DOT_and_Rail_Road, Timberland,
-##                          South_and_West_of_Iowa_State_University,
-##                          Meadow_Village, Veenker}
-##  Bldg_Type in {OneFam, TwoFmCon, TwnhsE}
-##  Year_Built &lt;= 2004
-##     then
-##  outcome = 0.3519752 + 1.26e-05 Gr_Liv_Area + 0.000171 Year_Built
-##            + 7.2e-06 Total_Bsmt_SF + 1.8e-07 Lot_Area
-## 
-##   Rule 1/7: [54 cases, mean 0.7134706, range 0.6808683 to 0.7362626, est err 0.0044510]
-## 
-##     if
-##  Bldg_Type in {Duplex, Twnhs}
-##  Gr_Liv_Area &gt; 1692
-##     then
-##  outcome = 0.3791743 + 1.48e-05 Gr_Liv_Area + 0.000151 Year_Built
-##            + 4.7e-06 Total_Bsmt_SF + 1.3e-07 Lot_Area
-##            + 0.0004 Bsmt_Full_Bath
-## 
-##   Rule 1/8: [997 cases, mean 0.7173781, range 0.6792599 to 0.74771, est err 0.0034352]
-## 
-##     if
-##  Year_Built &gt; 1952
-##  Total_Bsmt_SF &gt; 765
-##  Gr_Liv_Area &lt;= 1692
-##     then
-##  outcome = 0.3008866 + 1.41e-05 Gr_Liv_Area + 0.000195 Year_Built
-##            + 9e-06 Total_Bsmt_SF + 0.0026 Bsmt_Full_Bath + 5e-08 Lot_Area
-## 
-##   Rule 1/9: [166 cases, mean 0.7354736, range 0.711188 to 0.7687976, est err 0.0044621]
-## 
-##     if
-##  Neighborhood in {Somerset, Northridge_Heights, Brookside, Crawford,
-##                          Northridge, Stone_Brook, Clear_Creek}
-##  Year_Built &lt;= 2004
-##  Gr_Liv_Area &gt; 1692
-##     then
-##  outcome = 0.451118 + 1.11e-05 Gr_Liv_Area + 0.000126 Year_Built
-##            + 7.5e-06 Total_Bsmt_SF + 4e-08 Lot_Area
-## 
-##   Rule 1/10: [128 cases, mean 0.7408611, range 0.7227189 to 0.7608459, est err 0.0035555]
-## 
-##     if
-##  Year_Built &gt; 2004
-##  Total_Bsmt_SF &lt;= 2024
-##  Gr_Liv_Area &gt; 1692
-##     then
-##  outcome = 0.1972512 + 0.000248 Year_Built + 1.44e-05 Gr_Liv_Area
-##            + 9.1e-06 Total_Bsmt_SF + 1.7e-07 Lot_Area
-##            + 0.0018 Bsmt_Full_Bath
-## 
-##   Rule 1/11: [20 cases, mean 0.7468034, range 0.7163473 to 0.7624165, est err 0.0068615]
-## 
-##     if
-##  Year_Built &gt; 2004
-##  Total_Bsmt_SF &gt; 2024
-##     then
-##  outcome = 0.7741479 - 1e-05 Gr_Liv_Area
-## 
-## Model 2:
-## 
-##   Rule 2/1: [31 cases, mean 0.6767582, range 0.6135074 to 0.7025505, est err 0.0169966]
-## 
-##     if
-##  Central_Air = N
-##  Gr_Liv_Area &lt;= 832
-##     then
-##  outcome = -60.1255459 - 0.649 Longitude + 3.1e-06 Gr_Liv_Area
-##            + 1.6e-06 Total_Bsmt_SF + 1.7e-05 Year_Built + 5e-08 Lot_Area
-## 
-##   Rule 2/2: [91 cases, mean 0.6914554, range 0.6135074 to 0.7112178, est err 0.0085649]
-## 
-##     if
-##  Gr_Liv_Area &lt;= 832
-##     then
-##  outcome = -7.0404897 + 3.32e-05 Total_Bsmt_SF + 2.71e-05 Gr_Liv_Area
-##            + 1.81e-06 Lot_Area + 0.000148 Year_Built - 0.079 Longitude
-## 
-##   Rule 2/3: [126 cases, mean 0.7014069, range 0.6629523 to 0.7343875, est err 0.0089801]
-## 
-##     if
-##  Central_Air = N
-##  Gr_Liv_Area &gt; 832
-##     then
-##  outcome = -18.0819225 + 0.585 Latitude + 1.28e-05 Gr_Liv_Area
-##            - 0.0029 Year_Sold - 0.00035 TotRms_AbvGrd
-## 
-##   Rule 2/4: [389 cases, mean 0.7057415, range 0.6629523 to 0.7540954, est err 0.0063773]
-## 
-##     if
-##  Neighborhood in {Old_Town, Edwards, Gilbert, Sawyer_West, Mitchell,
-##                          Iowa_DOT_and_Rail_Road,
-##                          South_and_West_of_Iowa_State_University}
-##  Year_Built &lt;= 1966
-##  Gr_Liv_Area &gt; 832
-##     then
-##  outcome = 1.8797961 + 1.97e-05 Gr_Liv_Area - 0.00211 TotRms_AbvGrd
-##            - 0.0006 Year_Sold + 9e-06 Year_Built + 4e-07 Total_Bsmt_SF
-## 
-##   Rule 2/5: [615 cases, mean 0.7130445, range 0.6807946 to 0.7433388, est err 0.0040729]
-## 
-##     if
-##  Neighborhood in {North_Ames, Sawyer, Northwest_Ames, Brookside,
-##                          Crawford, Timberland, Clear_Creek}
-##  Gr_Liv_Area &gt; 832
-##  Latitude &gt; 42.03093
-##     then
-##  outcome = 0.4372397 + 1.06e-05 Gr_Liv_Area + 0.000134 Year_Built
-##            - 0.00198 TotRms_AbvGrd + 5.1e-07 Lot_Area
-##            + 6e-06 Total_Bsmt_SF
-## 
-##   Rule 2/6: [339 cases, mean 0.7155511, range 0.6858544 to 0.7433388, est err 0.0042090]
-## 
-##     if
-##  Neighborhood in {North_Ames, Old_Town, Edwards, Sawyer_West, Mitchell,
-##                          Iowa_DOT_and_Rail_Road, Meadow_Village, Briardale,
-##                          Bloomington_Heights, Landmark}
-##  Year_Built &gt; 1966
-##  Total_Bsmt_SF &lt;= 2220
-##  Gr_Liv_Area &gt; 832
-##     then
-##  outcome = -2.3923159 + 0.000258 Year_Built + 1.29e-05 Gr_Liv_Area
-##            + 6.6e-07 Lot_Area + 0.006 Bsmt_Full_Bath
-##            + 6e-06 Total_Bsmt_SF + 0.061 Latitude - 0.00026 TotRms_AbvGrd
-## 
-##   Rule 2/7: [63 cases, mean 0.7158888, range 0.7042104 to 0.7362626, est err 0.0022518]
-## 
-##     if
-##  Lot_Area &lt;= 3612
-##  Neighborhood in {College_Creek, Somerset, Northridge_Heights, Gilbert,
-##                          Sawyer, Northwest_Ames, Crawford, Timberland,
-##                          Northridge, Stone_Brook,
-##                          South_and_West_of_Iowa_State_University, Clear_Creek,
-##                          Veenker, Northpark_Villa, Blueste, Greens, Green_Hills}
-##     then
-##  outcome = 0.2224039 + 0.000239 Year_Built + 9.8e-06 Gr_Liv_Area
-##            + 2.3e-06 Total_Bsmt_SF + 0.0013 Bsmt_Full_Bath
-##            + 6e-08 Lot_Area
-## 
-##   Rule 2/8: [21 cases, mean 0.7226428, range 0.7021946 to 0.747059, est err 0.0093020]
-## 
-##     if
-##  Year_Built &gt; 1966
-##  Total_Bsmt_SF &lt;= 2220
-##  Bsmt_Full_Bath &gt; 1
-##     then
-##  outcome = 0.6899718 + 1.92e-05 Gr_Liv_Area
-## 
-##   Rule 2/9: [1326 cases, mean 0.7238501, range 0.6858544 to 0.7631194, est err 0.0037527]
-## 
-##     if
-##  Year_Built &gt; 1966
-##  Total_Bsmt_SF &lt;= 2220
-##  Bsmt_Full_Bath &lt;= 1
-##     then
-##  outcome = -0.0413273 + 0.000249 Year_Built + 1.34e-05 Gr_Liv_Area
-##            + 7.8e-06 Total_Bsmt_SF + 0.0041 Bsmt_Full_Bath
-##            + 1.1e-07 Lot_Area - 0.00029 TotRms_AbvGrd + 0.019 Latitude
-##            + 0.006 Longitude
-## 
-##   Rule 2/10: [199 cases, mean 0.7242572, range 0.6844585 to 0.7503841, est err 0.0053956]
-## 
-##     if
-##  Neighborhood in {North_Ames, Sawyer, Northwest_Ames, Brookside,
-##                          Crawford, Timberland, Clear_Creek}
-##  Latitude &lt;= 42.03093
-##     then
-##  outcome = 2.9085627 + 1.59e-05 Gr_Liv_Area + 2.7e-06 Total_Bsmt_SF
-##            - 0.00064 TotRms_AbvGrd - 0.049 Latitude + 2.5e-05 Year_Built
-##            + 1.3e-07 Lot_Area - 0.0001 Year_Sold
-## 
-##   Rule 2/11: [494 cases, mean 0.7320032, range 0.691652 to 0.7625942, est err 0.0039935]
-## 
-##     if
-##  Lot_Area &gt; 3612
-##  Neighborhood in {Somerset, Northridge_Heights, Northwest_Ames, Crawford,
-##                          Timberland, Stone_Brook,
-##                          South_and_West_of_Iowa_State_University, Clear_Creek,
-##                          Veenker, Blueste, Greens, Green_Hills}
-##  Year_Built &gt; 1966
-##     then
-##  outcome = -0.0693572 + 0.000386 Year_Built + 9.8e-06 Gr_Liv_Area
-##            + 0.0062 Bsmt_Full_Bath + 7.1e-06 Total_Bsmt_SF
-##            + 1.5e-07 Lot_Area
-## 
-##   Rule 2/12: [20 cases, mean 0.7484384, range 0.7163473 to 0.7687976, est err 0.0111278]
-## 
-##     if
-##  Total_Bsmt_SF &gt; 2220
-##     then
-##  outcome = -1.0179687 + 0.000906 Year_Built - 1.49e-05 Total_Bsmt_SF
-## 
-## Model 3:
-## 
-##   Rule 3/1: [104 cases, mean 0.6924329, range 0.6135074 to 0.7139776, est err 0.0101724]
-## 
-##     if
-##  Gr_Liv_Area &lt;= 845
-##     then
-##  outcome = 0.6422932 + 7.43e-05 Gr_Liv_Area
-## 
-##   Rule 3/2: [92 cases, mean 0.6954694, range 0.6146095 to 0.724802, est err 0.0076345]
-## 
-##     if
-##  Neighborhood in {Iowa_DOT_and_Rail_Road, Meadow_Village, Briardale}
-##  Total_Bsmt_SF &lt;= 800
-##     then
-##  outcome = -21.4519142 + 1.8e-05 Gr_Liv_Area + 2.01e-05 Total_Bsmt_SF
-##            - 0.215 Longitude + 7.1e-05 Year_Built + 0.044 Latitude
-## 
-##   Rule 3/3: [431 cases, mean 0.7078069, range 0.6135074 to 0.7294574, est err 0.0054390]
-## 
-##     if
-##  Neighborhood in {North_Ames, College_Creek, Old_Town, Edwards, Somerset,
-##                          Gilbert, Sawyer, Northwest_Ames, Sawyer_West, Mitchell,
-##                          Brookside, Crawford, Timberland, Northridge,
-##                          South_and_West_of_Iowa_State_University, Clear_Creek,
-##                          Veenker, Blueste, Green_Hills}
-##  Year_Built &lt;= 2005
-##  Total_Bsmt_SF &lt;= 800
-##  Gr_Liv_Area &lt;= 1832
-##     then
-##  outcome = 0.5911446 + 2.12e-05 Gr_Liv_Area + 1.12e-05 Total_Bsmt_SF
-##            + 4.2e-05 Year_Built + 0.00027 TotRms_AbvGrd
-## 
-##   Rule 3/4: [170 cases, mean 0.7106175, range 0.6802335 to 0.7362626, est err 0.0053771]
-## 
-##     if
-##  Bldg_Type in {Duplex, Twnhs}
-##  Gr_Liv_Area &gt; 845
-##     then
-##  outcome = 0.2154946 + 0.000239 Year_Built + 9.3e-06 Gr_Liv_Area
-##            + 9.7e-06 Total_Bsmt_SF
-## 
-##   Rule 3/5: [1411 cases, mean 0.7132381, range 0.6135074 to 0.7540954, est err 0.0043492]
-## 
-##     if
-##  Neighborhood in {North_Ames, College_Creek, Old_Town, Edwards, Gilbert,
-##                          Sawyer, Northwest_Ames, Sawyer_West,
-##                          Iowa_DOT_and_Rail_Road, Timberland,
-##                          South_and_West_of_Iowa_State_University,
-##                          Meadow_Village, Bloomington_Heights, Northpark_Villa}
-##  Bldg_Type in {OneFam, TwoFmCon, TwnhsE}
-##  Year_Built &lt;= 2005
-##     then
-##  outcome = 2.7340427 + 1.35e-05 Gr_Liv_Area + 0.000196 Year_Built
-##            + 9e-06 Total_Bsmt_SF + 0.0014 Half_Bath + 1.2e-07 Lot_Area
-##            + 0.026 Longitude
-## 
-##   Rule 3/6: [52 cases, mean 0.7157766, range 0.6927507 to 0.7362626, est err 0.0056324]
-## 
-##     if
-##  Bldg_Type in {Duplex, Twnhs}
-##  Total_Bsmt_SF &gt; 1221
-##     then
-##  outcome = 0.242855 - 2.58e-05 Total_Bsmt_SF + 0.000254 Year_Built
-##            + 5.3e-06 Gr_Liv_Area
-## 
-##   Rule 3/7: [30 cases, mean 0.7163877, range 0.6906617 to 0.7467062, est err 0.0104669]
-## 
-##     if
-##  Year_Built &lt;= 1960
-##  Total_Bsmt_SF &lt;= 800
-##  Gr_Liv_Area &gt; 1832
-##     then
-##  outcome = -1.2544615 + 0.000342 Year_Built + 3e-06 Gr_Liv_Area
-##            + 2.5e-06 Total_Bsmt_SF - 0.009 Longitude + 0.011 Latitude
-## 
-##   Rule 3/8: [991 cases, mean 0.7212871, range 0.6807946 to 0.7687976, est err 0.0040766]
-## 
-##     if
-##  Neighborhood in {North_Ames, College_Creek, Old_Town, Edwards, Somerset,
-##                          Gilbert, Sawyer, Northwest_Ames, Sawyer_West, Mitchell,
-##                          Brookside, Crawford, Timberland, Northridge,
-##                          South_and_West_of_Iowa_State_University, Clear_Creek,
-##                          Veenker, Blueste, Green_Hills}
-##  Bldg_Type in {OneFam, TwoFmCon, TwnhsE}
-##  Year_Built &gt; 1960
-##  Year_Built &lt;= 2005
-##     then
-##  outcome = -0.4926223 + 1.38e-05 Gr_Liv_Area + 1.3e-06 Total_Bsmt_SF
-##            + 1.1e-05 Year_Built - 0.008 Longitude + 0.01 Latitude
-## 
-##   Rule 3/9: [682 cases, mean 0.7277318, range 0.6879801 to 0.7687976, est err 0.0049696]
-## 
-##     if
-##  Neighborhood in {Somerset, Northridge_Heights, Mitchell, Brookside,
-##                          Crawford, Northridge, Stone_Brook, Clear_Creek,
-##                          Veenker, Blueste, Greens, Green_Hills}
-##  Gr_Liv_Area &gt; 845
-##     then
-##  outcome = 0.4310254 + 1.22e-05 Gr_Liv_Area + 1.11e-05 Total_Bsmt_SF
-##            + 0.000132 Year_Built + 0.0041 Half_Bath + 5e-08 Lot_Area
-##            - 0.00015 TotRms_AbvGrd
-## 
-##   Rule 3/10: [235 cases, mean 0.7322826, range 0.6925699 to 0.7608459, est err 0.0041824]
-## 
-##     if
-##  Year_Built &gt; 2005
-##  Total_Bsmt_SF &lt;= 2006
-##     then
-##  outcome = -2.1757049 + 0.001422 Year_Built + 2.14e-05 Gr_Liv_Area
-##            + 1.46e-05 Total_Bsmt_SF
-## 
-##   Rule 3/11: [20 cases, mean 0.7467262, range 0.7163473 to 0.7624165, est err 0.0108212]
-## 
-##     if
-##  Year_Built &gt; 2005
-##  Total_Bsmt_SF &gt; 2006
-##     then
-##  outcome = 0.7768462 - 3e-05 Gr_Liv_Area + 1.88e-05 Total_Bsmt_SF
-## 
-## 
-## Evaluation on training data (2344 cases):
-## 
-##     Average  |error|          0.0043261
-##     Relative |error|               0.38
-##     Correlation coefficient        0.90
-## 
-## 
-##  Attribute usage:
-##    Conds  Model
-## 
-##     80%    97%    Year_Built
-##     69%           Neighborhood
-##     42%   100%    Gr_Liv_Area
-##     36%           Bldg_Type
-##     34%    98%    Total_Bsmt_SF
-##     12%    35%    Bsmt_Full_Bath
-##      7%    27%    Latitude
-##      5%           Central_Air
-##      5%    73%    Lot_Area
-##            36%    TotRms_AbvGrd
-##            35%    Longitude
-##            18%    Half_Bath
-##             7%    Year_Sold
-## 
-## 
-## Time: 0.2 secs</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">com_model</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## </span>
+<span class="co">## Call:</span>
+<span class="co">## cubist.default(x = train_pred, y = train_resp, committees = 3)</span>
+<span class="co">## </span>
+<span class="co">## </span>
+<span class="co">## Cubist [Release 2.07 GPL Edition]  Fri Feb  4 19:38:15 2022</span>
+<span class="co">## ---------------------------------</span>
+<span class="co">## </span>
+<span class="co">##     Target attribute `outcome'</span>
+<span class="co">## </span>
+<span class="co">## Read 2344 cases (18 attributes) from undefined.data</span>
+<span class="co">## </span>
+<span class="co">## Model 1:</span>
+<span class="co">## </span>
+<span class="co">##   Rule 1/1: [107 cases, mean 0.6922308, range 0.6135074 to 0.725238, est err 0.0086873]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Year_Built &lt;= 1952</span>
+<span class="co">##  Central_Air = N</span>
+<span class="co">##  Gr_Liv_Area &lt;= 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 2.8339713 + 2.89e-05 Gr_Liv_Area - 0.0011 Year_Sold</span>
+<span class="co">##            + 2e-05 Year_Built + 1.1e-06 Total_Bsmt_SF</span>
+<span class="co">##            + 0.0003 Bsmt_Full_Bath</span>
+<span class="co">## </span>
+<span class="co">##   Rule 1/2: [333 cases, mean 0.7065404, range 0.6720027 to 0.7540954, est err 0.0054064]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {Old_Town, Edwards, Gilbert, Sawyer, Sawyer_West,</span>
+<span class="co">##                          Brookside, Iowa_DOT_and_Rail_Road, Timberland,</span>
+<span class="co">##                          South_and_West_of_Iowa_State_University}</span>
+<span class="co">##  Year_Built &lt;= 1952</span>
+<span class="co">##  Central_Air = Y</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.4666239 + 1.87e-05 Gr_Liv_Area + 0.00011 Year_Built</span>
+<span class="co">##            + 3.4e-06 Total_Bsmt_SF + 0.0009 Bsmt_Full_Bath</span>
+<span class="co">##            + 7e-08 Lot_Area</span>
+<span class="co">## </span>
+<span class="co">##   Rule 1/3: [176 cases, mean 0.7106560, range 0.6802335 to 0.7269588, est err 0.0030744]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {College_Creek, Edwards, Somerset, Northridge_Heights,</span>
+<span class="co">##                          Gilbert, Sawyer_West, Mitchell, Iowa_DOT_and_Rail_Road,</span>
+<span class="co">##                          Timberland, Clear_Creek, Meadow_Village, Briardale,</span>
+<span class="co">##                          Blueste, Landmark}</span>
+<span class="co">##  Year_Built &gt; 1952</span>
+<span class="co">##  Total_Bsmt_SF &lt;= 765</span>
+<span class="co">##  Gr_Liv_Area &lt;= 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.01018 + 0.00034 Year_Built + 1.79e-05 Gr_Liv_Area</span>
+<span class="co">##            + 2.2e-06 Total_Bsmt_SF + 0.0006 Bsmt_Full_Bath</span>
+<span class="co">## </span>
+<span class="co">##   Rule 1/4: [87 cases, mean 0.7109181, range 0.6841727 to 0.7294574, est err 0.0049527]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {North_Ames, Crawford}</span>
+<span class="co">##  Year_Built &lt;= 1952</span>
+<span class="co">##  Gr_Liv_Area &lt;= 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.6804143 + 1.45e-05 Gr_Liv_Area + 7e-06 Year_Built</span>
+<span class="co">##            + 4e-07 Total_Bsmt_SF</span>
+<span class="co">## </span>
+<span class="co">##   Rule 1/5: [35 cases, mean 0.7117702, range 0.6949773 to 0.7293048, est err 0.0047720]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {North_Ames, Old_Town, Sawyer, Northwest_Ames, Crawford,</span>
+<span class="co">##                          Green_Hills}</span>
+<span class="co">##  Year_Built &gt; 1952</span>
+<span class="co">##  Total_Bsmt_SF &lt;= 765</span>
+<span class="co">##  Gr_Liv_Area &lt;= 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.2370069 + 0.000232 Year_Built + 1.16e-05 Gr_Liv_Area</span>
+<span class="co">##            + 8.4e-06 Total_Bsmt_SF + 0.0013 Bsmt_Full_Bath</span>
+<span class="co">## </span>
+<span class="co">##   Rule 1/6: [1428 cases, mean 0.7131603, range 0.6135074 to 0.7540954, est err 0.0043013]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {North_Ames, College_Creek, Old_Town, Edwards, Gilbert,</span>
+<span class="co">##                          Sawyer, Northwest_Ames, Sawyer_West, Mitchell,</span>
+<span class="co">##                          Iowa_DOT_and_Rail_Road, Timberland,</span>
+<span class="co">##                          South_and_West_of_Iowa_State_University,</span>
+<span class="co">##                          Meadow_Village, Veenker}</span>
+<span class="co">##  Bldg_Type in {OneFam, TwoFmCon, TwnhsE}</span>
+<span class="co">##  Year_Built &lt;= 2004</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.3519752 + 1.26e-05 Gr_Liv_Area + 0.000171 Year_Built</span>
+<span class="co">##            + 7.2e-06 Total_Bsmt_SF + 1.8e-07 Lot_Area</span>
+<span class="co">## </span>
+<span class="co">##   Rule 1/7: [54 cases, mean 0.7134706, range 0.6808683 to 0.7362626, est err 0.0044510]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Bldg_Type in {Duplex, Twnhs}</span>
+<span class="co">##  Gr_Liv_Area &gt; 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.3791743 + 1.48e-05 Gr_Liv_Area + 0.000151 Year_Built</span>
+<span class="co">##            + 4.7e-06 Total_Bsmt_SF + 1.3e-07 Lot_Area</span>
+<span class="co">##            + 0.0004 Bsmt_Full_Bath</span>
+<span class="co">## </span>
+<span class="co">##   Rule 1/8: [997 cases, mean 0.7173781, range 0.6792599 to 0.74771, est err 0.0034352]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Year_Built &gt; 1952</span>
+<span class="co">##  Total_Bsmt_SF &gt; 765</span>
+<span class="co">##  Gr_Liv_Area &lt;= 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.3008866 + 1.41e-05 Gr_Liv_Area + 0.000195 Year_Built</span>
+<span class="co">##            + 9e-06 Total_Bsmt_SF + 0.0026 Bsmt_Full_Bath + 5e-08 Lot_Area</span>
+<span class="co">## </span>
+<span class="co">##   Rule 1/9: [166 cases, mean 0.7354736, range 0.711188 to 0.7687976, est err 0.0044621]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {Somerset, Northridge_Heights, Brookside, Crawford,</span>
+<span class="co">##                          Northridge, Stone_Brook, Clear_Creek}</span>
+<span class="co">##  Year_Built &lt;= 2004</span>
+<span class="co">##  Gr_Liv_Area &gt; 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.451118 + 1.11e-05 Gr_Liv_Area + 0.000126 Year_Built</span>
+<span class="co">##            + 7.5e-06 Total_Bsmt_SF + 4e-08 Lot_Area</span>
+<span class="co">## </span>
+<span class="co">##   Rule 1/10: [128 cases, mean 0.7408611, range 0.7227189 to 0.7608459, est err 0.0035555]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Year_Built &gt; 2004</span>
+<span class="co">##  Total_Bsmt_SF &lt;= 2024</span>
+<span class="co">##  Gr_Liv_Area &gt; 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.1972512 + 0.000248 Year_Built + 1.44e-05 Gr_Liv_Area</span>
+<span class="co">##            + 9.1e-06 Total_Bsmt_SF + 1.7e-07 Lot_Area</span>
+<span class="co">##            + 0.0018 Bsmt_Full_Bath</span>
+<span class="co">## </span>
+<span class="co">##   Rule 1/11: [20 cases, mean 0.7468034, range 0.7163473 to 0.7624165, est err 0.0068615]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Year_Built &gt; 2004</span>
+<span class="co">##  Total_Bsmt_SF &gt; 2024</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.7741479 - 1e-05 Gr_Liv_Area</span>
+<span class="co">## </span>
+<span class="co">## Model 2:</span>
+<span class="co">## </span>
+<span class="co">##   Rule 2/1: [31 cases, mean 0.6767582, range 0.6135074 to 0.7025505, est err 0.0169966]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Central_Air = N</span>
+<span class="co">##  Gr_Liv_Area &lt;= 832</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = -60.1255459 - 0.649 Longitude + 3.1e-06 Gr_Liv_Area</span>
+<span class="co">##            + 1.6e-06 Total_Bsmt_SF + 1.7e-05 Year_Built + 5e-08 Lot_Area</span>
+<span class="co">## </span>
+<span class="co">##   Rule 2/2: [91 cases, mean 0.6914554, range 0.6135074 to 0.7112178, est err 0.0085649]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Gr_Liv_Area &lt;= 832</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = -7.0404897 + 3.32e-05 Total_Bsmt_SF + 2.71e-05 Gr_Liv_Area</span>
+<span class="co">##            + 1.81e-06 Lot_Area + 0.000148 Year_Built - 0.079 Longitude</span>
+<span class="co">## </span>
+<span class="co">##   Rule 2/3: [126 cases, mean 0.7014069, range 0.6629523 to 0.7343875, est err 0.0089801]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Central_Air = N</span>
+<span class="co">##  Gr_Liv_Area &gt; 832</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = -18.0819225 + 0.585 Latitude + 1.28e-05 Gr_Liv_Area</span>
+<span class="co">##            - 0.0029 Year_Sold - 0.00035 TotRms_AbvGrd</span>
+<span class="co">## </span>
+<span class="co">##   Rule 2/4: [389 cases, mean 0.7057415, range 0.6629523 to 0.7540954, est err 0.0063773]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {Old_Town, Edwards, Gilbert, Sawyer_West, Mitchell,</span>
+<span class="co">##                          Iowa_DOT_and_Rail_Road,</span>
+<span class="co">##                          South_and_West_of_Iowa_State_University}</span>
+<span class="co">##  Year_Built &lt;= 1966</span>
+<span class="co">##  Gr_Liv_Area &gt; 832</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 1.8797961 + 1.97e-05 Gr_Liv_Area - 0.00211 TotRms_AbvGrd</span>
+<span class="co">##            - 0.0006 Year_Sold + 9e-06 Year_Built + 4e-07 Total_Bsmt_SF</span>
+<span class="co">## </span>
+<span class="co">##   Rule 2/5: [615 cases, mean 0.7130445, range 0.6807946 to 0.7433388, est err 0.0040729]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {North_Ames, Sawyer, Northwest_Ames, Brookside,</span>
+<span class="co">##                          Crawford, Timberland, Clear_Creek}</span>
+<span class="co">##  Gr_Liv_Area &gt; 832</span>
+<span class="co">##  Latitude &gt; 42.03093</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.4372397 + 1.06e-05 Gr_Liv_Area + 0.000134 Year_Built</span>
+<span class="co">##            - 0.00198 TotRms_AbvGrd + 5.1e-07 Lot_Area</span>
+<span class="co">##            + 6e-06 Total_Bsmt_SF</span>
+<span class="co">## </span>
+<span class="co">##   Rule 2/6: [339 cases, mean 0.7155511, range 0.6858544 to 0.7433388, est err 0.0042090]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {North_Ames, Old_Town, Edwards, Sawyer_West, Mitchell,</span>
+<span class="co">##                          Iowa_DOT_and_Rail_Road, Meadow_Village, Briardale,</span>
+<span class="co">##                          Bloomington_Heights, Landmark}</span>
+<span class="co">##  Year_Built &gt; 1966</span>
+<span class="co">##  Total_Bsmt_SF &lt;= 2220</span>
+<span class="co">##  Gr_Liv_Area &gt; 832</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = -2.3923159 + 0.000258 Year_Built + 1.29e-05 Gr_Liv_Area</span>
+<span class="co">##            + 6.6e-07 Lot_Area + 0.006 Bsmt_Full_Bath</span>
+<span class="co">##            + 6e-06 Total_Bsmt_SF + 0.061 Latitude - 0.00026 TotRms_AbvGrd</span>
+<span class="co">## </span>
+<span class="co">##   Rule 2/7: [63 cases, mean 0.7158888, range 0.7042104 to 0.7362626, est err 0.0022518]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Lot_Area &lt;= 3612</span>
+<span class="co">##  Neighborhood in {College_Creek, Somerset, Northridge_Heights, Gilbert,</span>
+<span class="co">##                          Sawyer, Northwest_Ames, Crawford, Timberland,</span>
+<span class="co">##                          Northridge, Stone_Brook,</span>
+<span class="co">##                          South_and_West_of_Iowa_State_University, Clear_Creek,</span>
+<span class="co">##                          Veenker, Northpark_Villa, Blueste, Greens, Green_Hills}</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.2224039 + 0.000239 Year_Built + 9.8e-06 Gr_Liv_Area</span>
+<span class="co">##            + 2.3e-06 Total_Bsmt_SF + 0.0013 Bsmt_Full_Bath</span>
+<span class="co">##            + 6e-08 Lot_Area</span>
+<span class="co">## </span>
+<span class="co">##   Rule 2/8: [21 cases, mean 0.7226428, range 0.7021946 to 0.747059, est err 0.0093020]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Year_Built &gt; 1966</span>
+<span class="co">##  Total_Bsmt_SF &lt;= 2220</span>
+<span class="co">##  Bsmt_Full_Bath &gt; 1</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.6899718 + 1.92e-05 Gr_Liv_Area</span>
+<span class="co">## </span>
+<span class="co">##   Rule 2/9: [1326 cases, mean 0.7238501, range 0.6858544 to 0.7631194, est err 0.0037527]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Year_Built &gt; 1966</span>
+<span class="co">##  Total_Bsmt_SF &lt;= 2220</span>
+<span class="co">##  Bsmt_Full_Bath &lt;= 1</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = -0.0413273 + 0.000249 Year_Built + 1.34e-05 Gr_Liv_Area</span>
+<span class="co">##            + 7.8e-06 Total_Bsmt_SF + 0.0041 Bsmt_Full_Bath</span>
+<span class="co">##            + 1.1e-07 Lot_Area - 0.00029 TotRms_AbvGrd + 0.019 Latitude</span>
+<span class="co">##            + 0.006 Longitude</span>
+<span class="co">## </span>
+<span class="co">##   Rule 2/10: [199 cases, mean 0.7242572, range 0.6844585 to 0.7503841, est err 0.0053956]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {North_Ames, Sawyer, Northwest_Ames, Brookside,</span>
+<span class="co">##                          Crawford, Timberland, Clear_Creek}</span>
+<span class="co">##  Latitude &lt;= 42.03093</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 2.9085627 + 1.59e-05 Gr_Liv_Area + 2.7e-06 Total_Bsmt_SF</span>
+<span class="co">##            - 0.00064 TotRms_AbvGrd - 0.049 Latitude + 2.5e-05 Year_Built</span>
+<span class="co">##            + 1.3e-07 Lot_Area - 0.0001 Year_Sold</span>
+<span class="co">## </span>
+<span class="co">##   Rule 2/11: [494 cases, mean 0.7320032, range 0.691652 to 0.7625942, est err 0.0039935]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Lot_Area &gt; 3612</span>
+<span class="co">##  Neighborhood in {Somerset, Northridge_Heights, Northwest_Ames, Crawford,</span>
+<span class="co">##                          Timberland, Stone_Brook,</span>
+<span class="co">##                          South_and_West_of_Iowa_State_University, Clear_Creek,</span>
+<span class="co">##                          Veenker, Blueste, Greens, Green_Hills}</span>
+<span class="co">##  Year_Built &gt; 1966</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = -0.0693572 + 0.000386 Year_Built + 9.8e-06 Gr_Liv_Area</span>
+<span class="co">##            + 0.0062 Bsmt_Full_Bath + 7.1e-06 Total_Bsmt_SF</span>
+<span class="co">##            + 1.5e-07 Lot_Area</span>
+<span class="co">## </span>
+<span class="co">##   Rule 2/12: [20 cases, mean 0.7484384, range 0.7163473 to 0.7687976, est err 0.0111278]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Total_Bsmt_SF &gt; 2220</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = -1.0179687 + 0.000906 Year_Built - 1.49e-05 Total_Bsmt_SF</span>
+<span class="co">## </span>
+<span class="co">## Model 3:</span>
+<span class="co">## </span>
+<span class="co">##   Rule 3/1: [104 cases, mean 0.6924329, range 0.6135074 to 0.7139776, est err 0.0101724]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Gr_Liv_Area &lt;= 845</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.6422932 + 7.43e-05 Gr_Liv_Area</span>
+<span class="co">## </span>
+<span class="co">##   Rule 3/2: [92 cases, mean 0.6954694, range 0.6146095 to 0.724802, est err 0.0076345]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {Iowa_DOT_and_Rail_Road, Meadow_Village, Briardale}</span>
+<span class="co">##  Total_Bsmt_SF &lt;= 800</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = -21.4519142 + 1.8e-05 Gr_Liv_Area + 2.01e-05 Total_Bsmt_SF</span>
+<span class="co">##            - 0.215 Longitude + 7.1e-05 Year_Built + 0.044 Latitude</span>
+<span class="co">## </span>
+<span class="co">##   Rule 3/3: [431 cases, mean 0.7078069, range 0.6135074 to 0.7294574, est err 0.0054390]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {North_Ames, College_Creek, Old_Town, Edwards, Somerset,</span>
+<span class="co">##                          Gilbert, Sawyer, Northwest_Ames, Sawyer_West, Mitchell,</span>
+<span class="co">##                          Brookside, Crawford, Timberland, Northridge,</span>
+<span class="co">##                          South_and_West_of_Iowa_State_University, Clear_Creek,</span>
+<span class="co">##                          Veenker, Blueste, Green_Hills}</span>
+<span class="co">##  Year_Built &lt;= 2005</span>
+<span class="co">##  Total_Bsmt_SF &lt;= 800</span>
+<span class="co">##  Gr_Liv_Area &lt;= 1832</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.5911446 + 2.12e-05 Gr_Liv_Area + 1.12e-05 Total_Bsmt_SF</span>
+<span class="co">##            + 4.2e-05 Year_Built + 0.00027 TotRms_AbvGrd</span>
+<span class="co">## </span>
+<span class="co">##   Rule 3/4: [170 cases, mean 0.7106175, range 0.6802335 to 0.7362626, est err 0.0053771]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Bldg_Type in {Duplex, Twnhs}</span>
+<span class="co">##  Gr_Liv_Area &gt; 845</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.2154946 + 0.000239 Year_Built + 9.3e-06 Gr_Liv_Area</span>
+<span class="co">##            + 9.7e-06 Total_Bsmt_SF</span>
+<span class="co">## </span>
+<span class="co">##   Rule 3/5: [1411 cases, mean 0.7132381, range 0.6135074 to 0.7540954, est err 0.0043492]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {North_Ames, College_Creek, Old_Town, Edwards, Gilbert,</span>
+<span class="co">##                          Sawyer, Northwest_Ames, Sawyer_West,</span>
+<span class="co">##                          Iowa_DOT_and_Rail_Road, Timberland,</span>
+<span class="co">##                          South_and_West_of_Iowa_State_University,</span>
+<span class="co">##                          Meadow_Village, Bloomington_Heights, Northpark_Villa}</span>
+<span class="co">##  Bldg_Type in {OneFam, TwoFmCon, TwnhsE}</span>
+<span class="co">##  Year_Built &lt;= 2005</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 2.7340427 + 1.35e-05 Gr_Liv_Area + 0.000196 Year_Built</span>
+<span class="co">##            + 9e-06 Total_Bsmt_SF + 0.0014 Half_Bath + 1.2e-07 Lot_Area</span>
+<span class="co">##            + 0.026 Longitude</span>
+<span class="co">## </span>
+<span class="co">##   Rule 3/6: [52 cases, mean 0.7157766, range 0.6927507 to 0.7362626, est err 0.0056324]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Bldg_Type in {Duplex, Twnhs}</span>
+<span class="co">##  Total_Bsmt_SF &gt; 1221</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.242855 - 2.58e-05 Total_Bsmt_SF + 0.000254 Year_Built</span>
+<span class="co">##            + 5.3e-06 Gr_Liv_Area</span>
+<span class="co">## </span>
+<span class="co">##   Rule 3/7: [30 cases, mean 0.7163877, range 0.6906617 to 0.7467062, est err 0.0104669]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Year_Built &lt;= 1960</span>
+<span class="co">##  Total_Bsmt_SF &lt;= 800</span>
+<span class="co">##  Gr_Liv_Area &gt; 1832</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = -1.2544615 + 0.000342 Year_Built + 3e-06 Gr_Liv_Area</span>
+<span class="co">##            + 2.5e-06 Total_Bsmt_SF - 0.009 Longitude + 0.011 Latitude</span>
+<span class="co">## </span>
+<span class="co">##   Rule 3/8: [991 cases, mean 0.7212871, range 0.6807946 to 0.7687976, est err 0.0040766]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {North_Ames, College_Creek, Old_Town, Edwards, Somerset,</span>
+<span class="co">##                          Gilbert, Sawyer, Northwest_Ames, Sawyer_West, Mitchell,</span>
+<span class="co">##                          Brookside, Crawford, Timberland, Northridge,</span>
+<span class="co">##                          South_and_West_of_Iowa_State_University, Clear_Creek,</span>
+<span class="co">##                          Veenker, Blueste, Green_Hills}</span>
+<span class="co">##  Bldg_Type in {OneFam, TwoFmCon, TwnhsE}</span>
+<span class="co">##  Year_Built &gt; 1960</span>
+<span class="co">##  Year_Built &lt;= 2005</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = -0.4926223 + 1.38e-05 Gr_Liv_Area + 1.3e-06 Total_Bsmt_SF</span>
+<span class="co">##            + 1.1e-05 Year_Built - 0.008 Longitude + 0.01 Latitude</span>
+<span class="co">## </span>
+<span class="co">##   Rule 3/9: [682 cases, mean 0.7277318, range 0.6879801 to 0.7687976, est err 0.0049696]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {Somerset, Northridge_Heights, Mitchell, Brookside,</span>
+<span class="co">##                          Crawford, Northridge, Stone_Brook, Clear_Creek,</span>
+<span class="co">##                          Veenker, Blueste, Greens, Green_Hills}</span>
+<span class="co">##  Gr_Liv_Area &gt; 845</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.4310254 + 1.22e-05 Gr_Liv_Area + 1.11e-05 Total_Bsmt_SF</span>
+<span class="co">##            + 0.000132 Year_Built + 0.0041 Half_Bath + 5e-08 Lot_Area</span>
+<span class="co">##            - 0.00015 TotRms_AbvGrd</span>
+<span class="co">## </span>
+<span class="co">##   Rule 3/10: [235 cases, mean 0.7322826, range 0.6925699 to 0.7608459, est err 0.0041824]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Year_Built &gt; 2005</span>
+<span class="co">##  Total_Bsmt_SF &lt;= 2006</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = -2.1757049 + 0.001422 Year_Built + 2.14e-05 Gr_Liv_Area</span>
+<span class="co">##            + 1.46e-05 Total_Bsmt_SF</span>
+<span class="co">## </span>
+<span class="co">##   Rule 3/11: [20 cases, mean 0.7467262, range 0.7163473 to 0.7624165, est err 0.0108212]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Year_Built &gt; 2005</span>
+<span class="co">##  Total_Bsmt_SF &gt; 2006</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.7768462 - 3e-05 Gr_Liv_Area + 1.88e-05 Total_Bsmt_SF</span>
+<span class="co">## </span>
+<span class="co">## </span>
+<span class="co">## Evaluation on training data (2344 cases):</span>
+<span class="co">## </span>
+<span class="co">##     Average  |error|          0.0043261</span>
+<span class="co">##     Relative |error|               0.38</span>
+<span class="co">##     Correlation coefficient        0.90</span>
+<span class="co">## </span>
+<span class="co">## </span>
+<span class="co">##  Attribute usage:</span>
+<span class="co">##    Conds  Model</span>
+<span class="co">## </span>
+<span class="co">##     80%    97%    Year_Built</span>
+<span class="co">##     69%           Neighborhood</span>
+<span class="co">##     42%   100%    Gr_Liv_Area</span>
+<span class="co">##     36%           Bldg_Type</span>
+<span class="co">##     34%    98%    Total_Bsmt_SF</span>
+<span class="co">##     12%    35%    Bsmt_Full_Bath</span>
+<span class="co">##      7%    27%    Latitude</span>
+<span class="co">##      5%           Central_Air</span>
+<span class="co">##      5%    73%    Lot_Area</span>
+<span class="co">##            36%    TotRms_AbvGrd</span>
+<span class="co">##            35%    Longitude</span>
+<span class="co">##            18%    Half_Bath</span>
+<span class="co">##             7%    Year_Sold</span>
+<span class="co">## </span>
+<span class="co">## </span>
+<span class="co">## Time: 0.1 secs</span></code></pre>
 <p>For this model:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">com_pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">com_model</span>, <span class="va">test_pred</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">com_pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">com_model</span>, <span class="va">test_pred</span><span class="op">)</span>
 <span class="co">## RMSE</span>
-<span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">com_pred</span> <span class="op">-</span> <span class="va">test_resp</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.00592</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">com_pred</span> <span class="op">-</span> <span class="va">test_resp</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] 0.00592</span></code></pre>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## R^2</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">com_pred</span>, <span class="va">test_resp</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span></code></pre></div>
-<pre><code>## [1] 0.837</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">com_pred</span>, <span class="va">test_resp</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span></code></pre></div>
+<pre><code><span class="co">## [1] 0.837</span></code></pre>
 </div>
-<div id="instance-based-corrections" class="section level2">
-<h2 class="hasAnchor">
-<a href="#instance-based-corrections" class="anchor"></a>Instance-Based Corrections</h2>
-<p>Another innovation in Cubist using nearest-neighbors to adjust the predictions from the rule-based model. First, a model tree (with or without committees) is created. Once a sample is predicted by this model, Cubist can find it’s nearest neighbors and determine the average of these training set points. See Quinlan (1993a) for the details of the adjustment as well as <a href="https://rviews.rstudio.com/2020/05/21/modern-rule-based-models">this blog post</a>.</p>
+<div class="section level2">
+<h2 id="instance-based-corrections">Instance-Based Corrections<a class="anchor" aria-label="anchor" href="#instance-based-corrections"></a>
+</h2>
+<p>Another innovation in Cubist using nearest-neighbors to adjust the predictions from the rule-based model. First, a model tree (with or without committees) is created. Once a sample is predicted by this model, Cubist can find it’s nearest neighbors and determine the average of these training set points. See Quinlan (1993a) for the details of the adjustment as well as <a href="https://rviews.rstudio.com/2020/05/21/modern-rule-based-models" class="external-link">this blog post</a>.</p>
 <p>The development of rules and committees is independent of the choice of using instances. The original <code>C</code> code allowed the program to choose whether to use instances, not use them or let the program decide. Our approach is to build a model with the <code><a href="../reference/cubist.default.html">cubist()</a></code> function that is ignorant to the decision about instances. When samples are predicted, the argument <code>neighbors</code> can be used to adjust the rule-based model predictions (or not).</p>
 <p>We can add instances to the previously fit committee model:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">inst_pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">com_model</span>, <span class="va">test_pred</span>, neighbors <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">inst_pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">com_model</span>, <span class="va">test_pred</span>, neighbors <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
 <span class="co">## RMSE</span>
-<span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">inst_pred</span> <span class="op">-</span> <span class="va">test_resp</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.00565</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">inst_pred</span> <span class="op">-</span> <span class="va">test_resp</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] 0.00565</span></code></pre>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## R^2</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">inst_pred</span>, <span class="va">test_resp</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span></code></pre></div>
-<pre><code>## [1] 0.851</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">inst_pred</span>, <span class="va">test_resp</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span></code></pre></div>
+<pre><code><span class="co">## [1] 0.851</span></code></pre>
 <p>Note that the previous models used the implicit default of <code>neighbors = 0</code> for their predictions.</p>
 <p>It may also be useful to see how the different models fit a single predictor. Here is the test set data for a model with one predictor (<code>Gr_Liv_Area</code>), 100 committees, and various values of <code>neighbors</code>:</p>
 <p><img src="neighbors.gif" style="display: block; margin: auto;"></p>
 <p>After the initial use of the instance-based correction, there is very little change in the mainstream of the data.</p>
 </div>
-<div id="model-tuning" class="section level2">
-<h2 class="hasAnchor">
-<a href="#model-tuning" class="anchor"></a>Model tuning</h2>
-<p>R modeling packages such as <code>caret</code>, <code>tidymodels</code>, and <code>mlr3</code> can be used to tune the model. See the <a href="https://topepo.github.io/Cubist/articles/extras/tuning.html">examples here</a> for more details.</p>
+<div class="section level2">
+<h2 id="model-tuning">Model tuning<a class="anchor" aria-label="anchor" href="#model-tuning"></a>
+</h2>
+<p>R modeling packages such as <code>caret</code>, <code>tidymodels</code>, and <code>mlr3</code> can be used to tune the model. See the <a href="https://topepo.github.io/Cubist/articles/extras/tuning.html" class="external-link">examples here</a> for more details.</p>
 <p>It should be noted that this variable importance measure does not capture the influence of the predictors when using the instance-based correction.</p>
 </div>
-<div id="tidy-rules" class="section level2">
-<h2 class="hasAnchor">
-<a href="#tidy-rules" class="anchor"></a>Tidy rules</h2>
+<div class="section level2">
+<h2 id="tidy-rules">Tidy rules<a class="anchor" aria-label="anchor" href="#tidy-rules"></a>
+</h2>
 <p>Rules from a Cubist model can be viewed using <code>summary</code> as follows:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">model_tree</span><span class="op">)</span></code></pre></div>
-<pre><code>## 
-## Call:
-## cubist.default(x = train_pred, y = train_resp)
-## 
-## 
-## Cubist [Release 2.07 GPL Edition]  Fri May 28 16:18:26 2021
-## ---------------------------------
-## 
-##     Target attribute `outcome'
-## 
-## Read 2344 cases (18 attributes) from undefined.data
-## 
-## Model:
-## 
-##   Rule 1: [107 cases, mean 0.6922308, range 0.6135074 to 0.725238, est err 0.0086873]
-## 
-##     if
-##  Year_Built &lt;= 1952
-##  Central_Air = N
-##  Gr_Liv_Area &lt;= 1692
-##     then
-##  outcome = 2.8339713 + 2.89e-05 Gr_Liv_Area - 0.0011 Year_Sold
-##            + 2e-05 Year_Built + 1.1e-06 Total_Bsmt_SF
-##            + 0.0003 Bsmt_Full_Bath
-## 
-##   Rule 2: [333 cases, mean 0.7065404, range 0.6720027 to 0.7540954, est err 0.0054064]
-## 
-##     if
-##  Neighborhood in {Old_Town, Edwards, Gilbert, Sawyer, Sawyer_West,
-##                          Brookside, Iowa_DOT_and_Rail_Road, Timberland,
-##                          South_and_West_of_Iowa_State_University}
-##  Year_Built &lt;= 1952
-##  Central_Air = Y
-##     then
-##  outcome = 0.4666239 + 1.87e-05 Gr_Liv_Area + 0.00011 Year_Built
-##            + 3.4e-06 Total_Bsmt_SF + 0.0009 Bsmt_Full_Bath
-##            + 7e-08 Lot_Area
-## 
-##   Rule 3: [176 cases, mean 0.7106560, range 0.6802335 to 0.7269588, est err 0.0030744]
-## 
-##     if
-##  Neighborhood in {College_Creek, Edwards, Somerset, Northridge_Heights,
-##                          Gilbert, Sawyer_West, Mitchell, Iowa_DOT_and_Rail_Road,
-##                          Timberland, Clear_Creek, Meadow_Village, Briardale,
-##                          Blueste, Landmark}
-##  Year_Built &gt; 1952
-##  Total_Bsmt_SF &lt;= 765
-##  Gr_Liv_Area &lt;= 1692
-##     then
-##  outcome = 0.01018 + 0.00034 Year_Built + 1.79e-05 Gr_Liv_Area
-##            + 2.2e-06 Total_Bsmt_SF + 0.0006 Bsmt_Full_Bath
-## 
-##   Rule 4: [87 cases, mean 0.7109181, range 0.6841727 to 0.7294574, est err 0.0049527]
-## 
-##     if
-##  Neighborhood in {North_Ames, Crawford}
-##  Year_Built &lt;= 1952
-##  Gr_Liv_Area &lt;= 1692
-##     then
-##  outcome = 0.6804143 + 1.45e-05 Gr_Liv_Area + 7e-06 Year_Built
-##            + 4e-07 Total_Bsmt_SF
-## 
-##   Rule 5: [35 cases, mean 0.7117702, range 0.6949773 to 0.7293048, est err 0.0047720]
-## 
-##     if
-##  Neighborhood in {North_Ames, Old_Town, Sawyer, Northwest_Ames, Crawford,
-##                          Green_Hills}
-##  Year_Built &gt; 1952
-##  Total_Bsmt_SF &lt;= 765
-##  Gr_Liv_Area &lt;= 1692
-##     then
-##  outcome = 0.2370069 + 0.000232 Year_Built + 1.16e-05 Gr_Liv_Area
-##            + 8.4e-06 Total_Bsmt_SF + 0.0013 Bsmt_Full_Bath
-## 
-##   Rule 6: [1428 cases, mean 0.7131603, range 0.6135074 to 0.7540954, est err 0.0043013]
-## 
-##     if
-##  Neighborhood in {North_Ames, College_Creek, Old_Town, Edwards, Gilbert,
-##                          Sawyer, Northwest_Ames, Sawyer_West, Mitchell,
-##                          Iowa_DOT_and_Rail_Road, Timberland,
-##                          South_and_West_of_Iowa_State_University,
-##                          Meadow_Village, Veenker}
-##  Bldg_Type in {OneFam, TwoFmCon, TwnhsE}
-##  Year_Built &lt;= 2004
-##     then
-##  outcome = 0.3519752 + 1.26e-05 Gr_Liv_Area + 0.000171 Year_Built
-##            + 7.2e-06 Total_Bsmt_SF + 1.8e-07 Lot_Area
-## 
-##   Rule 7: [54 cases, mean 0.7134706, range 0.6808683 to 0.7362626, est err 0.0044510]
-## 
-##     if
-##  Bldg_Type in {Duplex, Twnhs}
-##  Gr_Liv_Area &gt; 1692
-##     then
-##  outcome = 0.3791743 + 1.48e-05 Gr_Liv_Area + 0.000151 Year_Built
-##            + 4.7e-06 Total_Bsmt_SF + 1.3e-07 Lot_Area
-##            + 0.0004 Bsmt_Full_Bath
-## 
-##   Rule 8: [997 cases, mean 0.7173781, range 0.6792599 to 0.74771, est err 0.0034352]
-## 
-##     if
-##  Year_Built &gt; 1952
-##  Total_Bsmt_SF &gt; 765
-##  Gr_Liv_Area &lt;= 1692
-##     then
-##  outcome = 0.3008866 + 1.41e-05 Gr_Liv_Area + 0.000195 Year_Built
-##            + 9e-06 Total_Bsmt_SF + 0.0026 Bsmt_Full_Bath + 5e-08 Lot_Area
-## 
-##   Rule 9: [166 cases, mean 0.7354736, range 0.711188 to 0.7687976, est err 0.0044621]
-## 
-##     if
-##  Neighborhood in {Somerset, Northridge_Heights, Brookside, Crawford,
-##                          Northridge, Stone_Brook, Clear_Creek}
-##  Year_Built &lt;= 2004
-##  Gr_Liv_Area &gt; 1692
-##     then
-##  outcome = 0.451118 + 1.11e-05 Gr_Liv_Area + 0.000126 Year_Built
-##            + 7.5e-06 Total_Bsmt_SF + 4e-08 Lot_Area
-## 
-##   Rule 10: [128 cases, mean 0.7408611, range 0.7227189 to 0.7608459, est err 0.0035555]
-## 
-##     if
-##  Year_Built &gt; 2004
-##  Total_Bsmt_SF &lt;= 2024
-##  Gr_Liv_Area &gt; 1692
-##     then
-##  outcome = 0.1972512 + 0.000248 Year_Built + 1.44e-05 Gr_Liv_Area
-##            + 9.1e-06 Total_Bsmt_SF + 1.7e-07 Lot_Area
-##            + 0.0018 Bsmt_Full_Bath
-## 
-##   Rule 11: [20 cases, mean 0.7468034, range 0.7163473 to 0.7624165, est err 0.0068615]
-## 
-##     if
-##  Year_Built &gt; 2004
-##  Total_Bsmt_SF &gt; 2024
-##     then
-##  outcome = 0.7741479 - 1e-05 Gr_Liv_Area
-## 
-## 
-## Evaluation on training data (2344 cases):
-## 
-##     Average  |error|          0.0045926
-##     Relative |error|               0.40
-##     Correlation coefficient        0.89
-## 
-## 
-##  Attribute usage:
-##    Conds  Model
-## 
-##     98%    99%    Year_Built
-##     63%           Neighborhood
-##     50%   100%    Gr_Liv_Area
-##     42%           Bldg_Type
-##     38%    99%    Total_Bsmt_SF
-##     12%           Central_Air
-##            88%    Lot_Area
-##            52%    Bsmt_Full_Bath
-##             3%    Year_Sold
-## 
-## 
-## Time: 0.1 secs</code></pre>
-<p>The <code>tidyRules</code> function in the <a href="https://talegari.github.io/tidyrules/"><code>tidyrules</code> package</a> returns rules in a tibble (an extension of data frames) with one row per rule. The tibble provides these information about the rule: <code>support</code>, <code>mean</code>, <code>min</code>, <code>max</code>, <code>error</code>, <code>LHS</code>, <code>RHS</code> and <code>committee</code>. The values in <code>LHS</code> and <code>RHS</code> columns are strings which can be parsed as R expressions. These can be pasted inside the parenthesis of <code><a href="https://dplyr.tidyverse.org/reference/filter.html">dplyr::filter()</a></code> to obtain the rows of the data corresponding to the rule and evaluate the response variable.</p>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">model_tree</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## </span>
+<span class="co">## Call:</span>
+<span class="co">## cubist.default(x = train_pred, y = train_resp)</span>
+<span class="co">## </span>
+<span class="co">## </span>
+<span class="co">## Cubist [Release 2.07 GPL Edition]  Fri Feb  4 19:38:15 2022</span>
+<span class="co">## ---------------------------------</span>
+<span class="co">## </span>
+<span class="co">##     Target attribute `outcome'</span>
+<span class="co">## </span>
+<span class="co">## Read 2344 cases (18 attributes) from undefined.data</span>
+<span class="co">## </span>
+<span class="co">## Model:</span>
+<span class="co">## </span>
+<span class="co">##   Rule 1: [107 cases, mean 0.6922308, range 0.6135074 to 0.725238, est err 0.0086873]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Year_Built &lt;= 1952</span>
+<span class="co">##  Central_Air = N</span>
+<span class="co">##  Gr_Liv_Area &lt;= 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 2.8339713 + 2.89e-05 Gr_Liv_Area - 0.0011 Year_Sold</span>
+<span class="co">##            + 2e-05 Year_Built + 1.1e-06 Total_Bsmt_SF</span>
+<span class="co">##            + 0.0003 Bsmt_Full_Bath</span>
+<span class="co">## </span>
+<span class="co">##   Rule 2: [333 cases, mean 0.7065404, range 0.6720027 to 0.7540954, est err 0.0054064]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {Old_Town, Edwards, Gilbert, Sawyer, Sawyer_West,</span>
+<span class="co">##                          Brookside, Iowa_DOT_and_Rail_Road, Timberland,</span>
+<span class="co">##                          South_and_West_of_Iowa_State_University}</span>
+<span class="co">##  Year_Built &lt;= 1952</span>
+<span class="co">##  Central_Air = Y</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.4666239 + 1.87e-05 Gr_Liv_Area + 0.00011 Year_Built</span>
+<span class="co">##            + 3.4e-06 Total_Bsmt_SF + 0.0009 Bsmt_Full_Bath</span>
+<span class="co">##            + 7e-08 Lot_Area</span>
+<span class="co">## </span>
+<span class="co">##   Rule 3: [176 cases, mean 0.7106560, range 0.6802335 to 0.7269588, est err 0.0030744]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {College_Creek, Edwards, Somerset, Northridge_Heights,</span>
+<span class="co">##                          Gilbert, Sawyer_West, Mitchell, Iowa_DOT_and_Rail_Road,</span>
+<span class="co">##                          Timberland, Clear_Creek, Meadow_Village, Briardale,</span>
+<span class="co">##                          Blueste, Landmark}</span>
+<span class="co">##  Year_Built &gt; 1952</span>
+<span class="co">##  Total_Bsmt_SF &lt;= 765</span>
+<span class="co">##  Gr_Liv_Area &lt;= 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.01018 + 0.00034 Year_Built + 1.79e-05 Gr_Liv_Area</span>
+<span class="co">##            + 2.2e-06 Total_Bsmt_SF + 0.0006 Bsmt_Full_Bath</span>
+<span class="co">## </span>
+<span class="co">##   Rule 4: [87 cases, mean 0.7109181, range 0.6841727 to 0.7294574, est err 0.0049527]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {North_Ames, Crawford}</span>
+<span class="co">##  Year_Built &lt;= 1952</span>
+<span class="co">##  Gr_Liv_Area &lt;= 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.6804143 + 1.45e-05 Gr_Liv_Area + 7e-06 Year_Built</span>
+<span class="co">##            + 4e-07 Total_Bsmt_SF</span>
+<span class="co">## </span>
+<span class="co">##   Rule 5: [35 cases, mean 0.7117702, range 0.6949773 to 0.7293048, est err 0.0047720]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {North_Ames, Old_Town, Sawyer, Northwest_Ames, Crawford,</span>
+<span class="co">##                          Green_Hills}</span>
+<span class="co">##  Year_Built &gt; 1952</span>
+<span class="co">##  Total_Bsmt_SF &lt;= 765</span>
+<span class="co">##  Gr_Liv_Area &lt;= 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.2370069 + 0.000232 Year_Built + 1.16e-05 Gr_Liv_Area</span>
+<span class="co">##            + 8.4e-06 Total_Bsmt_SF + 0.0013 Bsmt_Full_Bath</span>
+<span class="co">## </span>
+<span class="co">##   Rule 6: [1428 cases, mean 0.7131603, range 0.6135074 to 0.7540954, est err 0.0043013]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {North_Ames, College_Creek, Old_Town, Edwards, Gilbert,</span>
+<span class="co">##                          Sawyer, Northwest_Ames, Sawyer_West, Mitchell,</span>
+<span class="co">##                          Iowa_DOT_and_Rail_Road, Timberland,</span>
+<span class="co">##                          South_and_West_of_Iowa_State_University,</span>
+<span class="co">##                          Meadow_Village, Veenker}</span>
+<span class="co">##  Bldg_Type in {OneFam, TwoFmCon, TwnhsE}</span>
+<span class="co">##  Year_Built &lt;= 2004</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.3519752 + 1.26e-05 Gr_Liv_Area + 0.000171 Year_Built</span>
+<span class="co">##            + 7.2e-06 Total_Bsmt_SF + 1.8e-07 Lot_Area</span>
+<span class="co">## </span>
+<span class="co">##   Rule 7: [54 cases, mean 0.7134706, range 0.6808683 to 0.7362626, est err 0.0044510]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Bldg_Type in {Duplex, Twnhs}</span>
+<span class="co">##  Gr_Liv_Area &gt; 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.3791743 + 1.48e-05 Gr_Liv_Area + 0.000151 Year_Built</span>
+<span class="co">##            + 4.7e-06 Total_Bsmt_SF + 1.3e-07 Lot_Area</span>
+<span class="co">##            + 0.0004 Bsmt_Full_Bath</span>
+<span class="co">## </span>
+<span class="co">##   Rule 8: [997 cases, mean 0.7173781, range 0.6792599 to 0.74771, est err 0.0034352]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Year_Built &gt; 1952</span>
+<span class="co">##  Total_Bsmt_SF &gt; 765</span>
+<span class="co">##  Gr_Liv_Area &lt;= 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.3008866 + 1.41e-05 Gr_Liv_Area + 0.000195 Year_Built</span>
+<span class="co">##            + 9e-06 Total_Bsmt_SF + 0.0026 Bsmt_Full_Bath + 5e-08 Lot_Area</span>
+<span class="co">## </span>
+<span class="co">##   Rule 9: [166 cases, mean 0.7354736, range 0.711188 to 0.7687976, est err 0.0044621]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Neighborhood in {Somerset, Northridge_Heights, Brookside, Crawford,</span>
+<span class="co">##                          Northridge, Stone_Brook, Clear_Creek}</span>
+<span class="co">##  Year_Built &lt;= 2004</span>
+<span class="co">##  Gr_Liv_Area &gt; 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.451118 + 1.11e-05 Gr_Liv_Area + 0.000126 Year_Built</span>
+<span class="co">##            + 7.5e-06 Total_Bsmt_SF + 4e-08 Lot_Area</span>
+<span class="co">## </span>
+<span class="co">##   Rule 10: [128 cases, mean 0.7408611, range 0.7227189 to 0.7608459, est err 0.0035555]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Year_Built &gt; 2004</span>
+<span class="co">##  Total_Bsmt_SF &lt;= 2024</span>
+<span class="co">##  Gr_Liv_Area &gt; 1692</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.1972512 + 0.000248 Year_Built + 1.44e-05 Gr_Liv_Area</span>
+<span class="co">##            + 9.1e-06 Total_Bsmt_SF + 1.7e-07 Lot_Area</span>
+<span class="co">##            + 0.0018 Bsmt_Full_Bath</span>
+<span class="co">## </span>
+<span class="co">##   Rule 11: [20 cases, mean 0.7468034, range 0.7163473 to 0.7624165, est err 0.0068615]</span>
+<span class="co">## </span>
+<span class="co">##     if</span>
+<span class="co">##  Year_Built &gt; 2004</span>
+<span class="co">##  Total_Bsmt_SF &gt; 2024</span>
+<span class="co">##     then</span>
+<span class="co">##  outcome = 0.7741479 - 1e-05 Gr_Liv_Area</span>
+<span class="co">## </span>
+<span class="co">## </span>
+<span class="co">## Evaluation on training data (2344 cases):</span>
+<span class="co">## </span>
+<span class="co">##     Average  |error|          0.0045926</span>
+<span class="co">##     Relative |error|               0.40</span>
+<span class="co">##     Correlation coefficient        0.89</span>
+<span class="co">## </span>
+<span class="co">## </span>
+<span class="co">##  Attribute usage:</span>
+<span class="co">##    Conds  Model</span>
+<span class="co">## </span>
+<span class="co">##     98%    99%    Year_Built</span>
+<span class="co">##     63%           Neighborhood</span>
+<span class="co">##     50%   100%    Gr_Liv_Area</span>
+<span class="co">##     42%           Bldg_Type</span>
+<span class="co">##     38%    99%    Total_Bsmt_SF</span>
+<span class="co">##     12%           Central_Air</span>
+<span class="co">##            88%    Lot_Area</span>
+<span class="co">##            52%    Bsmt_Full_Bath</span>
+<span class="co">##             3%    Year_Sold</span>
+<span class="co">## </span>
+<span class="co">## </span>
+<span class="co">## Time: 0.1 secs</span></code></pre>
+<p>The <code>tidyRules</code> function in the <a href="https://talegari.github.io/tidyrules/" class="external-link"><code>tidyrules</code> package</a> returns rules in a tibble (an extension of data frames) with one row per rule. The tibble provides these information about the rule: <code>support</code>, <code>mean</code>, <code>min</code>, <code>max</code>, <code>error</code>, <code>LHS</code>, <code>RHS</code> and <code>committee</code>. The values in <code>LHS</code> and <code>RHS</code> columns are strings which can be parsed as R expressions. These can be pasted inside the parenthesis of <code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter()</a></code> to obtain the rows of the data corresponding to the rule and evaluate the response variable.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/talegari/tidyrules">tidyrules</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/talegari/tidyrules" class="external-link">tidyrules</a></span><span class="op">)</span>
 
-<span class="va">tr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tidyrules/man/tidyRules.html">tidyRules</a></span><span class="op">(</span><span class="va">model_tree</span><span class="op">)</span>
+<span class="va">tr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tidyrules/man/tidyRules.html" class="external-link">tidyRules</a></span><span class="op">(</span><span class="va">model_tree</span><span class="op">)</span>
 <span class="va">tr</span></code></pre></div>
-<pre><code>## # A tibble: 11 x 9
-##       id LHS           RHS           support  mean   min   max   error committee
-##    &lt;int&gt; &lt;chr&gt;         &lt;chr&gt;           &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;     &lt;int&gt;
-##  1     1 Year_Built &lt;… (2.8339713) …     107 0.692 0.614 0.725 0.00869         1
-##  2     2 Neighborhood… (0.4666239) …     333 0.707 0.672 0.754 0.00541         1
-##  3     3 Neighborhood… (0.01018) + …     176 0.711 0.680 0.727 0.00307         1
-##  4     4 Neighborhood… (0.6804143) …      87 0.711 0.684 0.729 0.00495         1
-##  5     5 Neighborhood… (0.2370069) …      35 0.712 0.695 0.729 0.00477         1
-##  6     6 Neighborhood… (0.3519752) …    1428 0.713 0.614 0.754 0.00430         1
-##  7     7 Bldg_Type %i… (0.3791743) …      54 0.713 0.681 0.736 0.00445         1
-##  8     8 Year_Built &gt;… (0.3008866) …     997 0.717 0.679 0.748 0.00344         1
-##  9     9 Neighborhood… (0.451118) +…     166 0.735 0.711 0.769 0.00446         1
-## 10    10 Year_Built &gt;… (0.1972512) …     128 0.741 0.723 0.761 0.00356         1
-## 11    11 Year_Built &gt;… (0.7741479) …      20 0.747 0.716 0.762 0.00686         1</code></pre>
+<pre><code><span class="co">## <span style="color: #949494;"># A tibble: 11 × 9</span></span>
+<span class="co">##       id LHS                   RHS   support  mean   min   max   error committee</span>
+<span class="co">##    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="co">## <span style="color: #BCBCBC;"> 1</span>     1 Year_Built &lt;= 1952 &amp;… (2.8…     107 0.692 0.614 0.725 0.008<span style="text-decoration: underline;">69</span>         1</span>
+<span class="co">## <span style="color: #BCBCBC;"> 2</span>     2 Neighborhood %in% c(… (0.4…     333 0.707 0.672 0.754 0.005<span style="text-decoration: underline;">41</span>         1</span>
+<span class="co">## <span style="color: #BCBCBC;"> 3</span>     3 Neighborhood %in% c(… (0.0…     176 0.711 0.680 0.727 0.003<span style="text-decoration: underline;">07</span>         1</span>
+<span class="co">## <span style="color: #BCBCBC;"> 4</span>     4 Neighborhood %in% c(… (0.6…      87 0.711 0.684 0.729 0.004<span style="text-decoration: underline;">95</span>         1</span>
+<span class="co">## <span style="color: #BCBCBC;"> 5</span>     5 Neighborhood %in% c(… (0.2…      35 0.712 0.695 0.729 0.004<span style="text-decoration: underline;">77</span>         1</span>
+<span class="co">## <span style="color: #BCBCBC;"> 6</span>     6 Neighborhood %in% c(… (0.3…    <span style="text-decoration: underline;">1</span>428 0.713 0.614 0.754 0.004<span style="text-decoration: underline;">30</span>         1</span>
+<span class="co">## <span style="color: #BCBCBC;"> 7</span>     7 Bldg_Type %in% c('Du… (0.3…      54 0.713 0.681 0.736 0.004<span style="text-decoration: underline;">45</span>         1</span>
+<span class="co">## <span style="color: #BCBCBC;"> 8</span>     8 Year_Built &gt; 1952 &amp; … (0.3…     997 0.717 0.679 0.748 0.003<span style="text-decoration: underline;">44</span>         1</span>
+<span class="co">## <span style="color: #BCBCBC;"> 9</span>     9 Neighborhood %in% c(… (0.4…     166 0.735 0.711 0.769 0.004<span style="text-decoration: underline;">46</span>         1</span>
+<span class="co">## <span style="color: #BCBCBC;">10</span>    10 Year_Built &gt; 2004 &amp; … (0.1…     128 0.741 0.723 0.761 0.003<span style="text-decoration: underline;">56</span>         1</span>
+<span class="co">## <span style="color: #BCBCBC;">11</span>    11 Year_Built &gt; 2004 &amp; … (0.7…      20 0.747 0.716 0.762 0.006<span style="text-decoration: underline;">86</span>         1</span></code></pre>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tr</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"LHS"</span>, <span class="st">"RHS"</span><span class="op">)</span><span class="op">]</span></code></pre></div>
-<pre><code>## # A tibble: 11 x 2
-##    LHS                                    RHS                                   
-##    &lt;chr&gt;                                  &lt;chr&gt;                                 
-##  1 Year_Built &lt;= 1952 &amp; Central_Air == '… (2.8339713) + (2.89e-05 * Gr_Liv_Area…
-##  2 Neighborhood %in% c('Old_Town', 'Edwa… (0.4666239) + (1.87e-05 * Gr_Liv_Area…
-##  3 Neighborhood %in% c('College_Creek', … (0.01018) + (0.00034 * Year_Built) + …
-##  4 Neighborhood %in% c('North_Ames', 'Cr… (0.6804143) + (1.45e-05 * Gr_Liv_Area…
-##  5 Neighborhood %in% c('North_Ames', 'Ol… (0.2370069) + (0.000232 * Year_Built)…
-##  6 Neighborhood %in% c('North_Ames', 'Co… (0.3519752) + (1.26e-05 * Gr_Liv_Area…
-##  7 Bldg_Type %in% c('Duplex', 'Twnhs') &amp;… (0.3791743) + (1.48e-05 * Gr_Liv_Area…
-##  8 Year_Built &gt; 1952 &amp; Total_Bsmt_SF &gt; 7… (0.3008866) + (1.41e-05 * Gr_Liv_Area…
-##  9 Neighborhood %in% c('Somerset', 'Nort… (0.451118) + (1.11e-05 * Gr_Liv_Area)…
-## 10 Year_Built &gt; 2004 &amp; Total_Bsmt_SF &lt;= … (0.1972512) + (0.000248 * Year_Built)…
-## 11 Year_Built &gt; 2004 &amp; Total_Bsmt_SF &gt; 2… (0.7741479) - (1e-05 * Gr_Liv_Area)</code></pre>
+<code class="sourceCode R"><span class="va">tr</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"LHS"</span>, <span class="st">"RHS"</span><span class="op">)</span><span class="op">]</span></code></pre></div>
+<pre><code><span class="co">## <span style="color: #949494;"># A tibble: 11 × 2</span></span>
+<span class="co">##    LHS                                                                     RHS  </span>
+<span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                                   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span>
+<span class="co">## <span style="color: #BCBCBC;"> 1</span> Year_Built &lt;= 1952 &amp; Central_Air == 'N' &amp; Gr_Liv_Area &lt;= 1692           (2.8…</span>
+<span class="co">## <span style="color: #BCBCBC;"> 2</span> Neighborhood %in% c('Old_Town', 'Edwards', 'Gilbert', 'Sawyer', 'Sawye… (0.4…</span>
+<span class="co">## <span style="color: #BCBCBC;"> 3</span> Neighborhood %in% c('College_Creek', 'Edwards', 'Somerset', 'Northridg… (0.0…</span>
+<span class="co">## <span style="color: #BCBCBC;"> 4</span> Neighborhood %in% c('North_Ames', 'Crawford') &amp; Year_Built &lt;= 1952 &amp; G… (0.6…</span>
+<span class="co">## <span style="color: #BCBCBC;"> 5</span> Neighborhood %in% c('North_Ames', 'Old_Town', 'Sawyer', 'Northwest_Ame… (0.2…</span>
+<span class="co">## <span style="color: #BCBCBC;"> 6</span> Neighborhood %in% c('North_Ames', 'College_Creek', 'Old_Town', 'Edward… (0.3…</span>
+<span class="co">## <span style="color: #BCBCBC;"> 7</span> Bldg_Type %in% c('Duplex', 'Twnhs') &amp; Gr_Liv_Area &gt; 1692                (0.3…</span>
+<span class="co">## <span style="color: #BCBCBC;"> 8</span> Year_Built &gt; 1952 &amp; Total_Bsmt_SF &gt; 765 &amp; Gr_Liv_Area &lt;= 1692           (0.3…</span>
+<span class="co">## <span style="color: #BCBCBC;"> 9</span> Neighborhood %in% c('Somerset', 'Northridge_Heights', 'Brookside', 'Cr… (0.4…</span>
+<span class="co">## <span style="color: #BCBCBC;">10</span> Year_Built &gt; 2004 &amp; Total_Bsmt_SF &lt;= 2024 &amp; Gr_Liv_Area &gt; 1692          (0.1…</span>
+<span class="co">## <span style="color: #BCBCBC;">11</span> Year_Built &gt; 2004 &amp; Total_Bsmt_SF &gt; 2024                                (0.7…</span></code></pre>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># lets look at 7th rule</span>
 <span class="va">tr</span><span class="op">$</span><span class="va">LHS</span><span class="op">[</span><span class="fl">7</span><span class="op">]</span></code></pre></div>
-<pre><code>## [1] "Bldg_Type %in% c('Duplex', 'Twnhs') &amp; Gr_Liv_Area &gt; 1692"</code></pre>
+<pre><code><span class="co">## [1] "Bldg_Type %in% c('Duplex', 'Twnhs') &amp; Gr_Liv_Area &gt; 1692"</span></code></pre>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tr</span><span class="op">$</span><span class="va">RHS</span><span class="op">[</span><span class="fl">7</span><span class="op">]</span></code></pre></div>
-<pre><code>## [1] "(0.3791743) + (1.48e-05 * Gr_Liv_Area) + (0.000151 * Year_Built) + (4.7e-06 * Total_Bsmt_SF) + (1.3e-07 * Lot_Area) + (0.0004 * Bsmt_Full_Bath)"</code></pre>
+<pre><code><span class="co">## [1] "(0.3791743) + (1.48e-05 * Gr_Liv_Area) + (0.000151 * Year_Built) + (4.7e-06 * Total_Bsmt_SF) + (1.3e-07 * Lot_Area) + (0.0004 * Bsmt_Full_Bath)"</span></code></pre>
 <p>These results can be used to look at specific parts of the data. For example, the 7th rule predictions are:</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rlang.r-lib.org">rlang</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rlang.r-lib.org" class="external-link">rlang</a></span><span class="op">)</span>
 
 <span class="va">char_to_expr</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">index</span> <span class="op">=</span> <span class="fl">1</span>, <span class="va">model</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice</a></span><span class="op">(</span><span class="va">index</span><span class="op">)</span> 
+  <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="va">index</span><span class="op">)</span> 
   <span class="kw">if</span> <span class="op">(</span><span class="va">model</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">RHS</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/parse_expr.html">parse_expr</a></span><span class="op">(</span><span class="op">)</span>
+    <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">RHS</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/parse_expr.html" class="external-link">parse_expr</a></span><span class="op">(</span><span class="op">)</span>
   <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-    <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">LHS</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/parse_expr.html">parse_expr</a></span><span class="op">(</span><span class="op">)</span>
+    <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">LHS</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/parse_expr.html" class="external-link">parse_expr</a></span><span class="op">(</span><span class="op">)</span>
   <span class="op">}</span>
   <span class="va">x</span>
 <span class="op">}</span>
@@ -988,48 +990,48 @@
 <span class="va">model_expr</span> <span class="op">&lt;-</span> <span class="fu">char_to_expr</span><span class="op">(</span><span class="va">tr</span>, <span class="fl">7</span>, model <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
 <span class="co"># filter the data corresponding to rule 7</span>
-<span class="va">ames</span> <span class="op">%&gt;%</span> 
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rlang.r-lib.org/reference/eval_tidy.html">eval_tidy</a></span><span class="op">(</span><span class="va">rule_expr</span>, <span class="va">ames</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>sale_price_pred <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/eval_tidy.html">eval_tidy</a></span><span class="op">(</span><span class="va">model_expr</span>, <span class="va">.</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">Sale_Price</span>, <span class="va">sale_price_pred</span><span class="op">)</span></code></pre></div>
-<pre><code>## # A tibble: 59 x 2
-##    Sale_Price sale_price_pred
-##         &lt;dbl&gt;           &lt;dbl&gt;
-##  1      0.703           0.707
-##  2      0.693           0.712
-##  3      0.715           0.715
-##  4      0.710           0.714
-##  5      0.711           0.712
-##  6      0.716           0.716
-##  7      0.727           0.713
-##  8      0.719           0.719
-##  9      0.711           0.709
-## 10      0.716           0.722
-## # … with 49 more rows</code></pre>
+<span class="va">ames</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rlang.r-lib.org/reference/eval_tidy.html" class="external-link">eval_tidy</a></span><span class="op">(</span><span class="va">rule_expr</span>, <span class="va">ames</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>sale_price_pred <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/eval_tidy.html" class="external-link">eval_tidy</a></span><span class="op">(</span><span class="va">model_expr</span>, <span class="va">.</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Sale_Price</span>, <span class="va">sale_price_pred</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## <span style="color: #949494;"># A tibble: 59 × 2</span></span>
+<span class="co">##    Sale_Price sale_price_pred</span>
+<span class="co">##         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">## <span style="color: #BCBCBC;"> 1</span>      0.703           0.707</span>
+<span class="co">## <span style="color: #BCBCBC;"> 2</span>      0.693           0.712</span>
+<span class="co">## <span style="color: #BCBCBC;"> 3</span>      0.715           0.715</span>
+<span class="co">## <span style="color: #BCBCBC;"> 4</span>      0.710           0.714</span>
+<span class="co">## <span style="color: #BCBCBC;"> 5</span>      0.711           0.712</span>
+<span class="co">## <span style="color: #BCBCBC;"> 6</span>      0.716           0.716</span>
+<span class="co">## <span style="color: #BCBCBC;"> 7</span>      0.727           0.713</span>
+<span class="co">## <span style="color: #BCBCBC;"> 8</span>      0.719           0.719</span>
+<span class="co">## <span style="color: #BCBCBC;"> 9</span>      0.711           0.709</span>
+<span class="co">## <span style="color: #BCBCBC;">10</span>      0.716           0.722</span>
+<span class="co">## <span style="color: #949494;"># … with 49 more rows</span></span></code></pre>
 </div>
-<div id="variable-importance" class="section level2">
-<h2 class="hasAnchor">
-<a href="#variable-importance" class="anchor"></a>Variable Importance</h2>
-<p>The <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> method for Cubist shows the usage of each variable in either the rule conditions or the (terminal) linear model. In actuality, many more linear models are used in prediction that are shown in the output. Because of this, the variable usage statistics shown at the end of the output of the <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> function will probably be inconsistent with the rules also shown in the output. At each split of the tree, Cubist saves a linear model (after feature selection) that is allowed to have terms for each variable used in the current split or any split above it. Quinlan (1992) discusses a smoothing algorithm where each model prediction is a linear combination of the parent and child model along the tree. As such, the final prediction is a function of all the linear models from the initial node to the terminal node. The percentages shown in the Cubist output reflects all the models involved in prediction (as opposed to the terminal models shown in the output).</p>
+<div class="section level2">
+<h2 id="variable-importance">Variable Importance<a class="anchor" aria-label="anchor" href="#variable-importance"></a>
+</h2>
+<p>The <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> method for Cubist shows the usage of each variable in either the rule conditions or the (terminal) linear model. In actuality, many more linear models are used in prediction that are shown in the output. Because of this, the variable usage statistics shown at the end of the output of the <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> function will probably be inconsistent with the rules also shown in the output. At each split of the tree, Cubist saves a linear model (after feature selection) that is allowed to have terms for each variable used in the current split or any split above it. Quinlan (1992) discusses a smoothing algorithm where each model prediction is a linear combination of the parent and child model along the tree. As such, the final prediction is a function of all the linear models from the initial node to the terminal node. The percentages shown in the Cubist output reflects all the models involved in prediction (as opposed to the terminal models shown in the output).</p>
 <p>The raw usage statistics are contained in a data frame called <code>usage</code> in the <code>cubist</code> object.</p>
-<p>The <code>caret</code> and <code>vip</code> packages have general variable importance functions <code><a href="https://rdrr.io/pkg/caret/man/varImp.html">caret::varImp()</a></code> and <code>vip::vi()</code>. When using this function on a <code>cubist</code> argument, the variable importance is a linear combination of the usage in the rule conditions and the model.</p>
+<p>The <code>caret</code> and <code>vip</code> packages have general variable importance functions <code><a href="https://rdrr.io/pkg/caret/man/varImp.html" class="external-link">caret::varImp()</a></code> and <code>vip::vi()</code>. When using this function on a <code>cubist</code> argument, the variable importance is a linear combination of the usage in the rule conditions and the model.</p>
 <p>For example, to compute the scores:</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">caret</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/caret/man/varImp.html">varImp</a></span><span class="op">(</span><span class="va">model_tree</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu">caret</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/caret/man/varImp.html" class="external-link">varImp</a></span><span class="op">(</span><span class="va">model_tree</span><span class="op">)</span>
 
 <span class="co"># or </span>
 
 <span class="fu">vip</span><span class="fu">::</span><span class="fu">vi</span><span class="op">(</span><span class="va">model_tree</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="exporting-the-model-using-the-rulequest-file-format" class="section level2">
-<h2 class="hasAnchor">
-<a href="#exporting-the-model-using-the-rulequest-file-format" class="anchor"></a>Exporting the Model Using the RuleQuest file format</h2>
+<div class="section level2">
+<h2 id="exporting-the-model-using-the-rulequest-file-format">Exporting the Model Using the RuleQuest file format<a class="anchor" aria-label="anchor" href="#exporting-the-model-using-the-rulequest-file-format"></a>
+</h2>
 <p>As previously mentioned, this code is a port of the command-line <code>C</code> code. To run the <code>C</code> code, the training set data must be converted to a specific file format as detailed on the RuleQuest website. Two files are created. The <code>file.data</code> file is a header-less, comma delimited version of the data (the <code>file</code> part is a name given by the user). The <code>file.names</code> file provides information about the columns (eg. levels for categorical data and so on). After running the <code>C</code> program, another text file called <code>file.models</code>, which contains the information needed for prediction.</p>
 <p>Once a model has been built with the <code>R</code> <code>cubist</code> package, the <code>exportCubistFiles</code> can be used to create the <code>.data</code>, <code>.names</code> and <code>.model</code> files so that the same model can be run at the command-line.</p>
 </div>
-<div id="current-limitations" class="section level2">
-<h2 class="hasAnchor">
-<a href="#current-limitations" class="anchor"></a>Current Limitations</h2>
+<div class="section level2">
+<h2 id="current-limitations">Current Limitations<a class="anchor" aria-label="anchor" href="#current-limitations"></a>
+</h2>
 <p>There are a few features in the <code>C</code> code that are not yet operational in the <code>R</code> package:</p>
 <ul>
 <li>only continuous and categorical predictors can be used (the original source code allows for other data types)</li>
@@ -1051,11 +1053,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Max Kuhn, Ross Quinlan.</p>
+  <p></p>
+<p>Developed by Max Kuhn, Ross Quinlan.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
@@ -1063,6 +1067,8 @@
 
   
 
+
+  
 
   </body>
 </html>

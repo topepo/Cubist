@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://topepo.github.io/Cubist/404.html</loc>
+  </url>
+  <url>
+    <loc>http://topepo.github.io/Cubist/ISSUE_TEMPLATE.html</loc>
+  </url>
+  <url>
+    <loc>http://topepo.github.io/Cubist/articles/cubist.html</loc>
+  </url>
+  <url>
+    <loc>http://topepo.github.io/Cubist/articles/extras/tuning.html</loc>
+  </url>
+  <url>
+    <loc>http://topepo.github.io/Cubist/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>http://topepo.github.io/Cubist/authors.html</loc>
+  </url>
+  <url>
     <loc>http://topepo.github.io/Cubist/index.html</loc>
   </url>
   <url>
@@ -19,15 +37,12 @@
     <loc>http://topepo.github.io/Cubist/reference/exportCubistFiles.html</loc>
   </url>
   <url>
+    <loc>http://topepo.github.io/Cubist/reference/index.html</loc>
+  </url>
+  <url>
     <loc>http://topepo.github.io/Cubist/reference/predict.cubist.html</loc>
   </url>
   <url>
     <loc>http://topepo.github.io/Cubist/reference/summary.cubist.html</loc>
-  </url>
-  <url>
-    <loc>http://topepo.github.io/Cubist/articles/cubist.html</loc>
-  </url>
-  <url>
-    <loc>http://topepo.github.io/Cubist/articles/extras/tuning.html</loc>
   </url>
 </urlset>
