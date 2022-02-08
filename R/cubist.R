@@ -350,7 +350,7 @@ cubistControl <- function(
   extrapolation = 100,
   sample = 0.0,
   seed = sample.int(4096, size=1) - 1L,
-  cv=NA,
+  cv = NA,
   label = "outcome"
 ) {
   if (!is.logical(auto)){
