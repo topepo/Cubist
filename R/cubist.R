@@ -340,35 +340,37 @@ cubist.default <- function(x, y,
 #' @export cubistControl
 cubistControl <- function(
   unbiased = FALSE,
-  composite = TRUE,
+  auto=FALSE,
   rules = 100,
   neighbors = NA,
   extrapolation = 100,
   sample = 0.0,
   seed = sample.int(4096, size=1) - 1L,
+  cv=NA,
   label = "outcome"
 ) {
+  if (!is.logical(auto)){
+    stop("'auto' should be either TRUE or FALSE")
+  }
 
   if (!is.na(neighbors)) {
-    if (composite == FALSE){
-      stop("neighbors should not be set when composite=FALSE")
-    } else if (length(neighbors) > 1) {
-      stop("only a single value of neighbors is allowed")
+    if (length(neighbors) > 1) {
+      stop("only a single value of neighbors is allowed", call. = FALSE)
     } else if (neighbors < 1 | neighbors > 9) {
-      stop("'neighbors' must be between 1 and 9")
+      stop("'neighbors' must be between 1 and 9", call. = FALSE)
     }
   } else {
-    if (isTRUE(composite)){
+    if (isTRUE(auto)){
       cat("Cubist will choose an appropriate value for neigbors as this parameter is not set\n")
     }
     neighbors = 0
   }
 
-  if (!(composite %in% c(TRUE, FALSE, 'auto')))
-    stop("composite parameters must be TRUE, FALSE, or 'auto")
-  if (composite == TRUE){
+  if (auto){
+    composite = 'auto'
+  } else if (neighbors > 0){
     composite = 'yes'
-  } else if (composite == FALSE){
+  } else {
     composite = 'no'
   }
 
@@ -379,6 +381,17 @@ cubistControl <- function(
   if (sample < 0.0 | sample > 99.9)
     stop("sampling percentage must be between 0.0 and 99.9", call. = FALSE)
 
+
+  if (length(cv) > 1){
+    stop("number of cross-validation folds must be an integer or NA", call. = FALSE)
+  }
+  if (cv <= 1) {
+    stop("Number of cross-validation folds must be greater than 1", call. = FALSE)
+  }
+  if (is.na(cv)) {
+    cv = 0
+  }
+
   list(
     unbiased = unbiased,
     composite = composite,
@@ -387,7 +400,8 @@ cubistControl <- function(
     extrapolation = extrapolation / 100,
     sample = sample / 100,
     label = label,
-    seed = seed %% 4096L
+    seed = seed %% 4096L,
+    cv = cv
   )
   }
 
