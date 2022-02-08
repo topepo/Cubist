@@ -6,20 +6,22 @@
 \usage{
 cubistControl(
   unbiased = FALSE,
-  composite = TRUE,
+  auto = FALSE,
   rules = 100,
   neighbors = NA,
   extrapolation = 100,
   sample = 0,
   seed = sample.int(4096, size = 1) - 1L,
+  cv = NA,
   label = "outcome"
 )
 }
 \arguments{
 \item{unbiased}{a logical: should unbiased rules be used?}
 
-\item{composite}{a logical (or \code{auto}): should a composite
-model be used? (\code{auto} lets Cubist decide)}
+\item{auto}{a logical: should Cubist decide whether a composite
+model is used. TRUE to automatically decide or FALSE to choose by
+whether number of nearest neighbors is set.}
 
 \item{rules}{an integer (or \code{NA}): define an explicit limit to
 the number of rules used (\code{NA} lets Cubist decide).}
@@ -39,6 +41,9 @@ percentage of the data set to be randomly selected for model
 building (not for out-of-bag type evaluation).}
 
 \item{seed}{an integer for the random seed (in the C code)}
+
+\item{cv}{an integer for the number of cross-validation folds
+(note this will return no model)}
 
 \item{label}{a label for the outcome (when printing rules)}
 }

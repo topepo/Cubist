@@ -4,7 +4,7 @@
 \alias{predict.cubist}
 \title{Predict method for cubist fits}
 \usage{
-\method{predict}{cubist}(object, newdata = NULL, ...)
+\method{predict}{cubist}(object, newdata = NULL, neighbors = NULL, ...)
 }
 \arguments{
 \item{object}{an object of class \code{cubist}}
