@@ -344,7 +344,7 @@ cubist.default <- function(x, y,
 #' @export cubistControl
 cubistControl <- function(
   unbiased = FALSE,
-  auto=FALSE,
+  auto = FALSE,
   rules = 100,
   neighbors = NA,
   extrapolation = 100,
