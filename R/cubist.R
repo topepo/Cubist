@@ -191,6 +191,7 @@ cubist.default <- function(x, y,
           as.integer(control$seed),         # -I : set the sampling seed value
           as.integer(control$rules),        # -r: set the maximum number of rules
           as.double(control$extrapolation), # -e : set the extrapolation limit
+          as.integer(control$cv),           # -X: set number of cross-validation folds
           model = character(1),             # pass back .model file as a string
           output = character(1),            # pass back cubist output as a string
           PACKAGE = "Cubist"
@@ -298,8 +299,9 @@ cubist.default <- function(x, y,
 #'  \url{http://rulequest.com/cubist-unix.html}
 #'
 #' @param unbiased a logical: should unbiased rules be used?
-#' @param composite a logical (or `auto`): should a composite
-#'  model be used? (`auto` lets Cubist decide)
+#' @param auto a logical: should Cubist decide whether a composite
+#' model is used. TRUE to automatically decide or FALSE to choose by
+#' whether number of nearest neighbors is set.
 #' @param rules an integer (or `NA`): define an explicit limit to
 #'  the number of rules used (`NA` lets Cubist decide).
 #' @param neighbors an integer (or `NA`): set the number of nearest-
@@ -314,6 +316,8 @@ cubist.default <- function(x, y,
 #'  percentage of the data set to be randomly selected for model
 #'  building (not for out-of-bag type evaluation).
 #' @param seed an integer for the random seed (in the C code)
+#' @param cv an integer for the number of cross-validation folds
+#' (note this will return no model)
 #' @param label a label for the outcome (when printing rules)
 #' @return A list containing the options.
 #' @author Max Kuhn
