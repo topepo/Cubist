@@ -181,7 +181,7 @@ static R_NativePrimitiveArgType predictions_t[] = {
 
 // Declare the cubist function
 static const R_CMethodDef cEntries[] = {
-    {"cubist", (DL_FUNC)&cubist, 12, cubist_t},
+    {"cubist", (DL_FUNC)&cubist, 13, cubist_t},
     {"predictions", (DL_FUNC)&predictions, 6, predictions_t},
     {NULL, NULL, 0}};
 
