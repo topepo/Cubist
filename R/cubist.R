@@ -191,6 +191,7 @@ cubist.default <- function(x, y,
           as.integer(control$seed),         # -I : set the sampling seed value
           as.integer(control$rules),        # -r: set the maximum number of rules
           as.double(control$extrapolation), # -e : set the extrapolation limit
+          as.integer(control$cv),           # -X: set number of cross-validation folds
           model = character(1),             # pass back .model file as a string
           output = character(1),            # pass back cubist output as a string
           PACKAGE = "Cubist"
@@ -219,6 +220,22 @@ cubist.default <- function(x, y,
 
   namesString <- memCompress(charToRaw(namesString), type = "b")
   dataString <- memCompress(charToRaw(dataString), type = "b")
+
+  # if model is the same as the input string, we're doing cross-validation
+  # and can stop here
+  if (Z$model == ""){
+    out <- list(data = dataString,
+                names = namesString,
+                caseWeights = !is.null(weights),
+                model = Z$model,
+                output = Z$output,
+                control = control,
+                committees = committees,
+                dims = dim(x),
+                call = funcCall)
+    class(out) <- "cubist"
+    return(out)
+  }
 
   splits <- getSplits(Z$model)
   if (!is.null(splits)) {
@@ -298,8 +315,9 @@ cubist.default <- function(x, y,
 #'  \url{http://rulequest.com/cubist-unix.html}
 #'
 #' @param unbiased a logical: should unbiased rules be used?
-#' @param composite a logical (or `auto`): should a composite
-#'  model be used? (`auto` lets Cubist decide)
+#' @param auto a logical: should Cubist decide whether a composite
+#' model is used. TRUE to automatically decide or FALSE to choose by
+#' whether number of nearest neighbors is set.
 #' @param rules an integer (or `NA`): define an explicit limit to
 #'  the number of rules used (`NA` lets Cubist decide).
 #' @param neighbors an integer (or `NA`): set the number of nearest-
@@ -314,6 +332,8 @@ cubist.default <- function(x, y,
 #'  percentage of the data set to be randomly selected for model
 #'  building (not for out-of-bag type evaluation).
 #' @param seed an integer for the random seed (in the C code)
+#' @param cv an integer for the number of cross-validation folds
+#' (note this will return no model)
 #' @param label a label for the outcome (when printing rules)
 #' @return A list containing the options.
 #' @author Max Kuhn
@@ -340,35 +360,37 @@ cubist.default <- function(x, y,
 #' @export cubistControl
 cubistControl <- function(
   unbiased = FALSE,
-  composite = TRUE,
+  auto = FALSE,
   rules = 100,
   neighbors = NA,
   extrapolation = 100,
   sample = 0.0,
   seed = sample.int(4096, size=1) - 1L,
+  cv = NA,
   label = "outcome"
 ) {
+  if (!is.logical(auto)){
+    stop("'auto' should be either TRUE or FALSE")
+  }
 
   if (!is.na(neighbors)) {
-    if (composite == FALSE){
-      stop("neighbors should not be set when composite=FALSE")
-    } else if (length(neighbors) > 1) {
-      stop("only a single value of neighbors is allowed")
+    if (length(neighbors) > 1) {
+      stop("only a single value of neighbors is allowed", call. = FALSE)
     } else if (neighbors < 1 | neighbors > 9) {
-      stop("'neighbors' must be between 1 and 9")
+      stop("'neighbors' must be between 1 and 9", call. = FALSE)
     }
   } else {
-    if (isTRUE(composite)){
+    if (isTRUE(auto)){
       cat("Cubist will choose an appropriate value for neigbors as this parameter is not set\n")
     }
     neighbors = 0
   }
 
-  if (!(composite %in% c(TRUE, FALSE, 'auto')))
-    stop("composite parameters must be TRUE, FALSE, or 'auto")
-  if (composite == TRUE){
+  if (auto){
+    composite = 'auto'
+  } else if (neighbors > 0){
     composite = 'yes'
-  } else if (composite == FALSE){
+  } else {
     composite = 'no'
   }
 
@@ -379,6 +401,16 @@ cubistControl <- function(
   if (sample < 0.0 | sample > 99.9)
     stop("sampling percentage must be between 0.0 and 99.9", call. = FALSE)
 
+
+  if (length(cv) > 1){
+    stop("number of cross-validation folds must be an integer or NA", call. = FALSE)
+  }
+  if (is.na(cv)){
+    cv = 0
+  } else if (cv <= 1) {
+    stop("Number of cross-validation folds must be greater than 1", call. = FALSE)
+  }
+
   list(
     unbiased = unbiased,
     composite = composite,
@@ -387,7 +419,8 @@ cubistControl <- function(
     extrapolation = extrapolation / 100,
     sample = sample / 100,
     label = label,
-    seed = seed %% 4096L
+    seed = seed %% 4096L,
+    cv = cv
   )
   }
 
