@@ -27,7 +27,7 @@ static void cubist(char **namesv, char **datav, int *unbiased,
   // Set globals based on the arguments.  This is analogous
   // to parsing the command line in the cubist program.
   setglobals(*unbiased, *compositev, *neighbors, *committees, *sample, *seed,
-             *rules, *extrapolation);
+             *rules, *extrapolation, *cv);
 
   // Handles the strbufv data structure
   rbm_removeall();
@@ -67,7 +67,7 @@ static void cubist(char **namesv, char **datav, int *unbiased,
     // Get the contents of the the model file if not using cross-validation
     if (*cv == 0){
       char *modelString = strbuf_getall(rbm_lookup("undefined.model"));
-      char *model = PyMem_Calloc(strlen(modelString) + 1, 1);
+      char *model = R_alloc(strlen(modelString) + 1, 1);
       strcpy(model, modelString);
 
       // I think the previous value of *modelv will be garbage collected

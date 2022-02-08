@@ -221,6 +221,22 @@ cubist.default <- function(x, y,
   namesString <- memCompress(charToRaw(namesString), type = "b")
   dataString <- memCompress(charToRaw(dataString), type = "b")
 
+  # if model is the same as the input string, we're doing cross-validation
+  # and can stop here
+  if (Z$model == ""){
+    out <- list(data = dataString,
+                names = namesString,
+                caseWeights = !is.null(weights),
+                model = Z$model,
+                output = Z$output,
+                control = control,
+                committees = committees,
+                dims = dim(x),
+                call = funcCall)
+    class(out) <- "cubist"
+    return(out)
+  }
+
   splits <- getSplits(Z$model)
   if (!is.null(splits)) {
     splits$percentile <- NA
@@ -389,11 +405,10 @@ cubistControl <- function(
   if (length(cv) > 1){
     stop("number of cross-validation folds must be an integer or NA", call. = FALSE)
   }
-  if (cv <= 1) {
-    stop("Number of cross-validation folds must be greater than 1", call. = FALSE)
-  }
-  if (is.na(cv)) {
+  if (is.na(cv)){
     cv = 0
+  } else if (cv <= 1) {
+    stop("Number of cross-validation folds must be greater than 1", call. = FALSE)
   }
 
   list(
