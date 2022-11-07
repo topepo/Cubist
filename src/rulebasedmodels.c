@@ -194,12 +194,12 @@ void setglobals(int unbiased, char *composite, int neighbors, int committees,
   EXTRAP = extrapolation;
 }
 
-void setOf() {
+void setOf(void) {
   // XXX Experimental
   Of = rbm_fopen("rulebasedmodels.stdout", "w");
 }
 
-char *closeOf() {
+char *closeOf(void) {
   if (Of) {
     rbm_fclose(Of);
     return strbuf_getall((STRBUF *)Of);
