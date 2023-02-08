@@ -442,7 +442,7 @@ String CaseLabel(CaseNo N)
   if (LabelAtt && (p = IgnoredVals + SVal(Case[N], LabelAtt)))
     ;
   else {
-    sprintf(LabelBuffer, "#%d", N + 1);
+    snprintf(LabelBuffer, sizeof(LabelBuffer), "#%d", N + 1);
     p = LabelBuffer;
   }
 
