@@ -627,7 +627,7 @@ void DayToDate(int Day, String Date)
     Year++;
   }
 
-  snprintf(Date, 14, "%d/%d%d/%d%d", Year, Month / 10, Month % 10, Day / 10,
+  snprintf(Date, 12, "%d/%d%d/%d%d", Year, Month / 10, Month % 10, Day / 10,
            Day % 10);
 }
 
