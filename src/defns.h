@@ -619,7 +619,7 @@ int Denominator(ContValue Val);
 int FracBase(Attribute Att);
 int GetInt(String S, int N);
 int DateToDay(String DS);
-void DayToDate(int DI, String Date, size_t DT_size);
+void DayToDate(int DI, String Date);
 int TimeToSecs(String TS);
 void SecsToTime(int Secs, String Time);
 void SetTSBase(int y);
