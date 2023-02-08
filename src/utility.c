@@ -627,7 +627,8 @@ void DayToDate(int Day, String Date)
     Year++;
   }
 
-  snprintf(Date, 12, "%d/%d%d/%d%d", Year, Month / 10, Month % 10, Day / 10,
+  /* not sure what the size will be. %d is 0 to 9 bytes so maybe (5 * 9) + 2   */
+  snprintf(Date, 47, "%d/%d%d/%d%d", Year, Month / 10, Month % 10, Day / 10,
            Day % 10);
 }
 
@@ -665,7 +666,8 @@ void SecsToTime(int Secs, String Time)
   Mins = (Secs % 3600) / 60;
   Secs = Secs % 60;
 
-  snprintf(Time, 15, "%d%d:%d%d:%d%d", Hour / 10, Hour % 10, Mins / 10, Mins % 10,
+  /* not sure what the size will be. %d is 0 to 9 bytes so maybe (6 * 9) + 2   */
+  snprintf(Time, 56, "%d%d:%d%d:%d%d", Hour / 10, Hour % 10, Mins / 10, Mins % 10,
            Secs / 10, Secs % 10);
 }
 
@@ -729,7 +731,7 @@ void CValToStr(ContValue CV, Attribute Att, String DS)
   } else if (TimeVal(Att)) {
     SecsToTime(CV, DS);
   } else {
-    snprintf(DS, 20, "%.*g", PREC, CV);
+    snprintf(DS, 200, "%.*g", PREC, CV);
   }
 }
 
