@@ -266,7 +266,8 @@ void PrintRule(CRule R)
 {
   int c, d, dd, id, LineLen, EntryLen, Indent, NCoeff = 0;
   Attribute Att;
-  char Entry[1000];
+  size_t size = 1000;
+  char Entry[size];
   double *Model;
   float *Importance;
 
@@ -313,10 +314,10 @@ void PrintRule(CRule R)
     }
   }
 
-  sprintf(Entry, "%s =", AttName[ClassAtt]);
+  snprintf(Entry, size,  "%s =", AttName[ClassAtt]);
   Indent = CharWidth(Entry);
 
-  sprintf(Entry + Indent, " %.14g", Model[0]);
+  snprintf(Entry + Indent, size, " %.14g", Model[0]);
   fprintf(Of, "\t%s", Entry);
   LineLen = CharWidth(Entry);
 
@@ -332,7 +333,7 @@ void PrintRule(CRule R)
 
     /*  Print, breaking lines when necessary  */
 
-    sprintf(Entry, " %c %.14g %s", (Model[Att] > 0 ? '+' : '-'),
+    snprintf(Entry, size, " %c %.14g %s", (Model[Att] > 0 ? '+' : '-'),
             fabs(Model[Att]), AttName[Att]);
     EntryLen = CharWidth(Entry);
 

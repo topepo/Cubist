@@ -42,12 +42,13 @@
 void PrintHeader(String Title)
 /*   -----------  */
 {
-  char TitleLine[80];
+  size_t size = 80;
+  char TitleLine[size];
   time_t clock;
   int Underline;
 
   clock = time(0);
-  sprintf(TitleLine, "%s%s [%s]", NAME, Title, TX_Release(RELEASE));
+  snprintf(TitleLine, size, "%s%s [%s]", NAME, Title, TX_Release(RELEASE));
   fprintf(Of, "\n%s  %s", TitleLine, ctime(&clock));
 
   Underline = CharWidth(TitleLine);
