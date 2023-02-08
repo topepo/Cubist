@@ -627,8 +627,8 @@ void DayToDate(int Day, String Date)
     Year++;
   }
 
-  sprintf(Date, "%d/%d%d/%d%d", Year, Month / 10, Month % 10, Day / 10,
-          Day % 10);
+  snprintf(Date, 14, "%d/%d%d/%d%d", Year, Month / 10, Month % 10, Day / 10,
+           Day % 10);
 }
 
 /*************************************************************************/
@@ -665,8 +665,8 @@ void SecsToTime(int Secs, String Time)
   Mins = (Secs % 3600) / 60;
   Secs = Secs % 60;
 
-  sprintf(Time, "%d%d:%d%d:%d%d", Hour / 10, Hour % 10, Mins / 10, Mins % 10,
-          Secs / 10, Secs % 10);
+  snprintf(Time, 15, "%d%d:%d%d:%d%d", Hour / 10, Hour % 10, Mins / 10, Mins % 10,
+           Secs / 10, Secs % 10);
 }
 
 void SetTSBase(int y)
@@ -729,7 +729,7 @@ void CValToStr(ContValue CV, Attribute Att, String DS)
   } else if (TimeVal(Att)) {
     SecsToTime(CV, DS);
   } else {
-    sprintf(DS, "%.*g", PREC, CV);
+    snprintf(DS, 20, "%.*g", PREC, CV);
   }
 }
 
