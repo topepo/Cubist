@@ -1,7 +1,7 @@
 Type: Package
 Package: Cubist
 Title: Rule- And Instance-Based Regression Modeling
-Version: 0.4.2
+Version: 0.4.3
 Authors@R: c(
     person("Max", "Kuhn", , "mxkuhn@gmail.com", role = c("aut", "cre")),
     person("Steve", "Weston", role = "ctb"),
@@ -16,7 +16,7 @@ Maintainer: Max Kuhn <mxkuhn@gmail.com>
 Description: Regression modeling using rules with added instance-based
     corrections.
 License: GPL-3
-URL: https://topepo.github.io/Cubist//, https://topepo.github.io/Cubist/
+URL: https://topepo.github.io/Cubist, https://github.com/topepo/Cubist/ 
 BugReports: https://github.com/topepo/Cubist/issues
 Depends: 
     lattice

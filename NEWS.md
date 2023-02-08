@@ -1,4 +1,4 @@
-# Cubist 0.4.2
+# Cubist 0.4.3
 
 * Maintenance release to fix CRAN issues related to compiler issues.
 
