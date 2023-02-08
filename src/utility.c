@@ -716,7 +716,7 @@ int TStampToMins(String TS)
 /*                                                                       */
 /*************************************************************************/
 
-void CValToStr(ContValue CV, Attribute Att, String DS)
+void CValToStr(ContValue CV, Attribute Att, String DS, size_t DS_size)
 /*   ---------  */
 {
   int Mins;
@@ -731,7 +731,7 @@ void CValToStr(ContValue CV, Attribute Att, String DS)
   } else if (TimeVal(Att)) {
     SecsToTime(CV, DS);
   } else {
-    snprintf(DS, 10000, "%.*g", PREC, CV);
+    snprintf(DS, DS_size, "%.*g", PREC, CV);
   }
 }
 
