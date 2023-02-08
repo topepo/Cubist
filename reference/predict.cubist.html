@@ -20,7 +20,7 @@ using the approach of Quinlan (1993)."><!-- mathjax --><script src="https://cdnj
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Cubist</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
       </span>
     </div>
 
@@ -62,27 +62,36 @@ using the approach of Quinlan (1993).</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># S3 method for cubist</span>
-<span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">object</span>, newdata <span class="op">=</span> <span class="cn">NULL</span>, neighbors <span class="op">=</span> <span class="fl">0</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for cubist</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">object</span>, newdata <span class="op">=</span> <span class="cn">NULL</span>, neighbors <span class="op">=</span> <span class="fl">0</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>object</dt>
 <dd><p>an object of class <code>cubist</code></p></dd>
+
+
 <dt>newdata</dt>
 <dd><p>a data frame of predictors (in the same order as
 the original training data). Must have column names.</p></dd>
+
+
 <dt>neighbors</dt>
 <dd><p>an integer from 0 to 9: how many instances to
 use to correct the rule-based prediction?</p></dd>
+
+
 <dt>...</dt>
 <dd><p>other options to pass through the function (not
 currently used)</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a numeric vector is returned</p>
+    
+
+<p>a numeric vector is returned</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -116,30 +125,30 @@ modifications be Steve Weston</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mlbench</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">BostonHousing</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## 1 committee and no instance-based correction, so just an M5 fit:</span></span>
-<span class="r-in"><span class="va">mod1</span> <span class="op">&lt;-</span> <span class="fu"><a href="cubist.default.html">cubist</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">BostonHousing</span><span class="op">[</span>, <span class="op">-</span><span class="fl">14</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">BostonHousing</span><span class="op">$</span><span class="va">medv</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">mod1</span>, <span class="va">BostonHousing</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">14</span><span class="op">]</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mlbench</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">BostonHousing</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## 1 committee and no instance-based correction, so just an M5 fit:</span></span></span>
+<span class="r-in"><span><span class="va">mod1</span> <span class="op">&lt;-</span> <span class="fu"><a href="cubist.default.html">cubist</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">BostonHousing</span><span class="op">[</span>, <span class="op">-</span><span class="fl">14</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">BostonHousing</span><span class="op">$</span><span class="va">medv</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">mod1</span>, <span class="va">BostonHousing</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">14</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 29.00493 22.19729 34.17934 32.97410</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## now add instances</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">mod1</span>, <span class="va">BostonHousing</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">14</span><span class="op">]</span>, neighbors <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## now add instances</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">mod1</span>, <span class="va">BostonHousing</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">14</span><span class="op">]</span>, neighbors <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 26.07685 21.67079 33.87119 34.64103</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Example error</span></span>
-<span class="r-in"><span class="va">iris_test</span> <span class="op">&lt;-</span> <span class="va">iris</span></span>
-<span class="r-in"><span class="va">iris_test</span><span class="op">$</span><span class="va">Species</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">iris_test</span><span class="op">$</span><span class="va">Species</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="cubist.default.html">cubist</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">iris_test</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">99</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span>,</span>
-<span class="r-in">              y <span class="op">=</span> <span class="va">iris_test</span><span class="op">$</span><span class="va">Sepal.Length</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">99</span><span class="op">]</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># predict(mod, iris_test[100:151, 2:5])</span></span>
-<span class="r-in"><span class="co"># Error:</span></span>
-<span class="r-in"><span class="co"># *** line 2 of `undefined.cases':</span></span>
-<span class="r-in"><span class="co"># bad value of 'virginica' for attribute 'Species'</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example error</span></span></span>
+<span class="r-in"><span><span class="va">iris_test</span> <span class="op">&lt;-</span> <span class="va">iris</span></span></span>
+<span class="r-in"><span><span class="va">iris_test</span><span class="op">$</span><span class="va">Species</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">iris_test</span><span class="op">$</span><span class="va">Species</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="cubist.default.html">cubist</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">iris_test</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">99</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>              y <span class="op">=</span> <span class="va">iris_test</span><span class="op">$</span><span class="va">Sepal.Length</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">99</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># predict(mod, iris_test[100:151, 2:5])</span></span></span>
+<span class="r-in"><span><span class="co"># Error:</span></span></span>
+<span class="r-in"><span><span class="co"># *** line 2 of `undefined.cases':</span></span></span>
+<span class="r-in"><span><span class="co"># bad value of 'virginica' for attribute 'Species'</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -154,7 +163,7 @@ modifications be Steve Weston</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Cubist</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
       </span>
     </div>
 
@@ -51,8 +51,91 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="development version" id="cubist-development-version">Cubist (development version)<a class="anchor" aria-label="anchor" href="#cubist-development-version"></a></h2>
-</div>
+<h2 class="page-header" data-toc-text="0.4.3" id="cubist-043">Cubist 0.4.3<a class="anchor" aria-label="anchor" href="#cubist-043"></a></h2>
+<ul><li><p>Maintenance release to fix CRAN issues related to compiler issues.</p></li>
+<li><p>Updated GHA and tests</p></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.4.1" id="cubist-041">Cubist 0.4.1<small>2022-11-09</small><a class="anchor" aria-label="anchor" href="#cubist-041"></a></h2>
+<ul><li>Build configuration changes for Windows</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.4.0" id="cubist-040">Cubist 0.4.0<small>2022-02-05</small><a class="anchor" aria-label="anchor" href="#cubist-040"></a></h2>
+<ul><li>Build configuration changes for Windows</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.3.0" id="cubist-030">Cubist 0.3.0<small>2021-05-28</small><a class="anchor" aria-label="anchor" href="#cubist-030"></a></h2>
+<ul><li>Build configuration changes for Windows</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.2.4" id="cubist-024">Cubist 0.2.4<a class="anchor" aria-label="anchor" href="#cubist-024"></a></h2>
+<ul><li><p>Maintenance release to fix CRAN issues by adding rmarkdown to Suggests.</p></li>
+<li><p>Re-wrote parts of the vignettes and added another for model tuning.</p></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.2.3" id="cubist-023">Cubist 0.2.3<small>2020-01-10</small><a class="anchor" aria-label="anchor" href="#cubist-023"></a></h2>
+<ul><li><p>Maintenance release to fix CRAN issues for GCC 10 -fno-common flag.</p></li>
+<li><p><code>tidy_rules()</code> was removed since the code is now in the tidyrules package.</p></li>
+<li><p>Changes to better work with tibble inputs.</p></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.2.2" id="cubist-022">Cubist 0.2.2<small>2018-05-21</small><a class="anchor" aria-label="anchor" href="#cubist-022"></a></h2>
+<ul><li>Maintenance release to fix CRAN issues for C string buffers</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.2.1" id="cubist-021">Cubist 0.2.1<small>2017-12-01</small><a class="anchor" aria-label="anchor" href="#cubist-021"></a></h2>
+<ul><li>Fixed a bug in the code that escapes improper characters.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.2.0" id="cubist-020">Cubist 0.2.0<small>2017-11-27</small><a class="anchor" aria-label="anchor" href="#cubist-020"></a></h2>
+<ul><li><p>Converted documentation to <code>roxygen2</code>.</p></li>
+<li><p>Revised some compiler options to reduce <code>R CMD check</code> warnings.</p></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.0.19" id="cubist-0019">Cubist 0.0.19<small>2016-12-11</small><a class="anchor" aria-label="anchor" href="#cubist-0019"></a></h2>
+<ul><li>A bug was fixed, found by Duncan Murdoch.</li>
+<li>A bug in predictions when sampling was used was fixed by Laurae (a random data witch/magician) </li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.0.17" id="cubist-0017">Cubist 0.0.17<a class="anchor" aria-label="anchor" href="#cubist-0017"></a></h2>
+<ul><li>Memory allocation bugs in the R version of the C code, which lead to segmentation faults, were fixed.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.0.15" id="cubist-0015">Cubist 0.0.15<small>2014-01-16</small><a class="anchor" aria-label="anchor" href="#cubist-0015"></a></h2>
+<ul><li>A bug was fixed where the model failed if no predictors were included in the model (thanks to Gabe Gershenfeld for the find).</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.0.14" id="cubist-0014">Cubist 0.0.14<a class="anchor" aria-label="anchor" href="#cubist-0014"></a></h2>
+<ul><li><p>The Windows build configuration was updated.</p></li>
+<li><p>Some files were synced with the C50 package.</p></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.0.13" id="cubist-0013">Cubist 0.0.13<small>2013-01-31</small><a class="anchor" aria-label="anchor" href="#cubist-0013"></a></h2>
+<ul><li><p>More efficient code was borrowed from the C50 package to write the data file to a string.</p></li>
+<li><p>A bug related to column names found by David Clifford was fixed.</p></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.0.12" id="cubist-0012">Cubist 0.0.12<small>2012-02-29</small><a class="anchor" aria-label="anchor" href="#cubist-0012"></a></h2>
+<ul><li><p>A bug was fixed that occurred when splits were determined in models with a categorical variable involving more than two categories (eg. “if X4 in {a, b}”)</p></li>
+<li><p>Also, a bug was found in the variable importances calculations when a variable was used only in the conditions and not the model.</p></li>
+<li><p>The ‘doc’ directory was moved into the “vignettes” directory</p></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.0.11" id="cubist-0011">Cubist 0.0.11<small>2012-02-15</small><a class="anchor" aria-label="anchor" href="#cubist-0011"></a></h2>
+<ul><li><p>cubist uses a string buffer to capture the output files that would normally get saved to external files. The package was failing R CMD check only on windows because the output files were getting garbled. <code>s*printf</code> functions work differently on Windows. On Linux, they return the size that is needed to correctly print the string. On Windows, if there isn’t enough space, they return -1.</p></li>
+<li><p>Also, work-arounds were added to the C sources because of R CMD check issues. <code>printf()</code>, <code>assert()</code> and <code>exist()</code> statements were removed or redefined.</p></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.0.8" id="cubist-008">Cubist 0.0.8<small>2011-06-22</small><a class="anchor" aria-label="anchor" href="#cubist-008"></a></h2>
+<ul><li>A bug was fixed for the <code>coef</code> method.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.0.6" id="cubist-006">Cubist 0.0.6<small>2011-04-30</small><a class="anchor" aria-label="anchor" href="#cubist-006"></a></h2>
+<ul><li><p>The GPL version was revised to be version 3 (thanks to Ross Quinlan for the note).</p></li>
+<li><p>The variable usage statistics were saved to a data frame in called <code>object$usage</code>. The package vignette and help files were updated accordingly.</p></li>
+<li><p>When using <code>cubist</code>, if <code>x</code> was a vector or a single variable, an error occurred. This was fixed.</p></li>
+<li><p>The vignette was also expanded to show how caret can be used to tune the model and a technical error was corrected about the boosting algorithm (thanks again to Ross Quinlan).</p></li>
+</ul></div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -67,7 +150,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

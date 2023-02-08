@@ -18,7 +18,7 @@ http://rulequest.com/cubist-unix.html"><!-- mathjax --><script src="https://cdnj
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Cubist</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
       </span>
     </div>
 
@@ -58,41 +58,54 @@ http://rulequest.com/cubist-unix.html"><!-- mathjax --><script src="https://cdnj
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">cubistControl</span><span class="op">(</span>
-  unbiased <span class="op">=</span> <span class="cn">FALSE</span>,
-  rules <span class="op">=</span> <span class="fl">100</span>,
-  extrapolation <span class="op">=</span> <span class="fl">100</span>,
-  sample <span class="op">=</span> <span class="fl">0</span>,
-  seed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample.int</a></span><span class="op">(</span><span class="fl">4096</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1L</span>,
-  label <span class="op">=</span> <span class="st">"outcome"</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">cubistControl</span><span class="op">(</span></span>
+<span>  unbiased <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  rules <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  extrapolation <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  sample <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample.int</a></span><span class="op">(</span><span class="fl">4096</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1L</span>,</span>
+<span>  label <span class="op">=</span> <span class="st">"outcome"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>unbiased</dt>
 <dd><p>a logical: should unbiased rules be used?</p></dd>
+
+
 <dt>rules</dt>
 <dd><p>an integer (or <code>NA</code>): define an explicit limit to
 the number of rules used (<code>NA</code> let's Cubist decide).</p></dd>
+
+
 <dt>extrapolation</dt>
 <dd><p>a number between 0 and 100: since Cubist
 uses linear models, predictions can be outside of the outside of
 the range seen the training set. This parameter controls how
 much rule predictions are adjusted to be consistent with the
 training set.</p></dd>
+
+
 <dt>sample</dt>
 <dd><p>a number between 0 and 99.9: this is the
 percentage of the data set to be randomly selected for model
 building (not for out-of-bag type evaluation).</p></dd>
+
+
 <dt>seed</dt>
 <dd><p>an integer for the random seed (in the C code)</p></dd>
+
+
 <dt>label</dt>
 <dd><p>a label for the outcome (when printing rules)</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list containing the options.</p>
+    
+
+<p>A list containing the options.</p>
     </div>
     <div id="references">
     <h2>References</h2>
@@ -118,8 +131,8 @@ Morgan Kaufmann Publishers Inc. San Francisco, CA</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="fu">cubistControl</span><span class="op">(</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">cubistControl</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $unbiased</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -136,9 +149,9 @@ Morgan Kaufmann Publishers Inc. San Francisco, CA</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "outcome"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $seed</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 924</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3806</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -153,7 +166,7 @@ Morgan Kaufmann Publishers Inc. San Francisco, CA</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

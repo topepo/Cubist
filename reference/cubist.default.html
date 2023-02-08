@@ -19,7 +19,7 @@ neighbors in the training set, as described in Quinlan (1993a)."><!-- mathjax --
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Cubist</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
       </span>
     </div>
 
@@ -60,8 +60,8 @@ neighbors in the training set, as described in Quinlan (1993a).</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># S3 method for default</span>
-<span class="fu">cubist</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, committees <span class="op">=</span> <span class="fl">1</span>, control <span class="op">=</span> <span class="fu"><a href="cubistControl.html">cubistControl</a></span><span class="op">(</span><span class="op">)</span>, weights <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for default</span></span>
+<span><span class="fu">cubist</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, committees <span class="op">=</span> <span class="fl">1</span>, control <span class="op">=</span> <span class="fu"><a href="cubistControl.html">cubistControl</a></span><span class="op">(</span><span class="op">)</span>, weights <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -70,14 +70,22 @@ neighbors in the training set, as described in Quinlan (1993a).</p>
 <dd><p>a matrix or data frame of predictor variables. Missing
 data are allowed but (at this time) only numeric, character and
 factor values are allowed. Must have column names.</p></dd>
+
+
 <dt>y</dt>
 <dd><p>a numeric vector of outcome</p></dd>
+
+
 <dt>committees</dt>
 <dd><p>an integer: how many committee models (e.g..
 boosting iterations) should be used?</p></dd>
+
+
 <dt>control</dt>
 <dd><p>options that control details of the <code>cubist</code>
 algorithm. See <code><a href="cubistControl.html">cubistControl()</a></code></p></dd>
+
+
 <dt>weights</dt>
 <dd><p>an optional vector of case weights (the same
 length as <code>y</code>) for how much each instance should contribute to
@@ -86,46 +94,62 @@ weight assigned to each case is its value of this attribute
 divided by the average value; if the value is undefined, not
 applicable, or is less than or equal to zero, the case's
 relative weight is set to 1."</p></dd>
+
+
 <dt>...</dt>
 <dd><p>optional arguments to pass (not currently used)</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>an object of class <code>cubist</code> with elements:</p>
+    
+
+<p>an object of class <code>cubist</code> with elements:</p>
 <dl><dt>data, names, model</dt>
 <dd><p>character strings that correspond to
 their counterparts for the command-line program available from
 RuleQuest</p></dd>
+
 <dt>output</dt>
 <dd><p>basic cubist output captured from the C code,
 including the rules, their terminal models and variable usage
 statistics</p></dd>
+
 <dt>control</dt>
 <dd><p>a list of control parameters passed in by the
 user</p></dd>
+
 <dt>composite, neighbors, committees</dt>
 <dd><p>mirrors of the values to
 these arguments that were passed in by the user</p></dd>
+
 <dt>dims</dt>
 <dd><p>the output if <code>dim(x)</code></p></dd>
+
 <dt>splits</dt>
 <dd><p>information about the variables and values used in
 the rule conditions</p></dd>
+
 <dt>call</dt>
 <dd><p>the function call</p></dd>
+
 <dt>coefs</dt>
 <dd><p>a data frame of regression coefficients for each
 rule within each committee</p></dd>
+
 <dt>vars</dt>
 <dd><p>a list with elements <code>all</code> and <code>used</code> listing the
 predictors passed into the function and used by any rule or
 model</p></dd>
+
 <dt>fitted.values</dt>
 <dd><p>a numeric vector of predictions on the
 training set.</p></dd>
+
 <dt>usage</dt>
 <dd><p>a data frame with the percent of models where each
 variable was used. See <code><a href="summary.cubist.html">summary.cubist()</a></code> for a discussion.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -182,13 +206,13 @@ modifications be Steve Weston</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mlbench</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">BostonHousing</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## 1 committee, so just an M5 fit:</span></span>
-<span class="r-in"><span class="va">mod1</span> <span class="op">&lt;-</span> <span class="fu">cubist</span><span class="op">(</span>x <span class="op">=</span> <span class="va">BostonHousing</span><span class="op">[</span>, <span class="op">-</span><span class="fl">14</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">BostonHousing</span><span class="op">$</span><span class="va">medv</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">mod1</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mlbench</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">BostonHousing</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## 1 committee, so just an M5 fit:</span></span></span>
+<span class="r-in"><span><span class="va">mod1</span> <span class="op">&lt;-</span> <span class="fu">cubist</span><span class="op">(</span>x <span class="op">=</span> <span class="va">BostonHousing</span><span class="op">[</span>, <span class="op">-</span><span class="fl">14</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">BostonHousing</span><span class="op">$</span><span class="va">medv</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mod1</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Call:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> cubist.default(x = BostonHousing[, -14], y = BostonHousing$medv)</span>
@@ -199,10 +223,10 @@ modifications be Steve Weston</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of committees: 1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of rules: 4 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Now with 10 committees</span></span>
-<span class="r-in"><span class="va">mod2</span> <span class="op">&lt;-</span> <span class="fu">cubist</span><span class="op">(</span>x <span class="op">=</span> <span class="va">BostonHousing</span><span class="op">[</span>, <span class="op">-</span><span class="fl">14</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">BostonHousing</span><span class="op">$</span><span class="va">medv</span>, committees <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">mod2</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Now with 10 committees</span></span></span>
+<span class="r-in"><span><span class="va">mod2</span> <span class="op">&lt;-</span> <span class="fu">cubist</span><span class="op">(</span>x <span class="op">=</span> <span class="va">BostonHousing</span><span class="op">[</span>, <span class="op">-</span><span class="fl">14</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">BostonHousing</span><span class="op">$</span><span class="va">medv</span>, committees <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mod2</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Call:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> cubist.default(x = BostonHousing[, -14], y = BostonHousing$medv, committees</span>
@@ -214,7 +238,7 @@ modifications be Steve Weston</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of committees: 10 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of rules per committee: 4, 6, 4, 6, 6, 7, 7, 7, 4, 5 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -229,7 +253,7 @@ modifications be Steve Weston</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
