@@ -591,7 +591,7 @@ int DateToDay(String DS) /*  Day 1 is 0000/03/01  */
          Day - 30;
 }
 
-void DayToDate(int Day, String Date)
+void DayToDate(int Day, String Date, size_t DT_size)
 /*   ---------  */
 {
   int Year, Month, OrigDay = Day;
@@ -627,7 +627,7 @@ void DayToDate(int Day, String Date)
     Year++;
   }
 
-  snprintf(Date, 10000,
+  snprintf(Date, DT_size,
            "%d/%d%d/%d%d",
            Year, Month / 10, Month % 10, Day / 10, Day % 10);
 }
@@ -657,7 +657,7 @@ int TimeToSecs(String TS)
   return Hour * 3600 + Mins * 60 + Secs;
 }
 
-void SecsToTime(int Secs, String Time)
+void SecsToTime(int Secs, String Time, size_t DT_size)
 /*   ----------  */
 {
   int Hour, Mins;
@@ -666,7 +666,7 @@ void SecsToTime(int Secs, String Time)
   Mins = (Secs % 3600) / 60;
   Secs = Secs % 60;
 
-  snprintf(Time, 10000,
+  snprintf(Time, DT_size,
            "%d%d:%d%d:%d%d",
            Hour / 10, Hour % 10, Mins / 10, Mins % 10, Secs / 10, Secs % 10);
 }
@@ -722,14 +722,14 @@ void CValToStr(ContValue CV, Attribute Att, String DS, size_t DS_size)
   int Mins;
 
   if (TStampVal(Att)) {
-    DayToDate(floor(CV / 1440) + TSBase, DS);
+    DayToDate(floor(CV / 1440) + TSBase, DS, DS_size);
     DS[10] = ' ';
     Mins = rint(CV) - floor(CV / 1440) * 1440;
-    SecsToTime(Mins * 60, DS + 11);
+    SecsToTime(Mins * 60, DS + 11, DS_size);
   } else if (DateVal(Att)) {
-    DayToDate(CV, DS);
+    DayToDate(CV, DS, DS_size);
   } else if (TimeVal(Att)) {
-    SecsToTime(CV, DS);
+    SecsToTime(CV, DS, DS_size);
   } else {
     snprintf(DS, DS_size, "%.*g", PREC, CV);
   }
