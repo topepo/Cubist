@@ -1,3 +1,8 @@
+# Cubist 0.4.4
+
+* 12.8 hours after the last submission was accepted, CRAN required another because the url `https://topepo.github.io/Cubist` forwards to `https://topepo.github.io/Cubist/` (with a slash at the end). 
+
+
 # Cubist 0.4.3
 
 * Maintenance release to fix CRAN issues related to compiler issues.
