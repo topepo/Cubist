@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(Cubist)
 library(dplyr)
 library(rlang)
-library(tidyrules)
+library(rules)
 options(digits = 3)
 ```
 
@@ -43,8 +43,6 @@ predictors <-
     "Year_Built", "Total_Bsmt_SF", "Central_Air", "Gr_Liv_Area", 
     "Bsmt_Full_Bath", "Bsmt_Half_Bath", "Full_Bath", "Half_Bath", 
     "TotRms_AbvGrd",  "Year_Sold", "Longitude", "Latitude")
-
-ames$Sale_Price <- log10(ames$Sale_Price)
 
 train_pred <- ames[ in_train_set, predictors]
 test_pred  <- ames[-in_train_set, predictors]
@@ -125,7 +123,9 @@ R modeling packages such as `caret`, `tidymodels`, and `mlr3` can be used to tun
 
 It should be noted that this variable importance measure does not capture the influence of the predictors when using the instance-based correction.
 
-## Tidy rules
+
+## Extracting Rules
+
 
 Rules from a Cubist model can be viewed using `summary` as follows:
 
@@ -133,46 +133,41 @@ Rules from a Cubist model can be viewed using `summary` as follows:
 summary(model_tree)
 ```
 
-The `tidyRules` function in the [`tidyrules` package](https://talegari.github.io/tidyrules/) returns rules in a tibble (an extension of data frames) with one row per rule. The tibble provides these information about the rule: `support`, `mean`, `min`, `max`, `error`, `LHS`, `RHS` and `committee`. The values in `LHS` and `RHS` columns are strings which can be parsed as R expressions. These can be pasted inside the parenthesis of `dplyr::filter()` to obtain the rows of the data corresponding to the rule and evaluate the response variable.
+The `tidy()` function in the [`rules` package](https://rules.tidymodels.org) returns rules in a tibble (an extension of data frames) with one row per rule. The tibble provides information about the rule and can be used to programatically extra data from the model. For example: 
 
-```{r tidy_rules_example}
-library(tidyrules)
 
-tr <- tidyRules(model_tree)
-tr
-tr[, c("LHS", "RHS")]
+```{r}
+#| label: rule-extraction
+library(rules)
 
-# lets look at 7th rule
-tr$LHS[7]
-tr$RHS[7]
+rule_df <- tidy(model_tree)
+
+rule_df
+
+rule_df$estimate[[1]]
+
+rule_df$statistic[[1]]
 ```
 
-These results can be used to look at specific parts of the data. For example, the 7th rule predictions are:
+The `rule` column can be converted to an R expression that can be used to pull data used by that rule. For example, for the seventh rule: 
 
-```{r rule-7}
+```{r}
+#| label: rule-data
+
+# Text
+rule_7 <- rule_df$rule[7]
+
+# Convert to an expression
+rule_7 <- rlang::parse_expr(rule_7)
+rule_7
+
+# Use in a dplyr filter: 
+nrow(train_pred)
+
 library(dplyr)
-library(rlang)
 
-char_to_expr <- function(x, index = 1, model = TRUE) {
-  x <- x %>% dplyr::slice(index) 
-  if (model) {
-    x <- x %>% dplyr::pull(RHS) %>% rlang::parse_expr()
-  } else {
-    x <- x %>% dplyr::pull(LHS) %>% rlang::parse_expr()
-  }
-  x
-}
-
-rule_expr  <- char_to_expr(tr, 7, model = FALSE)
-model_expr <- char_to_expr(tr, 7, model = TRUE)
-
-# filter the data corresponding to rule 7
-ames %>% 
-  dplyr::filter(eval_tidy(rule_expr, ames)) %>%
-  dplyr::mutate(sale_price_pred = eval_tidy(model_expr, .)) %>%
-  dplyr::select(Sale_Price, sale_price_pred)
+train_pred %>% filter(!!rule_7) %>% nrow()
 ```
-
 
 ## Variable Importance
 
