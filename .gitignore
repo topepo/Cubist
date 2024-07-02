@@ -24,3 +24,5 @@ revdep/data.sqlite
 .Rhistory
 docs
 src/Makevars
+/doc/
+/Meta/

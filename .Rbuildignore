@@ -9,3 +9,5 @@
 ^\.Rproj\.user$
 ^codecov\.yml$
 ^\.github$
+^doc$
+^Meta$
