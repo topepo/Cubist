@@ -1,3 +1,9 @@
+# Cubist 0.4.4
+
+* Fixed two issues in the vignette. 
+
+* vignette now uses `rules::tidy()` instead of `tidyrules:: tidyRules()`
+
 # Cubist 0.4.3
 
 * 12.8 hours after the last submission was accepted, CRAN required another because the url `https://topepo.github.io/Cubist` forwards to `https://topepo.github.io/Cubist/` (with a slash at the end). 

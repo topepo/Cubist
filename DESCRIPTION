@@ -16,7 +16,7 @@ Maintainer: Max Kuhn <mxkuhn@gmail.com>
 Description: Regression modeling using rules with added instance-based
     corrections.
 License: GPL-3
-URL: https://topepo.github.io/Cubist/, https://github.com/topepo/Cubist/, https://github.com/topepo/Cubist
+URL: https://topepo.github.io/Cubist/, https://github.com/topepo/Cubist
 BugReports: https://github.com/topepo/Cubist/issues
 Depends: 
     lattice
