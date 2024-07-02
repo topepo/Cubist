@@ -1,3 +1,5 @@
+# Cubist (development version)
+
 # Cubist 0.4.4
 
 * Fixed two issues in the vignette. 
