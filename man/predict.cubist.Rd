@@ -4,16 +4,13 @@
 \alias{predict.cubist}
 \title{Predict method for cubist fits}
 \usage{
-\method{predict}{cubist}(object, newdata = NULL, neighbors = 0, ...)
+\method{predict}{cubist}(object, newdata = NULL, neighbors = NULL, ...)
 }
 \arguments{
 \item{object}{an object of class \code{cubist}}
 
 \item{newdata}{a data frame of predictors (in the same order as
 the original training data). Must have column names.}
-
-\item{neighbors}{an integer from 0 to 9: how many instances to
-use to correct the rule-based prediction?}
 
 \item{\dots}{other options to pass through the function (not
 currently used)}
@@ -23,9 +20,7 @@ a numeric vector is returned
 }
 \description{
 Prediction using the parametric model are calculated using the
-method of Quinlan (1992). If \code{neighbors} is greater than zero,
-these predictions are adjusted by training set instances nearby
-using the approach of Quinlan (1993).
+method of Quinlan (1992).
 }
 \details{
 Note that the predictions can fail for various reasons.
@@ -43,7 +38,7 @@ mod1 <- cubist(x = BostonHousing[, -14], y = BostonHousing$medv)
 predict(mod1, BostonHousing[1:4, -14])
 
 ## now add instances
-predict(mod1, BostonHousing[1:4, -14], neighbors = 5)
+predict(mod1, BostonHousing[1:4, -14])
 
 # Example error
 iris_test <- iris
