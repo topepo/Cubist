@@ -5,7 +5,7 @@ neighbors in the training set, as described in Quinlan (1993a)."><!-- mathjax --
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -36,20 +36,20 @@ neighbors in the training set, as described in Quinlan (1993a)."><!-- mathjax --
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/topepo/Cubist/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Fit a Cubist model</h1>
-    <small class="dont-index">Source: <a href="https://github.com/topepo/Cubist/blob/HEAD/R/cubist.R" class="external-link"><code>R/cubist.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/topepo/Cubist/blob/master/R/cubist.R" class="external-link"><code>R/cubist.R</code></a></small>
     <div class="hidden name"><code>cubist.default.Rd</code></div>
     </div>
 
@@ -60,33 +60,35 @@ neighbors in the training set, as described in Quinlan (1993a).</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for default</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># Default S3 method</span></span>
 <span><span class="fu">cubist</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, committees <span class="op">=</span> <span class="fl">1</span>, control <span class="op">=</span> <span class="fu"><a href="cubistControl.html">cubistControl</a></span><span class="op">(</span><span class="op">)</span>, weights <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>x</dt>
+
+
+<dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
 <dd><p>a matrix or data frame of predictor variables. Missing
 data are allowed but (at this time) only numeric, character and
 factor values are allowed. Must have column names.</p></dd>
 
 
-<dt>y</dt>
+<dt id="arg-y">y<a class="anchor" aria-label="anchor" href="#arg-y"></a></dt>
 <dd><p>a numeric vector of outcome</p></dd>
 
 
-<dt>committees</dt>
+<dt id="arg-committees">committees<a class="anchor" aria-label="anchor" href="#arg-committees"></a></dt>
 <dd><p>an integer: how many committee models (e.g..
 boosting iterations) should be used?</p></dd>
 
 
-<dt>control</dt>
+<dt id="arg-control">control<a class="anchor" aria-label="anchor" href="#arg-control"></a></dt>
 <dd><p>options that control details of the <code>cubist</code>
 algorithm. See <code><a href="cubistControl.html">cubistControl()</a></code></p></dd>
 
 
-<dt>weights</dt>
+<dt id="arg-weights">weights<a class="anchor" aria-label="anchor" href="#arg-weights"></a></dt>
 <dd><p>an optional vector of case weights (the same
 length as <code>y</code>) for how much each instance should contribute to
 the model fit. From the RuleQuest website: "The relative
@@ -96,15 +98,13 @@ applicable, or is less than or equal to zero, the case's
 relative weight is set to 1."</p></dd>
 
 
-<dt>...</dt>
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>optional arguments to pass (not currently used)</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>an object of class <code>cubist</code> with elements:</p>
+    <p>an object of class <code>cubist</code> with elements:</p>
 <dl><dt>data, names, model</dt>
 <dd><p>character strings that correspond to
 their counterparts for the command-line program available from
@@ -253,15 +253,15 @@ modifications be Steve Weston</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 

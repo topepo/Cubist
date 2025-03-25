@@ -4,7 +4,7 @@ http://rulequest.com/cubist-unix.html"><!-- mathjax --><script src="https://cdnj
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -35,20 +35,20 @@ http://rulequest.com/cubist-unix.html"><!-- mathjax --><script src="https://cdnj
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/topepo/Cubist/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Various parameters that control aspects of the Cubist fit.</h1>
-    <small class="dont-index">Source: <a href="https://github.com/topepo/Cubist/blob/HEAD/R/cubist.R" class="external-link"><code>R/cubist.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/topepo/Cubist/blob/master/R/cubist.R" class="external-link"><code>R/cubist.R</code></a></small>
     <div class="hidden name"><code>cubistControl.Rd</code></div>
     </div>
 
@@ -70,16 +70,18 @@ http://rulequest.com/cubist-unix.html"><!-- mathjax --><script src="https://cdnj
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>unbiased</dt>
+
+
+<dl><dt id="arg-unbiased">unbiased<a class="anchor" aria-label="anchor" href="#arg-unbiased"></a></dt>
 <dd><p>a logical: should unbiased rules be used?</p></dd>
 
 
-<dt>rules</dt>
+<dt id="arg-rules">rules<a class="anchor" aria-label="anchor" href="#arg-rules"></a></dt>
 <dd><p>an integer (or <code>NA</code>): define an explicit limit to
 the number of rules used (<code>NA</code> let's Cubist decide).</p></dd>
 
 
-<dt>extrapolation</dt>
+<dt id="arg-extrapolation">extrapolation<a class="anchor" aria-label="anchor" href="#arg-extrapolation"></a></dt>
 <dd><p>a number between 0 and 100: since Cubist
 uses linear models, predictions can be outside of the outside of
 the range seen the training set. This parameter controls how
@@ -87,25 +89,23 @@ much rule predictions are adjusted to be consistent with the
 training set.</p></dd>
 
 
-<dt>sample</dt>
+<dt id="arg-sample">sample<a class="anchor" aria-label="anchor" href="#arg-sample"></a></dt>
 <dd><p>a number between 0 and 99.9: this is the
 percentage of the data set to be randomly selected for model
 building (not for out-of-bag type evaluation).</p></dd>
 
 
-<dt>seed</dt>
+<dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>an integer for the random seed (in the C code)</p></dd>
 
 
-<dt>label</dt>
+<dt id="arg-label">label<a class="anchor" aria-label="anchor" href="#arg-label"></a></dt>
 <dd><p>a label for the outcome (when printing rules)</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>A list containing the options.</p>
+    <p>A list containing the options.</p>
     </div>
     <div id="references">
     <h2>References</h2>
@@ -166,15 +166,15 @@ Morgan Kaufmann Publishers Inc. San Francisco, CA</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 
