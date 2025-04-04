@@ -1,3 +1,5 @@
+# Cubist (development version)
+
 # Cubist 0.5.0
 
 * Updated C code to stop overwriting keyword symbols. 
