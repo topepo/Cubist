@@ -14,7 +14,7 @@ extern void FreeCases(void);
 static void cubist(char **namesv, char **datav, int *unbiased,
                    char **compositev, int *neighbors, int *committees,
                    double *sample, int *seed, int *rules, double *extrapolation,
-                   char **modelv, char **outputv) {
+                   int *cv, char **modelv, char **outputv) {
   int val; /* Used by setjmp/longjmp for implementing rbm_exit */
 
   // Announce ourselves for testing
@@ -27,7 +27,7 @@ static void cubist(char **namesv, char **datav, int *unbiased,
   // Set globals based on the arguments.  This is analogous
   // to parsing the command line in the cubist program.
   setglobals(*unbiased, *compositev, *neighbors, *committees, *sample, *seed,
-             *rules, *extrapolation);
+             *rules, *extrapolation, *cv);
 
   // Handles the strbufv data structure
   rbm_removeall();
@@ -64,14 +64,22 @@ static void cubist(char **namesv, char **datav, int *unbiased,
     cubistmain();
 
     // Rprintf("cubistmain finished\n");
+    // Get the contents of the the model file if not using cross-validation
+    if (*cv == 0){
+      char *modelString = strbuf_getall(rbm_lookup("undefined.model"));
+      char *model = R_alloc(strlen(modelString) + 1, 1);
+      strcpy(model, modelString);
 
+      // I think the previous value of *modelv will be garbage collected
+      *modelv = model;
+    }
     // Get the contents of the the model file
-    char *modelString = strbuf_getall(rbm_lookup("undefined.model"));
-    char *model = R_alloc(strlen(modelString) + 1, 1);
-    strcpy(model, modelString);
+    //char *modelString = strbuf_getall(rbm_lookup("undefined.model"));
+    //char *model = R_alloc(strlen(modelString) + 1, 1);
+    //strcpy(model, modelString);
 
     // I think the previous value of *modelv will be garbage collected
-    *modelv = model;
+    //*modelv = model;
   } else {
     Rprintf("cubist code called exit with value %d\n", val - JMP_OFFSET);
   }
@@ -156,6 +164,7 @@ static R_NativePrimitiveArgType cubist_t[] = {
     INTSXP,  // seed
     INTSXP,  // rules
     REALSXP, // extrapolation
+    INTSXP,  // cv
     STRSXP,  // modelv
     STRSXP   // outputv
 };
@@ -172,7 +181,7 @@ static R_NativePrimitiveArgType predictions_t[] = {
 
 // Declare the cubist function
 static const R_CMethodDef cEntries[] = {
-    {"cubist", (DL_FUNC)&cubist, 12, cubist_t},
+    {"cubist", (DL_FUNC)&cubist, 13, cubist_t},
     {"predictions", (DL_FUNC)&predictions, 6, predictions_t},
     {NULL, NULL, 0}};
 
