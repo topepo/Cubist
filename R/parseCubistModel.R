@@ -218,7 +218,7 @@ type3 <- function(x)
     list(var = var, val = val, text = txt)
   }
 
-type2 <- function(x, dig = 3)
+type2 <- function(x, dig = NULL)
   {
     x <- gsub("\"", "", x)
     aInd <- regexpr("att=", x)
@@ -240,7 +240,10 @@ type2 <- function(x, dig = 3)
       {
         var[!missingRule] <- substring(x[!missingRule], aInd[!missingRule] + 4, cInd[!missingRule] - 2)        
         val[!missingRule] <- substring(x[!missingRule], cInd[!missingRule] + 4, rInd[!missingRule] - 1)
-        val[!missingRule] <- format(as.numeric(val[!missingRule]), digits = dig)
+        val[!missingRule] <- as.numeric(val[!missingRule])
+        if (!is.null(dig)) {
+          val[!missingRule] <- format(val[!missingRule], digits = dig)
+        }
         rslt[!missingRule] <- substring(x[!missingRule], rInd[!missingRule] + 7)
       }
 
