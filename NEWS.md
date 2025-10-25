@@ -1,3 +1,5 @@
+# Cubist (development version)
+
 # Cubist 0.5.1
 
 * Big fixed related to how rule values are formatted. (#59)
