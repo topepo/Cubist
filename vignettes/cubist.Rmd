@@ -91,31 +91,12 @@ sqrt(mean((com_pred - test_resp)^2))
 cor(com_pred, test_resp)^2
 ``` 
 
-## Instance-Based Corrections
+## Instance-Based Corrections (Composite Models)
 
-Another innovation in Cubist using nearest-neighbors to adjust the predictions from the rule-based model. First, a model tree (with or without committees) is created. Once a sample is predicted by this model, Cubist can find it's nearest neighbors and determine the average of these training set points. See Quinlan (1993a) for the details of the adjustment as well as [this blog post](https://rviews.rstudio.com/2020/05/21/modern-rule-based-models).
+Another innovation in Cubist is using nearest-neighbors to adjust the predictions from the rule-based model as a composite model. First, a model tree (with or without committees) is created. Once a sample is predicted by this model, Cubist can find it's nearest neighbors and determine the average of these training set points. See Quinlan (1993a) for the details of the adjustment as well as [this blog post](https://rviews.rstudio.com/2020/05/21/modern-rule-based-models).
 
-The development of rules and committees is independent of the choice of using instances. The original `C` code allowed the program to choose whether to use instances, not use them or let the program decide. Our approach is to build a model with the `cubist()` function that is ignorant to the decision about instances. When samples are predicted, the argument `neighbors` can be used to adjust the rule-based model predictions (or not). 
+The development of rules and committees is independent of the choice of using instances. The choice of whether to use instance-based correction is determined by the `neighbors` or `auto` arguments. If `auto` is TRUE, Cubist will decide whether to generate a composite model. A value of NA for `neighbors` tells Cubist to build a rules-only model while setting it in the range of 1 and 9 creates a composite model with this number of nearest neighbors. Note that this introduces slight opacity in the prediction process as the linear regressors are no longer perfectly followed.
 
-We can add instances to the previously fit committee model:
-
-```{r bh6}
-inst_pred <- predict(com_model, test_pred, neighbors = 5)
-## RMSE
-sqrt(mean((inst_pred - test_resp)^2))
-## R^2
-cor(inst_pred, test_resp)^2
-``` 
-
-Note that the previous models used the implicit default of `neighbors = 0` for their predictions.
-
-It may also be useful to see how the different models fit a single predictor. Here is the test set data for a model with one predictor (`Gr_Liv_Area`), 100 committees, and various values of `neighbors`: 
-
-```{r echo = FALSE, fig.align='center'}
-knitr::include_graphics("neighbors.gif")
-```
-
-After the initial use of the instance-based correction, there is very little change in the mainstream of the data. 
 
 ## Model tuning
 
