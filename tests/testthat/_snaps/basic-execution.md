@@ -37,4 +37,7 @@
       $seed
       [1] 3907
       
+      $strip_time_stamps
+      [1] TRUE
+      
 

@@ -10,7 +10,8 @@ cubistControl(
   extrapolation = 100,
   sample = 0,
   seed = sample.int(4096, size = 1) - 1L,
-  label = "outcome"
+  label = "outcome",
+  strip_time_stamps = TRUE
 )
 }
 \arguments{
@@ -32,6 +33,11 @@ building (not for out-of-bag type evaluation).}
 \item{seed}{an integer for the random seed (in the C code)}
 
 \item{label}{a label for the outcome (when printing rules)}
+
+\item{strip_time_stamps}{a logical: should timestamps and timing
+information be removed from the output? Defaults to \code{TRUE} for
+reproducible output. Set to \code{FALSE} to include the Cubist version
+header and execution time.}
 }
 \value{
 A list containing the options.
