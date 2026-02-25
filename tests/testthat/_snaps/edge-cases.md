@@ -5,8 +5,6 @@
     Condition
       Warning in `FUN()`:
       NAs introduced by coercion
-      Warning in `FUN()`:
-      NAs introduced by coercion
 
 # cubist errors with Date predictor
 
