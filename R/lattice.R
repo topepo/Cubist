@@ -63,9 +63,6 @@
 #'
 #' @export
 #' @method dotplot cubist
-#' @importFrom lattice dotplot panel.segments trellis.par.get
-#' @importFrom reshape2 melt
-#' @importFrom stats complete.cases
 dotplot.cubist <- function(
   x,
   data = NULL,
@@ -76,7 +73,7 @@ dotplot.cubist <- function(
 ) {
   splits <- x$splits
   if (is.null(splits)) {
-    stop("No splits were used in this model", call. = FALSE)
+    cli_abort("No splits were used in this model.")
   }
 
   if (!is.null(committee)) {
@@ -109,7 +106,7 @@ dotplot.cubist <- function(
 
   if (what == "splits") {
     if (all(splits$type == "type3")) {
-      stop("No splits of continuous predictors were made", call. = FALSE)
+      cli_abort("No splits of continuous predictors were made.")
     }
     out <- dotplot(
       label ~ percentile | variable,
@@ -194,6 +191,3 @@ dotplot.cubist <- function(
   }
   out
 }
-
-#' @importFrom utils globalVariables
-utils::globalVariables(c("type"))

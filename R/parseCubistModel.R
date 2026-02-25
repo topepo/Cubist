@@ -342,7 +342,8 @@ parser <- function(x) {
   x
 }
 
-#' @importFrom stats reshape
+#' @export
+#' @exportS3Method
 coef.cubist <- function(object, varNames = NULL, ...) {
   x <- object$model
   x <- strsplit(x, "\n")[[1]]

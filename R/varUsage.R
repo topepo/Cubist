@@ -1,8 +1,9 @@
-varUsage <- function(x) {
+varUsage <- function(x, call = caller_env()) {
   x <- strsplit(x, "\n")[[1]]
   startVars <- grep("\tAttribute usage", x)
+
   if (length(startVars) != 1) {
-    stop("cannot find attribute usage data")
+    cli_abort("Cannot find attribute usage data.", call = call)
   }
   x <- x[startVars:(length(x) - 1)]
 

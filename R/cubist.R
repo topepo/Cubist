@@ -176,28 +176,18 @@ cubist.default <- function(
   ...
 ) {
   funcCall <- match.call(expand.dots = TRUE)
-  if (!is.numeric(y)) {
-    stop("cubist models require a numeric outcome", call. = FALSE)
-  }
 
-  if (committees < 1 | committees > 100) {
-    stop("number of committees must be between 1 and 100", call. = FALSE)
-  }
+  check_numeric(y)
+  check_number_whole(committees, min = 1, max = 100)
+  check_data_frame_or_matrix(x)
+  check_numeric(weights, allow_null = TRUE)
 
-  if (!is.data.frame(x) & !is.matrix(x)) {
-    stop("x must be a matrix or data frame", call. = FALSE)
-  }
   if (inherits(x, "tbl_df")) {
     x <- as.data.frame(x)
   }
 
-  check_date_columns(x)
-
-  if (!is.null(weights) && !is.numeric(weights)) {
-    stop("case weights must be numeric", call. = FALSE)
-  }
-
   check_names(x)
+  check_date_columns(x)
   namesString <-
     makeNamesFile(x, y, w = weights, label = control$label, comments = TRUE)
   dataString <- makeDataFile(x, y, weights)
@@ -363,22 +353,10 @@ cubistControl <- function(
   label = "outcome",
   strip_time_stamps = TRUE
 ) {
-  if (!is.na(rules) & (rules < 1 | rules > 1000000)) {
-    stop("number of rules must be between 1 and 1000000", call. = FALSE)
-  }
-  if (extrapolation < 0 | extrapolation > 100) {
-    stop("percent extrapolation must between 0 and 100", call. = FALSE)
-  }
-  if (sample < 0.0 | sample > 99.9) {
-    stop("sampling percentage must be between 0.0 and 99.9", call. = FALSE)
-  }
-  if (
-    !is.logical(strip_time_stamps) ||
-      length(strip_time_stamps) != 1 ||
-      is.na(strip_time_stamps)
-  ) {
-    stop("strip_time_stamps must be a single logical value", call. = FALSE)
-  }
+  check_number_whole(rules, min = 1, max = 1000000, allow_na = TRUE)
+  check_number_decimal(extrapolation, min = 0, max = 100)
+  check_number_decimal(sample, min = 0, max = 99.9)
+  check_bool(strip_time_stamps)
 
   list(
     unbiased = unbiased,
@@ -634,10 +612,9 @@ truncateText <- function(x) {
   paste(out, collapse = "\n")
 }
 
-check_names <- function(x) {
-  cn <- colnames(x)
-  if (is.null(cn)) {
-    stop("The data should have column names")
+check_names <- function(x, arg = caller_arg(x), call = caller_env()) {
+  if (is.null(colnames(x))) {
+    cli_abort("{.arg {arg}} must have column names.", call = call)
   }
   invisible(NULL)
 }
@@ -655,25 +632,68 @@ strip_time_stamps <- function(x) {
   x
 }
 
-check_date_columns <- function(x) {
+check_date_columns <- function(x, arg = caller_arg(x), call = caller_env()) {
   date_classes <- c("Date", "POSIXt", "POSIXct", "POSIXlt")
   is_date <- vapply(x, function(col) inherits(col, date_classes), logical(1))
 
   if (any(is_date)) {
     date_cols <- colnames(x)[is_date]
-    stop(
-      "Column",
-      if (length(date_cols) > 1) "s" else "",
-      " ",
-      paste0("'", date_cols, "'", collapse = ", "),
-      " ",
-      if (length(date_cols) > 1) "have" else "has",
-      " a date/datetime class. ",
-      "Cubist does not support date or datetime predictors. ",
-      "Consider converting to numeric (e.g., days since a reference date) ",
-      "or extracting components (year, month, day) as separate predictors.",
-      call. = FALSE
+    cli_abort(
+      c(
+        "Column{?s} {.field {date_cols}} {?has/have} a date/datetime class.",
+        "x" = "Cubist does not support date or datetime predictors.",
+        "i" = "Consider converting to numeric (e.g., days since a reference
+               date) or extracting components (year, month, day) as separate
+               predictors."
+      ),
+      call = call
     )
   }
   invisible(NULL)
+}
+
+check_numeric <- function(
+  x,
+  ...,
+  allow_null = FALSE,
+  arg = caller_arg(x),
+  call = caller_env()
+) {
+  if (!missing(x)) {
+    if (is.null(x)) {
+      if (allow_null) {
+        return(invisible(NULL))
+      }
+    } else if (is.numeric(x)) {
+      return(invisible(NULL))
+    }
+  }
+
+  stop_input_type(
+    x,
+    "a numeric vector",
+    ...,
+    allow_null = allow_null,
+    arg = arg,
+    call = call
+  )
+}
+
+check_data_frame_or_matrix <- function(
+  x,
+  ...,
+  arg = caller_arg(x),
+  call = caller_env()
+) {
+  if (!missing(x) && (is.data.frame(x) || is.matrix(x))) {
+    return(invisible(NULL))
+  }
+
+  stop_input_type(
+    x,
+    c("a data frame", "a matrix"),
+    ...,
+    arg = arg,
+    call = call
+  )
 }
