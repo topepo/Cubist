@@ -22,8 +22,10 @@ new_mixed_data <- function(n = 100, seed = 123) {
   data.frame(
     num = rnorm(n),
     fac = factor(sample(letters[1:3], n, replace = TRUE)),
-    ord = ordered(sample(c("low", "med", "high"), n, replace = TRUE),
-                  levels = c("low", "med", "high")),
+    ord = ordered(
+      sample(c("low", "med", "high"), n, replace = TRUE),
+      levels = c("low", "med", "high")
+    ),
     chr = sample(c("a", "b"), n, replace = TRUE),
     stringsAsFactors = FALSE
   )

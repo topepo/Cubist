@@ -14,5 +14,4 @@ test_that("basic execution", {
   expect_equal(length(pred_xy), nrow(dat_tr))
 
   expect_snapshot(cubistControl())
-
 })

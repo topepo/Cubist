@@ -109,7 +109,10 @@ test_that("predict.cubist works with factor predictors", {
 
   x_test <- data.frame(
     num = rnorm(20),
-    fac = factor(sample(letters[1:3], 20, replace = TRUE), levels = letters[1:3])
+    fac = factor(
+      sample(letters[1:3], 20, replace = TRUE),
+      levels = letters[1:3]
+    )
   )
 
   mod <- cubist(x_train, y_train)

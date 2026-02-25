@@ -3,10 +3,8 @@
 # --- cubist.default() tests ---
 
 test_that("cubist works with basic numeric predictors", {
-
   data <- new_cubist_data(n = 100, p = 5)
   mod <- cubist(data$x, data$y)
-
 
   expect_s3_class(mod, "cubist")
   expect_equal(mod$dims, c(100L, 5L))
@@ -44,8 +42,10 @@ test_that("cubist works with ordered factor predictors", {
   set.seed(123)
   x <- data.frame(
     num = rnorm(50),
-    ord = ordered(sample(c("low", "med", "high"), 50, replace = TRUE),
-                  levels = c("low", "med", "high"))
+    ord = ordered(
+      sample(c("low", "med", "high"), 50, replace = TRUE),
+      levels = c("low", "med", "high")
+    )
   )
   y <- as.numeric(x$ord) + x$num + rnorm(50, sd = 0.1)
 
@@ -178,9 +178,9 @@ test_that("cubistControl returns correct default values", {
 
   expect_false(ctrl$unbiased)
   expect_equal(ctrl$rules, 100)
-  expect_equal(ctrl$extrapolation, 1)  # 100/100
+  expect_equal(ctrl$extrapolation, 1) # 100/100
 
-expect_equal(ctrl$sample, 0)
+  expect_equal(ctrl$sample, 0)
   expect_equal(ctrl$label, "outcome")
   expect_true(ctrl$seed >= 0 && ctrl$seed < 4096)
 })

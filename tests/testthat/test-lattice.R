@@ -50,7 +50,11 @@ test_that("dotplot.cubist filters by committee", {
   library(mlbench)
   data(BostonHousing)
 
-  mod <- cubist(x = BostonHousing[, -14], y = BostonHousing$medv, committees = 5)
+  mod <- cubist(
+    x = BostonHousing[, -14],
+    y = BostonHousing$medv,
+    committees = 5
+  )
 
   if (!is.null(mod$splits)) {
     plt <- dotplot(mod, what = "splits", committee = 2)
@@ -78,7 +82,11 @@ test_that("dotplot.cubist creates labels for single committee", {
   library(mlbench)
   data(BostonHousing)
 
-  mod <- cubist(x = BostonHousing[, -14], y = BostonHousing$medv, committees = 1)
+  mod <- cubist(
+    x = BostonHousing[, -14],
+    y = BostonHousing$medv,
+    committees = 1
+  )
 
   if (!is.null(mod$splits)) {
     plt <- dotplot(mod, what = "splits")
@@ -92,7 +100,11 @@ test_that("dotplot.cubist creates labels for multiple committees", {
   library(mlbench)
   data(BostonHousing)
 
-  mod <- cubist(x = BostonHousing[, -14], y = BostonHousing$medv, committees = 3)
+  mod <- cubist(
+    x = BostonHousing[, -14],
+    y = BostonHousing$medv,
+    committees = 3
+  )
 
   if (!is.null(mod$splits)) {
     plt <- dotplot(mod, what = "splits")
@@ -106,7 +118,11 @@ test_that("dotplot.cubist coefs works with multiple committees", {
   library(mlbench)
   data(BostonHousing)
 
-  mod <- cubist(x = BostonHousing[, -14], y = BostonHousing$medv, committees = 3)
+  mod <- cubist(
+    x = BostonHousing[, -14],
+    y = BostonHousing$medv,
+    committees = 3
+  )
 
   plt <- dotplot(mod, what = "coefs")
   expect_s3_class(plt, "trellis")
@@ -140,7 +156,10 @@ test_that("dotplot passes additional arguments to lattice", {
   mod <- cubist(x = BostonHousing[, -14], y = BostonHousing$medv)
 
   # Pass scales argument
-  plt <- dotplot(mod, what = "coefs",
-                 scales = list(x = list(relation = "free")))
+  plt <- dotplot(
+    mod,
+    what = "coefs",
+    scales = list(x = list(relation = "free"))
+  )
   expect_s3_class(plt, "trellis")
 })

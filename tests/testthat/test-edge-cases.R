@@ -27,8 +27,7 @@ test_that("cubist handles matrix input", {
 
 test_that("cubist handles missing values in predictors", {
   set.seed(123)
-  x <- data.frame(x1 = c(rnorm(45), NA, rnorm(4)),
-                  x2 = c(NA, rnorm(49)))
+  x <- data.frame(x1 = c(rnorm(45), NA, rnorm(4)), x2 = c(NA, rnorm(49)))
   y <- rnorm(50)
 
   mod <- cubist(x, y)
@@ -149,7 +148,11 @@ test_that("cubist handles plus and minus in variable names", {
 test_that("cubist handles factor levels with spaces", {
   set.seed(123)
   x <- data.frame(
-    fac = factor(sample(c("level one", "level two", "level three"), 100, replace = TRUE)),
+    fac = factor(sample(
+      c("level one", "level two", "level three"),
+      100,
+      replace = TRUE
+    )),
     num = rnorm(100)
   )
   y <- as.numeric(x$fac) + x$num + rnorm(100, sd = 0.5)

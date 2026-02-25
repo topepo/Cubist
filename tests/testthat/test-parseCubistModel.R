@@ -47,7 +47,7 @@ test_that("getSplits returns NULL when no splits", {
   # Create a very simple model that might have no splits
   set.seed(42)
   x <- data.frame(x1 = rnorm(20))
-  y <- x$x1 + rnorm(20, sd = 0.01)  # Almost perfect linear relationship
+  y <- x$x1 + rnorm(20, sd = 0.01) # Almost perfect linear relationship
 
   mod <- cubist(x, y)
   splits <- Cubist:::getSplits(mod$model)
@@ -128,7 +128,7 @@ test_that("type3 handles single value", {
   result <- Cubist:::type3(input)
 
   expect_type(result, "list")
-  expect_false(grepl("\\{", result$val))  # No braces for single value
+  expect_false(grepl("\\{", result$val)) # No braces for single value
 })
 
 test_that("type3 formats multiple values with braces", {
@@ -136,7 +136,7 @@ test_that("type3 formats multiple values with braces", {
 
   result <- Cubist:::type3(input)
 
-  expect_true(grepl("\\{", result$val))  # Has braces for multiple values
+  expect_true(grepl("\\{", result$val)) # Has braces for multiple values
 })
 
 # --- eqn() tests ---

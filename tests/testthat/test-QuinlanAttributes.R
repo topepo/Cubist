@@ -26,7 +26,7 @@ test_that("QuinlanAttributes.character returns comma-separated unique values", {
   expect_true(grepl("cat", result))
   expect_true(grepl("dog", result))
   expect_true(grepl("bird", result))
-  expect_true(grepl("\\.$", result))  # ends with period
+  expect_true(grepl("\\.$", result)) # ends with period
 })
 
 test_that("QuinlanAttributes.ordered returns [ordered] prefix", {
@@ -114,7 +114,7 @@ test_that("makeDataFile creates comma-separated output", {
 
   expect_type(result, "character")
   expect_true(grepl(",", result))
-  expect_true(grepl("\n", result))  # Multiple lines
+  expect_true(grepl("\n", result)) # Multiple lines
 })
 
 test_that("makeDataFile converts tibble", {
@@ -145,7 +145,7 @@ test_that("makeDataFile replaces NULL y with NA", {
   result <- Cubist:::makeDataFile(df, y = NULL)
 
   expect_type(result, "character")
-  expect_true(grepl("\\?", result))  # NA becomes "?"
+  expect_true(grepl("\\?", result)) # NA becomes "?"
 })
 
 test_that("makeDataFile appends weights column", {
