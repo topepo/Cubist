@@ -242,7 +242,10 @@ void PopCondition(void)
 void PruneRule(Condition Cond[], float InitCoeffs)
 /*   ---------  */
 {
-  int d, id, Bestid, Remaining = NCond;
+  int d, id, Remaining = NCond;
+#ifdef VerbOpt
+  int Bestid;
+#endif
   ContValue Val, LoVal = 1E38, HiVal = -1E38, Wt;
   double Sum = 0, SumWt = 0;
   CaseNo i;
@@ -293,7 +296,9 @@ void PruneRule(Condition Cond[], float InitCoeffs)
 
             if (PredErr[d] >= 0 && (!Bestd || PredErr[d] > PredErr[Bestd])) {
           Bestd = d;
+#ifdef VerbOpt
           Bestid = id;
+#endif
         }
       }
     }
@@ -341,9 +346,9 @@ void PruneRule(Condition Cond[], float InitCoeffs)
     for (i = Fail0; i >= 0;) {
       if (NFail[i]) /* not covered by initial rule */
       {
-        PredSum(Case[i]) +=
-            (CPredVal[i] < LoVal ? LoVal
-                                 : CPredVal[i] > HiVal ? HiVal : CPredVal[i]);
+        PredSum(Case[i]) += (CPredVal[i] < LoVal   ? LoVal
+                             : CPredVal[i] > HiVal ? HiVal
+                                                   : CPredVal[i]);
         PredCount(Case[i])++;
       }
 
@@ -524,9 +529,9 @@ void RemoveBias(CRule R, int Coeffs)
     Wt = CWeight(Case[i]);
     TotWt += Wt;
 
-    New = (CPredVal[i] < R->LoLim
-               ? R->LoLim
-               : CPredVal[i] > R->HiLim ? R->HiLim : CPredVal[i]);
+    New = (CPredVal[i] < R->LoLim   ? R->LoLim
+           : CPredVal[i] > R->HiLim ? R->HiLim
+                                    : CPredVal[i]);
 
     TotErr += Wt * (New - Class(Case[i]));
 
@@ -552,9 +557,9 @@ void RemoveBias(CRule R, int Coeffs)
 
       /*  Compute new range-limited value  */
 
-      New = (CPredVal[i] < R->LoLim
-                 ? R->LoLim
-                 : CPredVal[i] > R->HiLim ? R->HiLim : CPredVal[i]);
+      New = (CPredVal[i] < R->LoLim   ? R->LoLim
+             : CPredVal[i] > R->HiLim ? R->HiLim
+                                      : CPredVal[i]);
 
       TotErr += Wt * (New - Class(Case[i]));
       TotAbsErr += Wt * fabs(New - Class(Case[i]));

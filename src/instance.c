@@ -234,7 +234,10 @@ void CheckForms(RRuleSet *Cttee)
 {
   CaseNo i;
   int t;
-  double RSErr = 0, IErr = 0, RSIErr = 0, AvRules = 0;
+  double RSErr = 0, RSIErr = 0, AvRules = 0;
+#ifdef VerbOpt
+  double IErr = 0;
+#endif
   ContValue RealClass;
 
   NotifyStage(ASSESSCOMPOSITE);
@@ -246,7 +249,9 @@ void CheckForms(RRuleSet *Cttee)
     RealClass = Class(Case[i]);
 
     FindNearestNeighbors(Case[i]);
+#ifdef VerbOpt
     IErr += fabs(RealClass - AverageNeighbors(Nil, Case[i]));
+#endif
 
     RSErr += fabs(RealClass - PredictValue(Cttee, Case[i]));
 
@@ -711,12 +716,10 @@ void ScanIndex(DataRec Case, Index Node, float MinD)
         continue;
 
       GNNEnv.AttMinD[Att] =
-          (v == 1 || First == 1
-               ? 1.0
-               : Continuous(Att)
-                     ? CVDiff(Case, Node->Cut, Att)
-                     : Ordered(Att) ? abs(v - First) / (MaxAttVal[Att] - 1)
-                                    : 2.0 / (MaxAttVal[Att] - 1));
+          (v == 1 || First == 1 ? 1.0
+           : Continuous(Att)    ? CVDiff(Case, Node->Cut, Att)
+           : Ordered(Att)       ? abs(v - First) / (MaxAttVal[Att] - 1)
+                                : 2.0 / (MaxAttVal[Att] - 1));
       NewMinD = MinD + GNNEnv.AttMinD[Att] - SaveAttMinD;
 
       if (NewMinD <= *GNNEnv.WorstBest + 0.5 / DPREC) {

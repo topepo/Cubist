@@ -190,7 +190,6 @@ int strbuf_vprintf(STRBUF *sb, const char *format, va_list ap) {
   unsigned int nlen;
   int size = sb->len - sb->i; /* Remaining space left */
   va_list ap2;
-  va_list ap3;
 
   /* Copy ap to ap2 in case we need to call vsnprintf a second time */
   va_copy(ap2, ap);
@@ -210,6 +209,7 @@ int strbuf_vprintf(STRBUF *sb, const char *format, va_list ap) {
        * Copy ap2 to ap3, and then call _vscprintf to determine
        * the amount of memory that we need.
        */
+      va_list ap3;
       va_copy(ap3, ap2);
       s = _vscprintf(format, ap3);
       va_end(ap3);
