@@ -174,9 +174,19 @@ the RuleQuest website.</p>
 that are not applicable. Currently, this packages does not make
 such a distinction (all values are treated as missing). This
 will produce slightly different results.</p>
+<p>Factor levels with special characters (colons, semicolons, commas) will cause
+the underlying C code to error. These are documented limitations
+of the Cubist C code.</p>
+<p>Known unsupported special characters in factor/character levels:</p><ul><li><p>Colons (<code>:</code>)</p></li>
+<li><p>Semicolons (<code>;</code>)</p></li>
+<li><p>Commas (<code>,</code>)</p></li>
+<li><p>Pipes (<code>|</code>)</p></li>
+</ul><p>Users should avoid these characters in categorical predictor values.</p>
 <p>To tune the cubist model over the number of committees and
 neighbors, the <code><a href="https://rdrr.io/pkg/caret/man/train.html" class="external-link">caret::train()</a></code> function in the <code>caret</code> package
-has bindings to find appropriate settings of these parameters.</p>
+has bindings to find appropriate settings of these parameters.
+The <span class="pkg">rules</span> and <span class="pkg">tune</span> packages can be used to tune this model using
+the tidymodels framework.</p>
     </div>
     <div id="references">
     <h2>References</h2>
@@ -253,7 +263,7 @@ modifications be Steve Weston</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer></div>

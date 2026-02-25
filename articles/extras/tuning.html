@@ -169,10 +169,10 @@ using <code>ggplot(caret_grid)</code>.</p>
 <span><span class="co">## <span style="color: #00BBBB;">ℹ</span> See also `vignette("ggplot2-in-packages")` for more information.</span></span>
 <span><span class="co">## <span style="color: #00BBBB;">ℹ</span> The deprecated feature was likely used in the <span style="color: #0000BB;">caret</span> package.</span></span>
 <span><span class="co">##   Please report the issue at <span style="color: #0000BB; font-style: italic;">&lt;https://github.com/topepo/caret/issues&gt;</span>.</span></span>
-<span><span class="co">## <span style="color: #555555;">This warning is displayed once every 8 hours.</span></span></span>
+<span><span class="co">## <span style="color: #555555;">This warning is displayed once per session.</span></span></span>
 <span><span class="co">## <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was</span></span></span>
 <span><span class="co">## <span style="color: #555555;">generated.</span></span></span></code></pre>
-<p><img src="tuning_files/figure-html/plot-tune-1.png" width="700"></p>
+<p><img src="tuning_files/figure-html/plot-tune-1.png" class="r-plt" alt="" width="700"></p>
 <p>The <code>caret_grid</code> object selected and fit the final model
 (with the best results). The test data are predicted using:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -191,13 +191,13 @@ core packages:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidymodels.tidymodels.org" class="external-link">tidymodels</a></span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## ── <span style="font-weight: bold;">Attaching packages</span> ────────────────────────────────────── tidymodels 1.4.1 ──</span></span></code></pre>
-<pre><code><span><span class="co">## <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">broom       </span> 1.0.10     <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">rsample     </span> 1.3.1 </span></span>
+<pre><code><span><span class="co">## <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">broom       </span> 1.0.12     <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">rsample     </span> 1.3.2 </span></span>
 <span><span class="co">## <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">dials       </span> 1.4.2      <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">tailor      </span> 0.1.0 </span></span>
-<span><span class="co">## <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">dplyr       </span> 1.1.4      <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">tidyr       </span> 1.3.1 </span></span>
-<span><span class="co">## <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">infer       </span> 1.0.9      <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">tune        </span> 2.0.1 </span></span>
+<span><span class="co">## <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">dplyr       </span> 1.2.0      <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">tidyr       </span> 1.3.2 </span></span>
+<span><span class="co">## <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">infer       </span> 1.1.0      <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">tune        </span> 2.0.1 </span></span>
 <span><span class="co">## <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">modeldata   </span> 1.5.1      <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">workflows   </span> 1.3.0 </span></span>
-<span><span class="co">## <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">parsnip     </span> 1.3.3      <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">workflowsets</span> 1.1.1 </span></span>
-<span><span class="co">## <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">purrr       </span> 1.1.0      <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">yardstick   </span> 1.3.2 </span></span>
+<span><span class="co">## <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">parsnip     </span> 1.4.1      <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">workflowsets</span> 1.1.1 </span></span>
+<span><span class="co">## <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">purrr       </span> 1.2.1      <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">yardstick   </span> 1.3.2 </span></span>
 <span><span class="co">## <span style="color: #00BB00;">✔</span> <span style="color: #0000BB;">recipes     </span> 1.3.1</span></span></code></pre>
 <pre><code><span><span class="co">## ── <span style="font-weight: bold;">Conflicts</span> ───────────────────────────────────────── tidymodels_conflicts() ──</span></span>
 <span><span class="co">## <span style="color: #BB0000;">✖</span> <span style="color: #0000BB;">rsample</span>::<span style="color: #00BB00;">calibration()</span>   masks <span style="color: #0000BB;">caret</span>::calibration()</span></span>
@@ -307,7 +307,7 @@ frame:</p>
 <span><span class="co">## <span style="color: #949494;"># ℹ 22 more rows</span></span></span></code></pre>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="va">tm_grid</span>, metric <span class="op">=</span> <span class="st">"rmse"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tuning_files/figure-html/tm-autoplot-1.png" width="700"></p>
+<p><img src="tuning_files/figure-html/tm-autoplot-1.png" class="r-plt" alt="" width="700"></p>
 <p>We can select a parameter combination as the final configuration and
 update our model specification object with those values.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
@@ -383,7 +383,7 @@ update our model specification object with those values.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>
