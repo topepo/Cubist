@@ -17,11 +17,9 @@ int MAIN(int Argc, char *Argv[])
 /*  ----------  */
 {
   RRuleSet *CubistModel;
-  double pval;
   FILE *F;
   int o;
   extern String OptArg, Option;
-  CaseNo i;
 
   /*  Process options  */
 
@@ -83,17 +81,6 @@ int MAIN(int Argc, char *Argv[])
   GetData(F, binfalse, bintrue); /* GetData closes the file */
 
   FindPredictedValues(CubistModel, 0, MaxCase);
-
-  /* commented out to pass R CMD check: "Compiled code should
-         [...]  write to stdout/stderr instead of to the console" */
-  /* printf("predicted values:\n"); */
-
-  ForEach(i, 0, MaxCase) {
-    pval = PredVal(Case[i]);
-    /* commented out to pass R CMD check: "Compiled code should
-       [...]  write to stdout/stderr instead of to the console" */
-    /* printf("%f\n", pval); */
-  }
 
   /* Free memory allocated by GetCommittee */
   FreeCttee(CubistModel);

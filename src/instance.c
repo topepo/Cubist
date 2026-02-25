@@ -234,7 +234,10 @@ void CheckForms(RRuleSet *Cttee)
 {
   CaseNo i;
   int t;
-  double RSErr = 0, IErr = 0, RSIErr = 0, AvRules = 0;
+  double RSErr = 0, RSIErr = 0, AvRules = 0;
+#ifdef VerbOpt
+  double IErr = 0;
+#endif
   ContValue RealClass;
 
   NotifyStage(ASSESSCOMPOSITE);
@@ -246,7 +249,9 @@ void CheckForms(RRuleSet *Cttee)
     RealClass = Class(Case[i]);
 
     FindNearestNeighbors(Case[i]);
+#ifdef VerbOpt
     IErr += fabs(RealClass - AverageNeighbors(Nil, Case[i]));
+#endif
 
     RSErr += fabs(RealClass - PredictValue(Cttee, Case[i]));
 

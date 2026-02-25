@@ -242,7 +242,10 @@ void PopCondition(void)
 void PruneRule(Condition Cond[], float InitCoeffs)
 /*   ---------  */
 {
-  int d, id, Bestid, Remaining = NCond;
+  int d, id, Remaining = NCond;
+#ifdef VerbOpt
+  int Bestid;
+#endif
   ContValue Val, LoVal = 1E38, HiVal = -1E38, Wt;
   double Sum = 0, SumWt = 0;
   CaseNo i;
@@ -293,7 +296,9 @@ void PruneRule(Condition Cond[], float InitCoeffs)
 
             if (PredErr[d] >= 0 && (!Bestd || PredErr[d] > PredErr[Bestd])) {
           Bestd = d;
+#ifdef VerbOpt
           Bestid = id;
+#endif
         }
       }
     }
