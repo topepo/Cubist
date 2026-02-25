@@ -403,3 +403,56 @@ test_that("check_names errors without column names", {
     "The data should have column names"
   )
 })
+
+# --- check_date_columns() tests ---
+
+test_that("check_date_columns passes with no date columns", {
+  df <- data.frame(a = 1:3, b = 4:6)
+  expect_silent(Cubist:::check_date_columns(df))
+})
+
+test_that("check_date_columns errors with Date column", {
+  df <- data.frame(
+    date_col = as.Date("2020-01-01") + 1:3,
+    num = 1:3
+  )
+
+  expect_error(
+    Cubist:::check_date_columns(df),
+    "date/datetime class"
+  )
+})
+
+test_that("check_date_columns errors with POSIXct column", {
+  df <- data.frame(
+    datetime_col = as.POSIXct("2020-01-01") + 1:3,
+    num = 1:3
+  )
+
+  expect_error(
+    Cubist:::check_date_columns(df),
+    "date/datetime class"
+  )
+})
+
+test_that("check_date_columns errors with POSIXlt column", {
+  df <- data.frame(num = 1:3)
+  df$datetime_col <- as.POSIXlt("2020-01-01") + 1:3
+
+  expect_error(
+    Cubist:::check_date_columns(df),
+    "date/datetime class"
+  )
+})
+
+test_that("check_date_columns error message is helpful", {
+  df <- data.frame(
+    my_date = as.Date("2020-01-01") + 1:3,
+    num = 1:3
+  )
+
+  expect_error(
+    Cubist:::check_date_columns(df),
+    "Consider converting to numeric"
+  )
+})

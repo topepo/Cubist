@@ -176,6 +176,8 @@ cubist.default <- function(
     x <- as.data.frame(x)
   }
 
+  check_date_columns(x)
+
   if (!is.null(weights) && !is.numeric(weights)) {
     stop("case weights must be numeric", call. = FALSE)
   }
@@ -603,6 +605,29 @@ check_names <- function(x) {
   cn <- colnames(x)
   if (is.null(cn)) {
     stop("The data should have column names")
+  }
+  invisible(NULL)
+}
+
+check_date_columns <- function(x) {
+  date_classes <- c("Date", "POSIXt", "POSIXct", "POSIXlt")
+  is_date <- vapply(x, function(col) inherits(col, date_classes), logical(1))
+
+  if (any(is_date)) {
+    date_cols <- colnames(x)[is_date]
+    stop(
+      "Column",
+      if (length(date_cols) > 1) "s" else "",
+      " ",
+      paste0("'", date_cols, "'", collapse = ", "),
+      " ",
+      if (length(date_cols) > 1) "have" else "has",
+      " a date/datetime class. ",
+      "Cubist does not support date or datetime predictors. ",
+      "Consider converting to numeric (e.g., days since a reference date) ",
+      "or extracting components (year, month, day) as separate predictors.",
+      call. = FALSE
+    )
   }
   invisible(NULL)
 }

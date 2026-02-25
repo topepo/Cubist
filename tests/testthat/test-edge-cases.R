@@ -216,7 +216,11 @@ test_that("cubist handles percent sign in variable names", {
   names(x) <- c("var%one", "var%two")
   y <- x$`var%one` + x$`var%two` + rnorm(50, sd = 0.1)
 
-  mod <- cubist(x, y)
+  # Percent signs in names cause coercion warnings but model still works
+ expect_warning(
+    mod <- cubist(x, y),
+    "NAs introduced by coercion"
+  )
   expect_s3_class(mod, "cubist")
 })
 
@@ -357,8 +361,48 @@ test_that("predict handles newdata with different row count", {
   expect_length(preds, 25)
 })
 
-# NOTE: Test for Date predictor removed - causes C code to exit()
-# Known limitation: Date predictors are not supported
+test_that("cubist errors with Date predictor", {
+  set.seed(123)
+  x <- data.frame(
+    date_var = as.Date("2020-01-01") + 1:50,
+    num = rnorm(50)
+  )
+  y <- rnorm(50)
+
+  expect_error(
+    cubist(x, y),
+    "date/datetime class"
+  )
+})
+
+test_that("cubist errors with POSIXct predictor", {
+  set.seed(123)
+  x <- data.frame(
+    datetime_var = as.POSIXct("2020-01-01 12:00:00") + (1:50) * 3600,
+    num = rnorm(50)
+  )
+  y <- rnorm(50)
+
+  expect_error(
+    cubist(x, y),
+    "date/datetime class"
+  )
+})
+
+test_that("cubist error message lists all date columns", {
+  set.seed(123)
+  x <- data.frame(
+    date1 = as.Date("2020-01-01") + 1:50,
+    date2 = as.Date("2021-01-01") + 1:50,
+    num = rnorm(50)
+  )
+  y <- rnorm(50)
+
+  expect_error(
+    cubist(x, y),
+    "'date1', 'date2'"
+  )
+})
 
 test_that("cubist model can be saved and loaded", {
   data <- new_cubist_data(n = 100, p = 5)
