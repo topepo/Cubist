@@ -716,12 +716,10 @@ void ScanIndex(DataRec Case, Index Node, float MinD)
         continue;
 
       GNNEnv.AttMinD[Att] =
-          (v == 1 || First == 1
-               ? 1.0
-               : Continuous(Att)
-                     ? CVDiff(Case, Node->Cut, Att)
-                     : Ordered(Att) ? abs(v - First) / (MaxAttVal[Att] - 1)
-                                    : 2.0 / (MaxAttVal[Att] - 1));
+          (v == 1 || First == 1 ? 1.0
+           : Continuous(Att)    ? CVDiff(Case, Node->Cut, Att)
+           : Ordered(Att)       ? abs(v - First) / (MaxAttVal[Att] - 1)
+                                : 2.0 / (MaxAttVal[Att] - 1));
       NewMinD = MinD + GNNEnv.AttMinD[Att] - SaveAttMinD;
 
       if (NewMinD <= *GNNEnv.WorstBest + 0.5 / DPREC) {
