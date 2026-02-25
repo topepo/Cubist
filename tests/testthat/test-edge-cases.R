@@ -216,11 +216,11 @@ test_that("cubist handles percent sign in variable names", {
   names(x) <- c("var%one", "var%two")
   y <- x$`var%one` + x$`var%two` + rnorm(50, sd = 0.1)
 
-  # Percent signs in names cause coercion warnings but model still works
- expect_warning(
-    mod <- cubist(x, y),
-    "NAs introduced by coercion"
-  )
+  # Percent signs in names cause coercion warnings (one per column)
+  # but the model still works correctly
+  expect_snapshot({
+    mod <- cubist(x, y)
+  })
   expect_s3_class(mod, "cubist")
 })
 
@@ -369,9 +369,9 @@ test_that("cubist errors with Date predictor", {
   )
   y <- rnorm(50)
 
-  expect_error(
+  expect_snapshot(
     cubist(x, y),
-    "date/datetime class"
+    error = TRUE
   )
 })
 
@@ -383,9 +383,9 @@ test_that("cubist errors with POSIXct predictor", {
   )
   y <- rnorm(50)
 
-  expect_error(
+  expect_snapshot(
     cubist(x, y),
-    "date/datetime class"
+    error = TRUE
   )
 })
 
@@ -398,9 +398,9 @@ test_that("cubist error message lists all date columns", {
   )
   y <- rnorm(50)
 
-  expect_error(
+  expect_snapshot(
     cubist(x, y),
-    "'date1', 'date2'"
+    error = TRUE
   )
 })
 

@@ -141,40 +141,39 @@ test_that("cubist stores usage statistics for unused variables", {
 test_that("cubist errors with non-numeric outcome", {
   data <- new_cubist_data(n = 50, p = 3)
 
-  expect_error(
+  expect_snapshot(
     cubist(data$x, factor(data$y > 0)),
-    "cubist models require a numeric outcome"
+    error = TRUE
   )
 })
-
 test_that("cubist errors with committees outside 1-100", {
   data <- new_cubist_data(n = 50, p = 3)
 
-  expect_error(
+  expect_snapshot(
     cubist(data$x, data$y, committees = 0),
-    "number of committees must be between 1 and 100"
+    error = TRUE
   )
-  expect_error(
+  expect_snapshot(
     cubist(data$x, data$y, committees = 101),
-    "number of committees must be between 1 and 100"
+    error = TRUE
   )
 })
 
 test_that("cubist errors when x is not data.frame or matrix", {
   data <- new_cubist_data(n = 50, p = 3)
 
-  expect_error(
+  expect_snapshot(
     cubist(as.list(data$x), data$y),
-    "x must be a matrix or data frame"
+    error = TRUE
   )
 })
 
 test_that("cubist errors with non-numeric weights", {
   data <- new_cubist_data(n = 50, p = 3)
 
-  expect_error(
+  expect_snapshot(
     cubist(data$x, data$y, weights = rep("a", 50)),
-    "case weights must be numeric"
+    error = TRUE
   )
 })
 
@@ -183,9 +182,9 @@ test_that("cubist errors with missing column names", {
   x_no_names <- as.matrix(data$x)
   colnames(x_no_names) <- NULL
 
-  expect_error(
+  expect_snapshot(
     cubist(x_no_names, data$y),
-    "The data should have column names"
+    error = TRUE
   )
 })
 
@@ -237,36 +236,18 @@ test_that("cubistControl accepts custom label", {
 })
 
 test_that("cubistControl errors with rules outside 1-1000000", {
-  expect_error(
-    cubistControl(rules = 0),
-    "number of rules must be between 1 and 1000000"
-  )
-  expect_error(
-    cubistControl(rules = 1000001),
-    "number of rules must be between 1 and 1000000"
-  )
+  expect_snapshot(cubistControl(rules = 0), error = TRUE)
+  expect_snapshot(cubistControl(rules = 1000001), error = TRUE)
 })
 
 test_that("cubistControl errors with extrapolation outside 0-100", {
-  expect_error(
-    cubistControl(extrapolation = -1),
-    "percent extrapolation must between 0 and 100"
-  )
-  expect_error(
-    cubistControl(extrapolation = 101),
-    "percent extrapolation must between 0 and 100"
-  )
+  expect_snapshot(cubistControl(extrapolation = -1), error = TRUE)
+  expect_snapshot(cubistControl(extrapolation = 101), error = TRUE)
 })
 
 test_that("cubistControl errors with sample outside 0-99.9", {
-  expect_error(
-    cubistControl(sample = -1),
-    "sampling percentage must be between 0.0 and 99.9"
-  )
-  expect_error(
-    cubistControl(sample = 100),
-    "sampling percentage must be between 0.0 and 99.9"
-  )
+  expect_snapshot(cubistControl(sample = -1), error = TRUE)
+  expect_snapshot(cubistControl(sample = 100), error = TRUE)
 })
 
 # --- print.cubist() tests ---
@@ -340,7 +321,8 @@ test_that("print.summary.cubist returns invisible(x)", {
   mod <- cubist(data$x, data$y)
   summ <- summary(mod)
 
-  result <- withVisible(print(summ))
+  # Capture output to prevent printing during tests
+  capture.output(result <- withVisible(print(summ)))
   expect_false(result$visible)
   expect_s3_class(result$value, "summary.cubist")
 })
@@ -398,10 +380,7 @@ test_that("check_names errors without column names", {
   mat <- matrix(1:6, ncol = 2)
   colnames(mat) <- NULL
 
-  expect_error(
-    Cubist:::check_names(mat),
-    "The data should have column names"
-  )
+  expect_snapshot(Cubist:::check_names(mat), error = TRUE)
 })
 
 # --- check_date_columns() tests ---
@@ -417,10 +396,7 @@ test_that("check_date_columns errors with Date column", {
     num = 1:3
   )
 
-  expect_error(
-    Cubist:::check_date_columns(df),
-    "date/datetime class"
-  )
+  expect_snapshot(Cubist:::check_date_columns(df), error = TRUE)
 })
 
 test_that("check_date_columns errors with POSIXct column", {
@@ -429,30 +405,12 @@ test_that("check_date_columns errors with POSIXct column", {
     num = 1:3
   )
 
-  expect_error(
-    Cubist:::check_date_columns(df),
-    "date/datetime class"
-  )
+  expect_snapshot(Cubist:::check_date_columns(df), error = TRUE)
 })
 
 test_that("check_date_columns errors with POSIXlt column", {
   df <- data.frame(num = 1:3)
   df$datetime_col <- as.POSIXlt("2020-01-01") + 1:3
 
-  expect_error(
-    Cubist:::check_date_columns(df),
-    "date/datetime class"
-  )
-})
-
-test_that("check_date_columns error message is helpful", {
-  df <- data.frame(
-    my_date = as.Date("2020-01-01") + 1:3,
-    num = 1:3
-  )
-
-  expect_error(
-    Cubist:::check_date_columns(df),
-    "Consider converting to numeric"
-  )
+  expect_snapshot(Cubist:::check_date_columns(df), error = TRUE)
 })

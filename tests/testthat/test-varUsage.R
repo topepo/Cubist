@@ -93,8 +93,8 @@ test_that("cubist model stores usage information", {
 
 test_that("varUsage error with invalid output", {
   # Create invalid output string that doesn't have attribute usage
-  expect_error(
+  expect_snapshot(
     Cubist:::varUsage("No attribute usage here"),
-    "cannot find attribute usage data"
+    error = TRUE
   )
 })

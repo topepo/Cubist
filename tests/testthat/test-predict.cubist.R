@@ -62,9 +62,9 @@ test_that("predict.cubist errors when newdata is NULL", {
   data <- new_cubist_data(n = 50, p = 3)
   mod <- cubist(data$x, data$y)
 
-  expect_error(
+  expect_snapshot(
     predict(mod, newdata = NULL),
-    "newdata must be non-null"
+    error = TRUE
   )
 })
 
@@ -72,9 +72,9 @@ test_that("predict.cubist errors with multiple neighbors values", {
   data <- new_cubist_data(n = 50, p = 3)
   mod <- cubist(data$x, data$y)
 
-  expect_error(
+  expect_snapshot(
     predict(mod, data$x, neighbors = c(1, 2)),
-    "only a single value of neighbors is allowed"
+    error = TRUE
   )
 })
 
@@ -82,9 +82,9 @@ test_that("predict.cubist errors when neighbors > 9", {
   data <- new_cubist_data(n = 50, p = 3)
   mod <- cubist(data$x, data$y)
 
-  expect_error(
+  expect_snapshot(
     predict(mod, data$x, neighbors = 10),
-    "'neighbors' must be less than 10"
+    error = TRUE
   )
 })
 

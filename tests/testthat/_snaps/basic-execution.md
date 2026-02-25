@@ -1,7 +1,7 @@
 # basic execution
 
     Code
-      print(c5_xy)
+      c5_xy
     Output
       
       Call:

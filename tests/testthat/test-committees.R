@@ -94,8 +94,8 @@ test_that("maximum 100 committees allowed", {
   expect_silent(cubist(data$x, data$y, committees = 100))
 
   # 101 should error
-  expect_error(
+  expect_snapshot(
     cubist(data$x, data$y, committees = 101),
-    "number of committees must be between 1 and 100"
+    error = TRUE
   )
 })

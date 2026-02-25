@@ -95,7 +95,11 @@ test_that("exportCubistFiles creates valid data file", {
 
   exportCubistFiles(mod, path = tmpdir, prefix = prefix)
 
-  data_content <- readLines(file.path(tmpdir, paste0(prefix, ".data")))
+  # warn = FALSE suppresses "incomplete final line" warning
+  data_content <- readLines(
+    file.path(tmpdir, paste0(prefix, ".data")),
+    warn = FALSE
+  )
 
   # Should have 50 lines (one per observation)
   expect_equal(length(data_content), 50)
@@ -137,7 +141,11 @@ test_that("exportCubistFiles data file has correct number of columns", {
 
   exportCubistFiles(mod, path = tmpdir, prefix = prefix)
 
-  data_content <- readLines(file.path(tmpdir, paste0(prefix, ".data")))
+  # warn = FALSE suppresses "incomplete final line" warning
+  data_content <- readLines(
+    file.path(tmpdir, paste0(prefix, ".data")),
+    warn = FALSE
+  )
   first_line <- data_content[1]
   n_cols <- length(strsplit(first_line, ",")[[1]])
 

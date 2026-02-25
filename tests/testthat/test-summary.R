@@ -48,9 +48,10 @@ test_that("print.summary.cubist returns invisible(x)", {
   mod <- cubist(data$x, data$y)
   summ <- summary(mod)
 
-  result <- withVisible(print(summ))
-  expect_false(result$visible)
-  expect_identical(result$value, summ)
+  # Capture output to prevent it from printing during tests
+  result <- capture.output(vis <- withVisible(print(summ)))
+  expect_false(vis$visible)
+  expect_identical(vis$value, summ)
 })
 
 test_that("summary works with multiple committees", {

@@ -105,9 +105,10 @@ test_that("type2 parses continuous split correctly", {
 test_that("type2 handles missing value rules", {
   input <- 'type="2" att="x1" val=NA'
 
-  result <- Cubist:::type2(input)
+  # NA coercion warning is expected when parsing NA values
+  expect_snapshot_warning(result <- Cubist:::type2(input))
 
-  expect_true(is.na(result$val) || result$val == "NA")
+  expect_true(is.na(result$val))
 })
 
 # --- type3() tests ---

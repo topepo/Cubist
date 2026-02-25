@@ -38,9 +38,9 @@ test_that("dotplot.cubist errors when no splits in model", {
   mod_no_splits <- mod
   mod_no_splits$splits <- NULL
 
-  expect_error(
+  expect_snapshot(
     dotplot(mod_no_splits),
-    "No splits were used in this model"
+    error = TRUE
   )
 })
 
@@ -140,9 +140,9 @@ test_that("dotplot.cubist errors with only categorical splits", {
 
   # If all splits are type3, dotplot for splits should error
   if (!is.null(mod$splits) && all(mod$splits$type == "type3")) {
-    expect_error(
+    expect_snapshot(
       dotplot(mod, what = "splits"),
-      "No splits of continuous predictors were made"
+      error = TRUE
     )
   }
 })
