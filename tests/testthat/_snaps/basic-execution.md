@@ -1,7 +1,7 @@
 # basic execution
 
     Code
-      print(c5_xy)
+      c5_xy
     Output
       
       Call:
@@ -35,7 +35,7 @@
       [1] "outcome"
       
       $seed
-      [1] 3907
+      [1] 3289
       
       $strip_time_stamps
       [1] TRUE

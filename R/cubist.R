@@ -1,5 +1,5 @@
 #' @export
-cubist <-  function(x, ...) UseMethod("cubist")
+cubist <- function(x, ...) UseMethod("cubist")
 
 # About the Cubist C code and our approach here...
 
@@ -38,7 +38,6 @@ cubist <-  function(x, ...) UseMethod("cubist")
 #  to pass in the numeric and categorical predictors separately
 #  unless we want to get really fancy.
 
-
 #' Fit a Cubist model
 #'
 #' This function fits the rule-based model described in Quinlan
@@ -71,9 +70,24 @@ cubist <-  function(x, ...) UseMethod("cubist")
 #'  such a distinction (all values are treated as missing). This
 #'  will produce slightly different results.
 #'
+#' Factor levels with special characters (colons, semicolons, commas) will cause
+#' the underlying C code to error. These are documented limitations
+#' of the Cubist C code.
+#'
+#' Known unsupported special characters in factor/character levels:
+#' - Colons (`:`)
+#' - Semicolons (`;`)
+#' - Commas (`,`)
+#' - Pipes (`|`)
+#'
+#'  Users should avoid these characters in categorical predictor values.
+#'
+#'
 #' To tune the cubist model over the number of committees and
 #'  neighbors, the [caret::train()] function in the `caret` package
 #'  has bindings to find appropriate settings of these parameters.
+#'  The \pkg{rules} and \pkg{tune} packages can be used to tune this model using
+#'  the tidymodels framework.
 #'
 #' @aliases cubist cubist.default
 #' @param x a matrix or data frame of predictor variables. Missing
@@ -153,52 +167,62 @@ cubist <-  function(x, ...) UseMethod("cubist")
 #'
 #' @export
 #' @method cubist default
-cubist.default <- function(x, y,
-                           committees = 1,
-                           control = cubistControl(),
-                           weights = NULL,
-                           ...) {
+cubist.default <- function(
+  x,
+  y,
+  committees = 1,
+  control = cubistControl(),
+  weights = NULL,
+  ...
+) {
   funcCall <- match.call(expand.dots = TRUE)
-  if (!is.numeric(y))
+  if (!is.numeric(y)) {
     stop("cubist models require a numeric outcome", call. = FALSE)
+  }
 
-  if (committees < 1 | committees > 100)
+  if (committees < 1 | committees > 100) {
     stop("number of committees must be between 1 and 100", call. = FALSE)
+  }
 
-  if (!is.data.frame(x) & !is.matrix(x))
+  if (!is.data.frame(x) & !is.matrix(x)) {
     stop("x must be a matrix or data frame", call. = FALSE)
+  }
   if (inherits(x, "tbl_df")) {
     x <- as.data.frame(x)
   }
 
-  if (!is.null(weights) && !is.numeric(weights))
+  check_date_columns(x)
+
+  if (!is.null(weights) && !is.numeric(weights)) {
     stop("case weights must be numeric", call. = FALSE)
+  }
 
   check_names(x)
   namesString <-
     makeNamesFile(x, y, w = weights, label = control$label, comments = TRUE)
   dataString <- makeDataFile(x, y, weights)
 
-  Z <- .C("cubist",
-          as.character(namesString),
-          as.character(dataString),
-          as.logical(control$unbiased),     # -u : generate unbiased rules
-          "yes",                            # -i and -a : how to combine these?
-          as.integer(1),                    # -n : set the number of nearest neighbors (1 to 9)
-          as.integer(committees),           # -c : construct a committee model
-          as.double(control$sample),        # -S : use a sample of x% for training
-                                            #      and a disjoint sample for testing
-          as.integer(control$seed),         # -I : set the sampling seed value
-          as.integer(control$rules),        # -r: set the maximum number of rules
-          as.double(control$extrapolation), # -e : set the extrapolation limit
-          model = character(1),             # pass back .model file as a string
-          output = character(1),            # pass back cubist output as a string
-          PACKAGE = "Cubist"
-          )
+  Z <- .C(
+    "cubist",
+    as.character(namesString),
+    as.character(dataString),
+    as.logical(control$unbiased), # -u : generate unbiased rules
+    "yes", # -i and -a : how to combine these?
+    as.integer(1), # -n : set the number of nearest neighbors (1 to 9)
+    as.integer(committees), # -c : construct a committee model
+    as.double(control$sample), # -S : use a sample of x% for training
+    #      and a disjoint sample for testing
+    as.integer(control$seed), # -I : set the sampling seed value
+    as.integer(control$rules), # -r: set the maximum number of rules
+    as.double(control$extrapolation), # -e : set the extrapolation limit
+    model = character(1), # pass back .model file as a string
+    output = character(1), # pass back cubist output as a string
+    PACKAGE = "Cubist"
+  )
 
   # Check for converted names
   has_reserved <- grep("\n__Sample", namesString, fixed = TRUE)
-  if(length(has_reserved) > 0) {
+  if (length(has_reserved) > 0) {
     Z$output <- gsub("__Sample", "sample", Z$output)
     Z$model <- gsub("__Sample", "sample", Z$model)
   }
@@ -212,9 +236,11 @@ cubist.default <- function(x, y,
   if (!is.null(splits)) {
     splits$percentile <- NA
     for (i in 1:nrow(splits)) {
-      if (!is.na(splits$value[i]))
+      if (!is.na(splits$value[i])) {
         splits$percentile[i] <-
-          sum(x[, as.character(splits$variable[i])] <= splits$value[i]) / nrow(x)
+          sum(x[, as.character(splits$variable[i])] <= splits$value[i]) /
+          nrow(x)
+      }
     }
   }
 
@@ -223,9 +249,11 @@ cubist.default <- function(x, y,
   tmp <- strsplit(tmp, "\"")[[1]]
   maxd <- tmp[grep("maxd", tmp) + 1]
   Z$model <-
-    gsub(paste("insts=\"1\" nn=\"1\" ", "maxd=\"", maxd, "\"", sep = ""),
-         "insts=\"0\"",
-         Z$model)
+    gsub(
+      paste("insts=\"1\" nn=\"1\" ", "maxd=\"", maxd, "\"", sep = ""),
+      "insts=\"0\"",
+      Z$model
+    )
   maxd <- as.double(maxd)
 
   usage <- varUsage(Z$output)
@@ -234,47 +262,50 @@ cubist.default <- function(x, y,
     xNames <- colnames(x)
 
     uNames <-
-      if (!is.null(usage))
+      if (!is.null(usage)) {
         as.character(usage$Variable)
-    else
-      ""
+      } else {
+        ""
+      }
     if (!all(xNames %in% uNames)) {
-      usage2 <- data.frame(Conditions = 0,
-                           Model = 0,
-                           Variable = xNames[!(xNames %in% uNames)])
+      usage2 <- data.frame(
+        Conditions = 0,
+        Model = 0,
+        Variable = xNames[!(xNames %in% uNames)]
+      )
       usage <- rbind(usage, usage2)
     }
   }
 
-
-  out <- list(data = dataString,
-              names = namesString,
-              caseWeights = !is.null(weights),
-              model = Z$model,
-              output = Z$output,
-              control = control,
-              committees = committees,
-              maxd = maxd,
-              dims = dim(x),
-              splits = splits,
-              usage = usage,
-              call = funcCall)
+  out <- list(
+    data = dataString,
+    names = namesString,
+    caseWeights = !is.null(weights),
+    model = Z$model,
+    output = Z$output,
+    control = control,
+    committees = committees,
+    maxd = maxd,
+    dims = dim(x),
+    splits = splits,
+    usage = usage,
+    call = funcCall
+  )
   coefs <- coef.cubist(out, varNames = colnames(x))
   out$coefficients <- coefs
 
   tmp <-
-    apply(coefs[,-(1:3), drop = FALSE], 2,
-          function(x) any(!is.na(x)))
+    apply(coefs[, -(1:3), drop = FALSE], 2, function(x) any(!is.na(x)))
   tmp <- names(tmp)[tmp]
-  xInfo <- list(all = colnames(x),
-                used = union(as.character(splits$variable), tmp))
+  xInfo <- list(
+    all = colnames(x),
+    used = union(as.character(splits$variable), tmp)
+  )
 
   out$vars <- xInfo
   class(out) <- "cubist"
   out
 }
-
-
 
 
 #' Various parameters that control aspects of the Cubist fit.
@@ -332,14 +363,18 @@ cubistControl <- function(
   label = "outcome",
   strip_time_stamps = TRUE
 ) {
-  if (!is.na(rules) & (rules < 1 | rules > 1000000))
+  if (!is.na(rules) & (rules < 1 | rules > 1000000)) {
     stop("number of rules must be between 1 and 1000000", call. = FALSE)
-  if (extrapolation < 0 | extrapolation > 100)
+  }
+  if (extrapolation < 0 | extrapolation > 100) {
     stop("percent extrapolation must between 0 and 100", call. = FALSE)
-  if (sample < 0.0 | sample > 99.9)
+  }
+  if (sample < 0.0 | sample > 99.9) {
     stop("sampling percentage must be between 0.0 and 99.9", call. = FALSE)
-  if (!is.logical(strip_time_stamps) || length(strip_time_stamps) != 1 || is.na(strip_time_stamps))
-    stop("strip_time_stamps must be a single logical value", call. = FALSE)
+  }
+  if (!is.logical(strip_time_stamps) || length(strip_time_stamps) != 1 || is.na(strip_time_stamps)) {
+      stop("strip_time_stamps must be a single logical value", call. = FALSE)
+  }
 
   list(
     unbiased = unbiased,
@@ -355,46 +390,62 @@ cubistControl <- function(
 
 #' @export
 print.cubist <- function(x, ...) {
-  cat("\nCall:\n", truncateText(deparse(x$call, width.cutoff = 500)), "\n\n", sep = "")
-
+  cat(
+    "\nCall:\n",
+    truncateText(deparse(x$call, width.cutoff = 500)),
+    "\n\n",
+    sep = ""
+  )
 
   nRules <- countRules(x$model)
 
-  cat("Number of samples:",
-      x$dims[1],
-      "\nNumber of predictors:",
-      x$dims[2],
-      "\n\n")
+  cat(
+    "Number of samples:",
+    x$dims[1],
+    "\nNumber of predictors:",
+    x$dims[2],
+    "\n\n"
+  )
 
-  if(x$caseWeights)
+  if (x$caseWeights) {
     cat("Case weights used\n\n")
+  }
 
   cat("Number of committees:", length(nRules), "\n")
   if (length(nRules) > 1) {
     ruleText <-
-      if (length(nRules) > 20)
+      if (length(nRules) > 20) {
         paste(paste(nRules[1:20], collapse = ", "), "...")
-    else
-      paste(nRules, collapse = ", ")
+      } else {
+        paste(nRules, collapse = ", ")
+      }
     cat("Number of rules per committee:", ruleText, "\n")
-  } else
+  } else {
     cat("Number of rules:", nRules, "\n")
+  }
   otherOptions <- NULL
-  if (x$control$unbiased)
+  if (x$control$unbiased) {
     otherOptions <- c(otherOptions, "unbiased rules")
-  if (x$control$extrapolation < 1)
-    otherOptions <- c(otherOptions,
-                      paste(
-                        round(x$control$extrapolation * 100, 1),
-                        "% extrapolation",
-                        sep = ""
-                      ))
-  if (x$control$sample > 0)
-    otherOptions <- c(otherOptions,
-                      paste(round(100 * x$control$sample, 1),
-                            "% sub-sampling", sep = ""))
-  if (!is.null(otherOptions))
+  }
+  if (x$control$extrapolation < 1) {
+    otherOptions <- c(
+      otherOptions,
+      paste(
+        round(x$control$extrapolation * 100, 1),
+        "% extrapolation",
+        sep = ""
+      )
+    )
+  }
+  if (x$control$sample > 0) {
+    otherOptions <- c(
+      otherOptions,
+      paste(round(100 * x$control$sample, 1), "% sub-sampling", sep = "")
+    )
+  }
+  if (!is.null(otherOptions)) {
     cat("Other options:", paste(otherOptions, collapse = ", "))
+  }
   cat("\n")
 }
 
@@ -548,11 +599,13 @@ print.summary.cubist <- function(x, ...) {
 }
 
 truncateText <- function(x) {
-  if (length(x) > 1)
+  if (length(x) > 1) {
     x <- paste(x, collapse = "")
+  }
   w <- options("width")$width
-  if (nchar(x) <= w)
+  if (nchar(x) <= w) {
     return(x)
+  }
 
   cont <- TRUE
   out <- x
@@ -562,15 +615,16 @@ truncateText <- function(x) {
 
     spaceIndex <- gregexpr("[[:space:]]", tmp2)[[1]]
     stopIndex <- spaceIndex[length(spaceIndex) - 1] - 1
-    tmp <- c(substring(tmp2, 1, stopIndex),
-             substring(tmp, stopIndex + 1))
+    tmp <- c(substring(tmp2, 1, stopIndex), substring(tmp, stopIndex + 1))
     out <-
-      if (length(out) == 1)
+      if (length(out) == 1) {
         tmp
-    else
-      c(out[1:(length(x) - 1)], tmp)
-    if (all(nchar(out) <= w))
+      } else {
+        c(out[1:(length(x) - 1)], tmp)
+      }
+    if (all(nchar(out) <= w)) {
       cont <- FALSE
+    }
   }
 
   paste(out, collapse = "\n")
@@ -591,4 +645,27 @@ strip_time_stamps <- function(x) {
   # Remove timing line: "Time: ... secs"
   x <- gsub("\n*Time:.*secs\n*$", "", x)
   x
+}
+
+check_date_columns <- function(x) {
+  date_classes <- c("Date", "POSIXt", "POSIXct", "POSIXlt")
+  is_date <- vapply(x, function(col) inherits(col, date_classes), logical(1))
+
+  if (any(is_date)) {
+    date_cols <- colnames(x)[is_date]
+    stop(
+      "Column",
+      if (length(date_cols) > 1) "s" else "",
+      " ",
+      paste0("'", date_cols, "'", collapse = ", "),
+      " ",
+      if (length(date_cols) > 1) "have" else "has",
+      " a date/datetime class. ",
+      "Cubist does not support date or datetime predictors. ",
+      "Consider converting to numeric (e.g., days since a reference date) ",
+      "or extracting components (year, month, day) as separate predictors.",
+      call. = FALSE
+    )
+  }
+  invisible(NULL)
 }

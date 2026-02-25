@@ -11,3 +11,6 @@
 ^\.github$
 ^doc$
 ^Meta$
+^.claude$
+^[.]?air[.]toml$
+^\.vscode$

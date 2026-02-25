@@ -1,7 +1,6 @@
 ## TODO:
 ##     fix call printing
 
-
 ## What's in a name? (http://www.rulequest.com/cubist-unix.html)
 ##
 ## Names, labels, and discrete values are represented by arbitrary
@@ -42,19 +41,16 @@
 #' @param comments A logical; should info about the call be
 #'  printed in the string?
 makeNamesFile <-
-  function(x,
-           y,
-           w = NULL,
-           label = "outcome",
-           comments = TRUE) {
+  function(x, y, w = NULL, label = "outcome", comments = TRUE) {
     if (!is.data.frame(x) || inherits(x, "tbl_df")) {
       x <- as.data.frame(x)
     }
     # See issue #5
     check_names(x)
     has_sample <- grep("^sample", colnames(x))
-    if(length(has_sample))
+    if (length(has_sample)) {
       colnames(x) <- gsub("^sample", "__Sample", colnames(x))
+    }
 
     if (comments) {
       call <- match.call()
@@ -65,43 +61,42 @@ makeNamesFile <-
         "| on ",
         format(Sys.time(), "%a %b %d %H:%M:%S %Y")
       )
-    } else
+    } else {
       out <- ""
+    }
 
     if (is.numeric(y)) {
       outcomeInfo <- ": continuous."
     } else {
       lvls <- escapes(levels(y))
-      prefix <- if (is.ordered(y))
+      prefix <- if (is.ordered(y)) {
         "[ordered] "
-      else
+      } else {
         ""
-      outcomeInfo <- paste(": ",
-                           prefix,
-                           paste(lvls, collapse = ","),
-                           ".", sep = "")
+      }
+      outcomeInfo <- paste(
+        ": ",
+        prefix,
+        paste(lvls, collapse = ","),
+        ".",
+        sep = ""
+      )
     }
 
-    out <- paste(out,
-                 "\n", label, ".\n",
-                 "\n", label, outcomeInfo,
-                 sep = "")
+    out <- paste(out, "\n", label, ".\n", "\n", label, outcomeInfo, sep = "")
     varData <- QuinlanAttributes(x)
-    if (!is.null(w))
+    if (!is.null(w)) {
       varData <- c(varData, "case weight" = "continuous.")
+    }
     varData <-
-      paste(escapes(names(varData)),
-            ": ",
-            varData,
-            sep = "",
-            collapse = "\n")
+      paste(escapes(names(varData)), ": ", varData, sep = "", collapse = "\n")
     out <- paste(out, "\n", varData, "\n", sep = "")
     out
   }
 
 escapes <- function(x, chars = c(":", ";", "|")) {
-  for (i in chars)
+  for (i in chars) {
     x <- gsub(i, paste("\\", i, sep = ""), x, fixed = TRUE)
+  }
   gsub("([^[:alnum:]^[:space:]])", "\\\\\\1", x, useBytes = TRUE)
 }
-

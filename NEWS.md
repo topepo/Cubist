@@ -1,5 +1,8 @@
 # Cubist (development version)
 
+* An error is thrown if a data or data/time column is passed. 
+
+
 # Cubist 0.5.1
 
 * Big fixed related to how rule values are formatted. (#59)
