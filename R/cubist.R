@@ -70,9 +70,24 @@ cubist <- function(x, ...) UseMethod("cubist")
 #'  such a distinction (all values are treated as missing). This
 #'  will produce slightly different results.
 #'
+#' Factor levels with special characters (colons, semicolons, commas) will cause
+#' the underlying C code to error. These are documented limitations
+#' of the Cubist C code.
+#'
+#' Known unsupported special characters in factor/character levels:
+#' - Colons (`:`)
+#' - Semicolons (`;`)
+#' - Commas (`,`)
+#' - Pipes (`|`)
+#'
+#'  Users should avoid these characters in categorical predictor values.
+#'
+#'
 #' To tune the cubist model over the number of committees and
 #'  neighbors, the [caret::train()] function in the `caret` package
 #'  has bindings to find appropriate settings of these parameters.
+#'  The \pkg{rules} and \pkg{tune} packages can be used to tune this model using
+#'  the tidymodels framework.
 #'
 #' @aliases cubist cubist.default
 #' @param x a matrix or data frame of predictor variables. Missing
