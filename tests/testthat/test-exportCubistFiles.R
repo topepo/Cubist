@@ -144,3 +144,38 @@ test_that("exportCubistFiles data file has correct number of columns", {
   # Should have p + 1 columns (y + predictors)
   expect_equal(n_cols, 6)
 })
+
+test_that("exportCubistFiles creates readable model file", {
+  skip_if_not_installed("mlbench")
+
+  library(mlbench)
+  data(BostonHousing)
+
+  mod <- cubist(x = BostonHousing[, -14], y = BostonHousing$medv)
+
+  tmpdir <- withr::local_tempdir(pattern = "cubist_test")
+  prefix <- "boston_model"
+
+  exportCubistFiles(mod, path = tmpdir, prefix = prefix)
+
+  model_content <- readLines(file.path(tmpdir, paste0(prefix, ".model")))
+  model_text <- paste(model_content, collapse = "\n")
+
+  # Model should contain rule information
+  expect_true(grepl("rules", model_text))
+})
+
+test_that("exportCubistFiles with neighbors = 9", {
+  data <- new_cubist_data(n = 50, p = 3)
+  mod <- cubist(data$x, data$y)
+
+  tmpdir <- withr::local_tempdir(pattern = "cubist_test")
+  prefix <- "neighbors9_test"
+
+  exportCubistFiles(mod, neighbors = 9, path = tmpdir, prefix = prefix)
+
+  model_content <- readLines(file.path(tmpdir, paste0(prefix, ".model")))
+  model_text <- paste(model_content, collapse = "\n")
+
+  expect_true(grepl("nn=\"9\"", model_text))
+})

@@ -163,3 +163,66 @@ test_that("dotplot passes additional arguments to lattice", {
   )
   expect_s3_class(plt, "trellis")
 })
+
+test_that("dotplot panel function renders correctly for splits", {
+  skip_if_not_installed("mlbench")
+
+  library(mlbench)
+  data(BostonHousing)
+
+  mod <- cubist(x = BostonHousing[, -14], y = BostonHousing$medv)
+
+  if (!is.null(mod$splits) && any(mod$splits$type == "type2")) {
+    plt <- dotplot(mod, what = "splits")
+
+    # Actually render the plot to exercise panel function
+    pdf(tempfile())
+    print(plt)
+    dev.off()
+
+    expect_s3_class(plt, "trellis")
+  }
+})
+
+test_that("dotplot panel function renders with both upper and lower splits", {
+  skip_if_not_installed("mlbench")
+
+  library(mlbench)
+  data(BostonHousing)
+
+  # Use multiple committees to get more rules/splits
+  mod <- cubist(
+    x = BostonHousing[, -14],
+    y = BostonHousing$medv,
+    committees = 5
+  )
+
+  if (!is.null(mod$splits) && any(mod$splits$type == "type2")) {
+    plt <- dotplot(mod, what = "splits")
+
+    # Render the plot
+    pdf(tempfile())
+    print(plt)
+    dev.off()
+
+    expect_s3_class(plt, "trellis")
+  }
+})
+
+test_that("dotplot coefs panel renders correctly", {
+  skip_if_not_installed("mlbench")
+
+  library(mlbench)
+  data(BostonHousing)
+
+  mod <- cubist(x = BostonHousing[, -14], y = BostonHousing$medv)
+
+  plt <- dotplot(mod, what = "coefs")
+
+  # Actually render the plot
+  pdf(tempfile())
+  print(plt)
+  dev.off()
+
+  expect_s3_class(plt, "trellis")
+})

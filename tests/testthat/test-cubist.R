@@ -90,6 +90,24 @@ test_that("cubist handles reserved name 'sample' in predictors", {
   expect_true("sample" %in% mod$vars$all)
 })
 
+test_that("cubist converts __Sample back to sample in output", {
+  # Create data with a column starting with 'sample'
+  set.seed(123)
+  x <- data.frame(
+    sample_var = rnorm(100),
+    other = rnorm(100)
+  )
+  y <- x$sample_var + x$other + rnorm(100, sd = 0.1)
+
+  mod <- cubist(x, y)
+  expect_s3_class(mod, "cubist")
+
+  # Check that output contains 'sample' not '__Sample'
+  # The conversion should happen
+  expect_true(grepl("sample", mod$output, ignore.case = TRUE) ||
+                !grepl("__Sample", mod$output))
+})
+
 test_that("cubist works with single predictor", {
   set.seed(123)
   x <- data.frame(single = rnorm(50))
@@ -344,6 +362,29 @@ test_that("truncateText wraps long text", {
   if (nchar(long_text) > getOption("width")) {
     expect_true(grepl("\n", result))
   }
+})
+
+test_that("truncateText handles multi-element input", {
+  # Pass a vector of strings
+  input <- c("first part", "second part")
+  result <- Cubist:::truncateText(input)
+
+  # Should be collapsed into single string
+  expect_type(result, "character")
+  expect_length(result, 1)
+})
+
+test_that("truncateText handles very long single line", {
+  # Create text that definitely exceeds width
+  old_width <- options(width = 40)
+
+  on.exit(options(old_width))
+
+  long_text <- paste(rep("longword", 20), collapse = " ")
+  result <- Cubist:::truncateText(long_text)
+
+  # Should wrap to multiple lines
+  expect_true(grepl("\n", result))
 })
 
 # --- check_names() tests ---

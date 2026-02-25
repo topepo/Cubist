@@ -427,6 +427,132 @@ test_that("cubist with control options all enabled", {
   expect_s3_class(mod, "cubist")
 })
 
+# --- Tests for various cubist control options ---
+
+test_that("cubist with unbiased = TRUE produces valid model", {
+  skip_if_not_installed("mlbench")
+
+  library(mlbench)
+  data(BostonHousing)
+
+  mod <- cubist(
+    x = BostonHousing[, -14],
+    y = BostonHousing$medv,
+    control = cubistControl(unbiased = TRUE)
+  )
+
+  expect_s3_class(mod, "cubist")
+  preds <- predict(mod, BostonHousing[1:10, -14])
+  expect_length(preds, 10)
+})
+
+test_that("cubist with sample option subsamples data", {
+  skip_if_not_installed("mlbench")
+
+  library(mlbench)
+  data(BostonHousing)
+
+  mod <- cubist(
+    x = BostonHousing[, -14],
+    y = BostonHousing$medv,
+    control = cubistControl(sample = 80, seed = 42)
+  )
+
+  expect_s3_class(mod, "cubist")
+  preds <- predict(mod, BostonHousing[1:10, -14])
+  expect_length(preds, 10)
+})
+
+test_that("cubist with extrapolation limit constrains predictions", {
+  skip_if_not_installed("mlbench")
+
+  library(mlbench)
+  data(BostonHousing)
+
+  mod <- cubist(
+    x = BostonHousing[, -14],
+    y = BostonHousing$medv,
+    control = cubistControl(extrapolation = 50)
+  )
+
+  expect_s3_class(mod, "cubist")
+  preds <- predict(mod, BostonHousing[1:10, -14])
+  expect_length(preds, 10)
+})
+
+test_that("cubist with max rules limit", {
+  skip_if_not_installed("mlbench")
+
+  library(mlbench)
+  data(BostonHousing)
+
+  mod <- cubist(
+    x = BostonHousing[, -14],
+    y = BostonHousing$medv,
+    control = cubistControl(rules = 5)
+  )
+
+  expect_s3_class(mod, "cubist")
+  # Model should have at most 5 rules
+  n_rules <- sum(Cubist:::countRules(mod$model))
+  expect_true(n_rules <= 5)
+})
+
+test_that("cubist with default rules value", {
+  data <- new_cubist_data(n = 100, p = 5)
+
+  # Use default rules (100)
+  mod <- cubist(data$x, data$y, control = cubistControl(rules = 100))
+  expect_s3_class(mod, "cubist")
+})
+
+test_that("cubist with many committees and all options", {
+  skip_if_not_installed("mlbench")
+
+  library(mlbench)
+  data(BostonHousing)
+
+  mod <- cubist(
+    x = BostonHousing[, -14],
+    y = BostonHousing$medv,
+    committees = 10,
+    control = cubistControl(
+      unbiased = TRUE,
+      rules = 20,
+      extrapolation = 80,
+      sample = 70,
+      seed = 123
+    )
+  )
+
+  expect_s3_class(mod, "cubist")
+  expect_equal(mod$committees, 10)
+
+  preds <- predict(mod, BostonHousing[1:10, -14])
+  expect_length(preds, 10)
+})
+
+test_that("cubist predict with neighbors uses instance correction", {
+  skip_if_not_installed("mlbench")
+
+  library(mlbench)
+  data(BostonHousing)
+
+  mod <- cubist(x = BostonHousing[, -14], y = BostonHousing$medv)
+
+  # Predictions without and with neighbors should differ
+  preds0 <- predict(mod, BostonHousing[1:10, -14], neighbors = 0)
+  preds5 <- predict(mod, BostonHousing[1:10, -14], neighbors = 5)
+  preds9 <- predict(mod, BostonHousing[1:10, -14], neighbors = 9)
+
+  expect_length(preds0, 10)
+  expect_length(preds5, 10)
+  expect_length(preds9, 10)
+
+  # Predictions should be different (unless exactly the same, which is unlikely)
+  expect_false(all(preds0 == preds5) && all(preds5 == preds9))
+})
+
 test_that("coefficient extraction works for complex models", {
   data <- new_cubist_data(n = 200, p = 10)
   mod <- cubist(data$x, data$y, committees = 5)

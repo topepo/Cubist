@@ -235,3 +235,85 @@ test_that("cubist object contains coefficients", {
   expect_true("coefficients" %in% names(mod))
   expect_s3_class(mod$coefficients, "data.frame")
 })
+
+test_that("getSplits handles model with many splits", {
+  skip_if_not_installed("mlbench")
+
+  library(mlbench)
+  data(BostonHousing)
+
+  mod <- cubist(
+    x = BostonHousing[, -14],
+    y = BostonHousing$medv,
+    committees = 5
+  )
+
+  splits <- mod$splits
+  if (!is.null(splits)) {
+    expect_s3_class(splits, "data.frame")
+    expect_true(nrow(splits) > 0)
+    expect_true("percentile" %in% names(splits))
+  }
+})
+
+test_that("type2 handles various split formats", {
+  # Test with result >
+  input1 <- 'type="2" att="x1" cut="0.5" result=">"'
+  result1 <- Cubist:::type2(input1)
+  expect_equal(result1$rslt, ">")
+
+  # Test with result <=
+  input2 <- 'type="2" att="x1" cut="0.5" result="<="'
+  result2 <- Cubist:::type2(input2)
+  expect_equal(result2$rslt, "<=")
+})
+
+test_that("eqn handles intercept-only model", {
+  # Simple model with just intercept
+  input <- 'coeff="5.0"'
+  result <- Cubist:::eqn(input, text = FALSE)
+
+  expect_type(result, "list")
+  expect_true("(Intercept)" %in% names(result[[1]]))
+})
+
+test_that("eqn handles multiple equations", {
+  input <- c(
+    'coeff="1.0" att="x1" coeff="2.0"',
+    'coeff="3.0" att="x2" coeff="4.0"'
+  )
+
+  result <- Cubist:::eqn(input, text = FALSE)
+  expect_length(result, 2)
+})
+
+test_that("parser handles complex input", {
+  input <- 'key1="value1" key2="value2" key3="value3"'
+  result <- Cubist:::parser(input)
+
+  expect_length(result, 3)
+  expect_true(all(c("key1", "key2", "key3") %in% names(result)))
+})
+
+test_that("coef.cubist returns all variables when varNames provided", {
+  data <- new_cubist_data(n = 100, p = 10)
+  mod <- cubist(data$x, data$y)
+
+  coefs <- coef(mod, varNames = names(data$x))
+
+  # All variable names should be present as columns
+  for (var in names(data$x)) {
+    expect_true(var %in% names(coefs))
+  }
+})
+
+# --- formatAttributes (stub function) ---
+
+test_that("formatAttributes returns input unchanged", {
+  input <- c("a", "b", "c")
+  result <- Cubist:::formatAttributes(input)
+  expect_equal(result, input)
+})
+
+# NOTE: printCubistRules is marked as "no longer used" in the source code
+# and has known issues (tries to cat a list), so it's not tested here.

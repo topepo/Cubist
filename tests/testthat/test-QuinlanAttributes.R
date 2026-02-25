@@ -212,6 +212,17 @@ test_that("makeNamesFile includes R version in comments", {
   expect_true(grepl("Generated using R", result))
 })
 
+test_that("makeNamesFile without comments", {
+  df <- data.frame(x1 = c(1, 2))
+  y <- c(3, 4)
+
+  result <- Cubist:::makeNamesFile(df, y, comments = FALSE)
+
+  expect_false(grepl("Generated using R", result))
+  # Should still have the outcome info
+  expect_true(grepl("outcome", result))
+})
+
 test_that("makeNamesFile handles numeric outcome", {
   df <- data.frame(x1 = c(1, 2))
   y <- c(3, 4)
