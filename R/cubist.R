@@ -227,6 +227,11 @@ cubist.default <- function(
     Z$model <- gsub("__Sample", "sample", Z$model)
   }
 
+  # Strip timestamps if requested
+  if (isTRUE(control$strip_time_stamps)) {
+    Z$output <- strip_time_stamps(Z$output)
+  }
+
   splits <- getSplits(Z$model)
   if (!is.null(splits)) {
     splits$percentile <- NA
@@ -322,6 +327,10 @@ cubist.default <- function(
 #'  building (not for out-of-bag type evaluation).
 #' @param seed an integer for the random seed (in the C code)
 #' @param label a label for the outcome (when printing rules)
+#' @param strip_time_stamps a logical: should timestamps and timing
+#'  information be removed from the output? Defaults to `TRUE` for
+#'  reproducible output. Set to `FALSE` to include the Cubist version
+#'  header and execution time.
 #' @return A list containing the options.
 #' @author Max Kuhn
 #' @seealso [cubist()], [predict.cubist()], [summary.cubist()],
@@ -351,7 +360,8 @@ cubistControl <- function(
   extrapolation = 100,
   sample = 0.0,
   seed = sample.int(4096, size = 1) - 1L,
-  label = "outcome"
+  label = "outcome",
+  strip_time_stamps = TRUE
 ) {
   if (!is.na(rules) & (rules < 1 | rules > 1000000)) {
     stop("number of rules must be between 1 and 1000000", call. = FALSE)
@@ -362,6 +372,13 @@ cubistControl <- function(
   if (sample < 0.0 | sample > 99.9) {
     stop("sampling percentage must be between 0.0 and 99.9", call. = FALSE)
   }
+  if (
+    !is.logical(strip_time_stamps) ||
+      length(strip_time_stamps) != 1 ||
+      is.na(strip_time_stamps)
+  ) {
+    stop("strip_time_stamps must be a single logical value", call. = FALSE)
+  }
 
   list(
     unbiased = unbiased,
@@ -369,7 +386,8 @@ cubistControl <- function(
     extrapolation = extrapolation / 100,
     sample = sample / 100,
     label = label,
-    seed = seed %% 4096L
+    seed = seed %% 4096L,
+    strip_time_stamps = strip_time_stamps
   )
 }
 
@@ -622,6 +640,19 @@ check_names <- function(x) {
     stop("The data should have column names")
   }
   invisible(NULL)
+}
+
+strip_time_stamps <- function(x) {
+  # Remove timestamp from header, keeping version info
+  # "Cubist [Release 2.07 GPL Edition]  Wed Feb 25 07:05:10 2026" -> "Cubist [Release 2.07 GPL Edition]"
+  x <- gsub(
+    "(GPL Edition\\])  [A-Z][a-z]{2} [A-Z][a-z]{2} [ 0-9]{2} [0-9:]+ [0-9]{4}",
+    "\\1",
+    x
+  )
+  # Remove timing line: "Time: ... secs"
+  x <- gsub("\n*Time:.*secs\n*$", "", x)
+  x
 }
 
 check_date_columns <- function(x) {

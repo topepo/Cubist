@@ -1,5 +1,7 @@
 # Cubist (development version)
 
+* A new control option, `strip_time_stamps`, is used to remove date/time and duration information for better reproducability. (#63) 
+
 * An error is thrown if a data or data/time column is passed. 
 
 
