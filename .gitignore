@@ -26,3 +26,4 @@ docs
 src/Makevars
 /doc/
 /Meta/
+.claude/settings.local.json
