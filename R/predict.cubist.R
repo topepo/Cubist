@@ -60,18 +60,21 @@
 #' # bad value of 'virginica' for attribute 'Species'
 #' @method predict cubist
 #' @export
-predict.cubist <- function (object, newdata = NULL, neighbors = 0, ...) {
-  if (is.null(newdata))
+predict.cubist <- function(object, newdata = NULL, neighbors = 0, ...) {
+  if (is.null(newdata)) {
     stop("newdata must be non-null", call. = FALSE)
+  }
 
   ## check order of data to make sure that it is the same
   check_names(newdata)
   newdata <- newdata[, object$vars$all, drop = FALSE]
 
-  if (length(neighbors) > 1)
+  if (length(neighbors) > 1) {
     stop("only a single value of neighbors is allowed")
-  if (neighbors > 9)
+  }
+  if (neighbors > 9) {
     stop("'neighbors' must be less than 10")
+  }
   if (neighbors > 0) {
     object$model <- gsub(
       "insts=\"0\"",
@@ -92,33 +95,37 @@ predict.cubist <- function (object, newdata = NULL, neighbors = 0, ...) {
   ## values will be ignored. `makeDataFile` puts those last in
   ## the data when `cubist.default` is run, so we will add a
   ## column of NA values at the end here
-  if (object$caseWeights)
+  if (object$caseWeights) {
     newdata$case_weight_pred <- NA
+  }
 
   ## make cases file
   caseString <- makeDataFile(x = newdata, y = NULL)
 
   ## fix breaking predictions when using sample parameter
-  caseModel <- ifelse(!(regexpr("sample", object$model) == -1),
-                      paste0(
-                        substr(object$model, 1,
-                               regexpr("sample", object$model) - 1),
-                        substr(
-                          object$model,
-                          regexpr("entries", object$model),
-                          nchar(object$model)
-                        )
-                      ),
-                      object$model)
+  caseModel <- ifelse(
+    !(regexpr("sample", object$model) == -1),
+    paste0(
+      substr(object$model, 1, regexpr("sample", object$model) - 1),
+      substr(
+        object$model,
+        regexpr("entries", object$model),
+        nchar(object$model)
+      )
+    ),
+    object$model
+  )
 
-  Z <- .C("predictions",
-          as.character(caseString),
-          as.character(object$names),
-          as.character(object$data),
-          as.character(caseModel),
-          pred = double(nrow(newdata)),
-          output = character(1),
-          PACKAGE = "Cubist")
+  Z <- .C(
+    "predictions",
+    as.character(caseString),
+    as.character(object$names),
+    as.character(object$data),
+    as.character(caseModel),
+    pred = double(nrow(newdata)),
+    output = character(1),
+    PACKAGE = "Cubist"
+  )
   Z$pred
 }
 
@@ -129,7 +136,7 @@ predict.cubist <- function (object, newdata = NULL, neighbors = 0, ...) {
 
 bad_att_index <- function(x) {
   bad_att <- grep("\n    bad value of", x, fixed = TRUE)
-  if(length(bad_att) == 0) {
+  if (length(bad_att) == 0) {
     return(integer(0))
   } else {
     x <- x[bad_att]
@@ -142,5 +149,3 @@ bad_att_index <- function(x) {
   }
   x
 }
-
-

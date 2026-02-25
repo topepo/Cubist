@@ -88,9 +88,25 @@ that are not applicable. Currently, this packages does not make
 such a distinction (all values are treated as missing). This
 will produce slightly different results.
 
+Factor levels with special characters (colons, semicolons, commas) will cause
+the underlying C code to error. These are documented limitations
+of the Cubist C code.
+
+Known unsupported special characters in factor/character levels:
+\itemize{
+\item Colons (\code{:})
+\item Semicolons (\verb{;})
+\item Commas (\verb{,})
+\item Pipes (\code{|})
+}
+
+Users should avoid these characters in categorical predictor values.
+
 To tune the cubist model over the number of committees and
 neighbors, the \code{\link[caret:train]{caret::train()}} function in the \code{caret} package
 has bindings to find appropriate settings of these parameters.
+The \pkg{rules} and \pkg{tune} packages can be used to tune this model using
+the tidymodels framework.
 }
 \examples{
 

@@ -1,7 +1,5 @@
 formatAttributes <-
-function(x)
-  {
+  function(x) {
     ## gsub special chars with escapes
     x
   }
-
