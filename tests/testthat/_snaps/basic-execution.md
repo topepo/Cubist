@@ -41,3 +41,35 @@
       [1] TRUE
       
 
+# strip_time_stamps validation
+
+    Code
+      cubistControl(strip_time_stamps = "yes")
+    Condition
+      Error:
+      ! strip_time_stamps must be a single logical value
+
+---
+
+    Code
+      cubistControl(strip_time_stamps = c(TRUE, FALSE))
+    Condition
+      Error:
+      ! strip_time_stamps must be a single logical value
+
+---
+
+    Code
+      cubistControl(strip_time_stamps = NA)
+    Condition
+      Error:
+      ! strip_time_stamps must be a single logical value
+
+---
+
+    Code
+      cubistControl(strip_time_stamps = 1)
+    Condition
+      Error:
+      ! strip_time_stamps must be a single logical value
+

@@ -45,20 +45,20 @@ test_that("strip_time_stamps removes timestamps from output", {
 })
 
 test_that("strip_time_stamps validation", {
-  expect_error(
+  expect_snapshot(
     cubistControl(strip_time_stamps = "yes"),
-    "strip_time_stamps must be a single logical value"
+    error = TRUE
   )
-  expect_error(
+  expect_snapshot(
     cubistControl(strip_time_stamps = c(TRUE, FALSE)),
-    "strip_time_stamps must be a single logical value"
+    error = TRUE
   )
-  expect_error(
+  expect_snapshot(
     cubistControl(strip_time_stamps = NA),
-    "strip_time_stamps must be a single logical value"
+    error = TRUE
   )
-  expect_error(
+  expect_snapshot(
     cubistControl(strip_time_stamps = 1),
-    "strip_time_stamps must be a single logical value"
+    error = TRUE
   )
 })
