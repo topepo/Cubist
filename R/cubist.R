@@ -359,7 +359,7 @@ cubistControl <- function(
   rules = 100,
   extrapolation = 100,
   sample = 0.0,
-  seed = sample.int(4096, size=1) - 1L,
+  seed = sample.int(4096, size = 1) - 1L,
   label = "outcome",
   strip_time_stamps = TRUE
 ) {
@@ -372,8 +372,12 @@ cubistControl <- function(
   if (sample < 0.0 | sample > 99.9) {
     stop("sampling percentage must be between 0.0 and 99.9", call. = FALSE)
   }
-  if (!is.logical(strip_time_stamps) || length(strip_time_stamps) != 1 || is.na(strip_time_stamps)) {
-      stop("strip_time_stamps must be a single logical value", call. = FALSE)
+  if (
+    !is.logical(strip_time_stamps) ||
+      length(strip_time_stamps) != 1 ||
+      is.na(strip_time_stamps)
+  ) {
+    stop("strip_time_stamps must be a single logical value", call. = FALSE)
   }
 
   list(
@@ -641,7 +645,11 @@ check_names <- function(x) {
 strip_time_stamps <- function(x) {
   # Remove timestamp from header, keeping version info
   # "Cubist [Release 2.07 GPL Edition]  Wed Feb 25 07:05:10 2026" -> "Cubist [Release 2.07 GPL Edition]"
-  x <- gsub("(GPL Edition\\])  [A-Z][a-z]{2} [A-Z][a-z]{2} [ 0-9]{2} [0-9:]+ [0-9]{4}", "\\1", x)
+  x <- gsub(
+    "(GPL Edition\\])  [A-Z][a-z]{2} [A-Z][a-z]{2} [ 0-9]{2} [0-9:]+ [0-9]{4}",
+    "\\1",
+    x
+  )
   # Remove timing line: "Time: ... secs"
   x <- gsub("\n*Time:.*secs\n*$", "", x)
   x
