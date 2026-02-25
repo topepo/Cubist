@@ -14,7 +14,7 @@ test_that("cubist works with basic numeric predictors", {
 })
 
 test_that("cubist works with factor predictors", {
-  set.seed(123)
+  set.seed(8361)
   x <- data.frame(
     num = rnorm(50),
     fac = factor(sample(letters[1:3], 50, replace = TRUE))
@@ -26,7 +26,7 @@ test_that("cubist works with factor predictors", {
 })
 
 test_that("cubist works with character predictors (converted to factors)", {
-  set.seed(123)
+  set.seed(8361)
   x <- data.frame(
     num = rnorm(50),
     chr = sample(c("cat", "dog"), 50, replace = TRUE),
@@ -39,7 +39,7 @@ test_that("cubist works with character predictors (converted to factors)", {
 })
 
 test_that("cubist works with ordered factor predictors", {
-  set.seed(123)
+  set.seed(8361)
   x <- data.frame(
     num = rnorm(50),
     ord = ordered(
@@ -92,7 +92,7 @@ test_that("cubist handles reserved name 'sample' in predictors", {
 
 test_that("cubist converts __Sample back to sample in output", {
   # Create data with a column starting with 'sample'
-  set.seed(123)
+  set.seed(8361)
   x <- data.frame(
     sample_var = rnorm(100),
     other = rnorm(100)
@@ -104,12 +104,14 @@ test_that("cubist converts __Sample back to sample in output", {
 
   # Check that output contains 'sample' not '__Sample'
   # The conversion should happen
-  expect_true(grepl("sample", mod$output, ignore.case = TRUE) ||
-                !grepl("__Sample", mod$output))
+  expect_true(
+    grepl("sample", mod$output, ignore.case = TRUE) ||
+      !grepl("__Sample", mod$output)
+  )
 })
 
 test_that("cubist works with single predictor", {
-  set.seed(123)
+  set.seed(8361)
   x <- data.frame(single = rnorm(50))
   y <- x$single * 2 + rnorm(50, sd = 0.1)
 
@@ -133,7 +135,7 @@ test_that("cubist stores usage statistics for unused variables", {
 
   # All variables should be in usage, even if not used
 
-  expect_true(all(names(data$x) %in% mod$usage$Variable))
+  expect_all_true(names(data$x) %in% mod$usage$Variable)
 })
 
 # --- Error handling tests ---
@@ -146,6 +148,7 @@ test_that("cubist errors with non-numeric outcome", {
     error = TRUE
   )
 })
+
 test_that("cubist errors with committees outside 1-100", {
   data <- new_cubist_data(n = 50, p = 3)
 

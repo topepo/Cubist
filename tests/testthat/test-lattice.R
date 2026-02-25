@@ -28,7 +28,7 @@ test_that("dotplot.cubist returns trellis object for coefs", {
 
 test_that("dotplot.cubist errors when no splits in model", {
   # Create a model that might have no splits
-  set.seed(42)
+  set.seed(7391)
   x <- data.frame(x1 = rnorm(30))
   y <- x$x1 + rnorm(30, sd = 0.01)
 
@@ -130,7 +130,7 @@ test_that("dotplot.cubist coefs works with multiple committees", {
 
 test_that("dotplot.cubist errors with only categorical splits", {
   # Create data with only categorical predictor
-  set.seed(123)
+  set.seed(6472)
   x <- data.frame(
     fac = factor(sample(letters[1:5], 100, replace = TRUE))
   )

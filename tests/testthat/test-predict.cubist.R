@@ -100,7 +100,7 @@ test_that("predict.cubist works on new data with same structure", {
 })
 
 test_that("predict.cubist works with factor predictors", {
-  set.seed(123)
+  set.seed(3194)
   x_train <- data.frame(
     num = rnorm(80),
     fac = factor(sample(letters[1:3], 80, replace = TRUE))

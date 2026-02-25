@@ -1,7 +1,7 @@
 # Tests for edge cases and error handling
 
 test_that("cubist handles small datasets", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(x1 = rnorm(10), x2 = rnorm(10))
   y <- x$x1 + x$x2 + rnorm(10, sd = 0.1)
 
@@ -26,7 +26,7 @@ test_that("cubist handles matrix input", {
 })
 
 test_that("cubist handles missing values in predictors", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(x1 = c(rnorm(45), NA, rnorm(4)), x2 = c(NA, rnorm(49)))
   y <- rnorm(50)
 
@@ -35,7 +35,7 @@ test_that("cubist handles missing values in predictors", {
 })
 
 test_that("cubist handles predictors with different scales", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(
     small = rnorm(100, mean = 0, sd = 0.001),
     medium = rnorm(100, mean = 0, sd = 1),
@@ -48,7 +48,7 @@ test_that("cubist handles predictors with different scales", {
 })
 
 test_that("cubist handles predictor names with spaces", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(rnorm(50), rnorm(50))
   names(x) <- c("var one", "var two")
   y <- x$`var one` + x$`var two` + rnorm(50, sd = 0.1)
@@ -58,7 +58,7 @@ test_that("cubist handles predictor names with spaces", {
 })
 
 test_that("cubist handles predictor names with special characters", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(rnorm(50), rnorm(50))
   names(x) <- c("var.one", "var_two")
   y <- x$var.one + x$var_two + rnorm(50, sd = 0.1)
@@ -70,7 +70,7 @@ test_that("cubist handles predictor names with special characters", {
 # --- Tests for unusual characters ---
 
 test_that("cubist handles colons in variable names", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(rnorm(50), rnorm(50))
   names(x) <- c("var:one", "var:two")
   y <- x$`var:one` + x$`var:two` + rnorm(50, sd = 0.1)
@@ -83,7 +83,7 @@ test_that("cubist handles colons in variable names", {
 })
 
 test_that("cubist handles semicolons in variable names", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(rnorm(50), rnorm(50))
   names(x) <- c("var;one", "var;two")
   y <- x$`var;one` + x$`var;two` + rnorm(50, sd = 0.1)
@@ -93,7 +93,7 @@ test_that("cubist handles semicolons in variable names", {
 })
 
 test_that("cubist handles pipes in variable names", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(rnorm(50), rnorm(50))
   names(x) <- c("var|one", "var|two")
   y <- x$`var|one` + x$`var|two` + rnorm(50, sd = 0.1)
@@ -103,7 +103,7 @@ test_that("cubist handles pipes in variable names", {
 })
 
 test_that("cubist handles parentheses in variable names", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(rnorm(50), rnorm(50))
   names(x) <- c("var(one)", "var(two)")
   y <- x$`var(one)` + x$`var(two)` + rnorm(50, sd = 0.1)
@@ -113,7 +113,7 @@ test_that("cubist handles parentheses in variable names", {
 })
 
 test_that("cubist handles brackets in variable names", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(rnorm(50), rnorm(50))
   names(x) <- c("var[one]", "var[two]")
   y <- x$`var[one]` + x$`var[two]` + rnorm(50, sd = 0.1)
@@ -123,7 +123,7 @@ test_that("cubist handles brackets in variable names", {
 })
 
 test_that("cubist handles plus and minus in variable names", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(rnorm(50), rnorm(50))
   names(x) <- c("var+one", "var-two")
   y <- x$`var+one` + x$`var-two` + rnorm(50, sd = 0.1)
@@ -146,7 +146,7 @@ test_that("cubist handles plus and minus in variable names", {
 # Users should avoid these characters in categorical predictor values.
 
 test_that("cubist handles factor levels with spaces", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(
     fac = factor(sample(
       c("level one", "level two", "level three"),
@@ -168,7 +168,7 @@ test_that("cubist handles factor levels with spaces", {
 # for the same reason - they cause C code to exit and crash the test session.
 
 test_that("cubist handles numeric-like factor levels", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(
     fac = factor(sample(c("1.5", "2.5", "3.5"), 100, replace = TRUE)),
     num = rnorm(100)
@@ -180,7 +180,7 @@ test_that("cubist handles numeric-like factor levels", {
 })
 
 test_that("cubist handles backslash in variable names", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(rnorm(50), rnorm(50))
   # Use double backslash to represent a single backslash
   names(x) <- c("var\\one", "var\\two")
@@ -191,7 +191,7 @@ test_that("cubist handles backslash in variable names", {
 })
 
 test_that("cubist handles quotes in variable names", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(rnorm(50), rnorm(50))
   names(x) <- c("var'one", 'var"two')
   y <- x[[1]] + x[[2]] + rnorm(50, sd = 0.1)
@@ -201,7 +201,7 @@ test_that("cubist handles quotes in variable names", {
 })
 
 test_that("cubist handles equals sign in variable names", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(rnorm(50), rnorm(50))
   names(x) <- c("var=one", "var=two")
   y <- x$`var=one` + x$`var=two` + rnorm(50, sd = 0.1)
@@ -211,7 +211,7 @@ test_that("cubist handles equals sign in variable names", {
 })
 
 test_that("cubist handles percent sign in variable names", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(rnorm(50), rnorm(50))
   names(x) <- c("var%one", "var%two")
   y <- x$`var%one` + x$`var%two` + rnorm(50, sd = 0.1)
@@ -225,7 +225,7 @@ test_that("cubist handles percent sign in variable names", {
 })
 
 test_that("predict works with newdata having special character column names", {
-  set.seed(123)
+  set.seed(1729)
   train_x <- data.frame(rnorm(80), rnorm(80))
   names(train_x) <- c("x:1", "x:2")
   train_y <- train_x[[1]] + train_x[[2]] + rnorm(80, sd = 0.1)
@@ -240,7 +240,7 @@ test_that("predict works with newdata having special character column names", {
 })
 
 test_that("cubist handles hash/pound sign in variable names", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(rnorm(50), rnorm(50))
   names(x) <- c("var#one", "var#two")
   y <- x$`var#one` + x$`var#two` + rnorm(50, sd = 0.1)
@@ -250,7 +250,7 @@ test_that("cubist handles hash/pound sign in variable names", {
 })
 
 test_that("cubist handles at sign in variable names", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(rnorm(50), rnorm(50))
   names(x) <- c("var@one", "var@two")
   y <- x$`var@one` + x$`var@two` + rnorm(50, sd = 0.1)
@@ -260,7 +260,7 @@ test_that("cubist handles at sign in variable names", {
 })
 
 test_that("cubist handles ampersand in variable names", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(rnorm(50), rnorm(50))
   names(x) <- c("var&one", "var&two")
   y <- x$`var&one` + x$`var&two` + rnorm(50, sd = 0.1)
@@ -279,7 +279,7 @@ test_that("predict handles subset of columns in newdata", {
 })
 
 test_that("cubist works with constant predictor", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(
     constant = rep(1, 50),
     variable = rnorm(50)
@@ -291,7 +291,7 @@ test_that("cubist works with constant predictor", {
 })
 
 test_that("cubist works with binary predictor", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(
     binary = sample(c(0, 1), 50, replace = TRUE),
     continuous = rnorm(50)
@@ -303,7 +303,7 @@ test_that("cubist works with binary predictor", {
 })
 
 test_that("cubist works with integer predictors", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(
     int1 = sample(1:10, 50, replace = TRUE),
     int2 = sample(100:200, 50, replace = TRUE)
@@ -315,7 +315,7 @@ test_that("cubist works with integer predictors", {
 })
 
 test_that("cubist handles outcome with large range", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(x1 = rnorm(50))
   y <- x$x1 * 1e6 + rnorm(50, sd = 1e3)
 
@@ -327,7 +327,7 @@ test_that("cubist handles outcome with large range", {
 })
 
 test_that("cubist handles outcome with small values", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(x1 = rnorm(50))
   y <- x$x1 * 1e-6 + rnorm(50, sd = 1e-8)
 
@@ -336,7 +336,7 @@ test_that("cubist handles outcome with small values", {
 })
 
 test_that("cubist handles factor with many levels", {
-  set.seed(123)
+  set.seed(1729)
   n <- 200
   x <- data.frame(
     many_levels = factor(sample(letters, n, replace = TRUE)),
@@ -362,7 +362,7 @@ test_that("predict handles newdata with different row count", {
 })
 
 test_that("cubist errors with Date predictor", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(
     date_var = as.Date("2020-01-01") + 1:50,
     num = rnorm(50)
@@ -376,7 +376,7 @@ test_that("cubist errors with Date predictor", {
 })
 
 test_that("cubist errors with POSIXct predictor", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(
     datetime_var = as.POSIXct("2020-01-01 12:00:00") + (1:50) * 3600,
     num = rnorm(50)
@@ -390,7 +390,7 @@ test_that("cubist errors with POSIXct predictor", {
 })
 
 test_that("cubist error message lists all date columns", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(
     date1 = as.Date("2020-01-01") + 1:50,
     date2 = as.Date("2021-01-01") + 1:50,
@@ -433,7 +433,7 @@ test_that("cubist handles negative weights", {
 })
 
 test_that("cubist handles very long column names", {
-  set.seed(123)
+  set.seed(1729)
   x <- data.frame(
     this_is_a_very_long_column_name_that_might_cause_issues = rnorm(50),
     another_extremely_long_variable_name_for_testing = rnorm(50)

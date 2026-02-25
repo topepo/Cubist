@@ -21,7 +21,7 @@ test_that("varUsage returns data.frame with correct columns", {
   usage <- mod$usage
 
   expect_s3_class(usage, "data.frame")
-  expect_equal(names(usage), c("Conditions", "Model", "Variable"))
+  expect_named(usage, c("Conditions", "Model", "Variable"))
 })
 
 test_that("varUsage handles conditions-only percentages", {
@@ -33,8 +33,8 @@ test_that("varUsage handles conditions-only percentages", {
 
   # Some variables might have Conditions > 0 and Model = 0
   expect_s3_class(usage, "data.frame")
-  expect_true(all(usage$Conditions >= 0))
-  expect_true(all(usage$Model >= 0))
+  expect_all_true(usage$Conditions >= 0)
+  expect_all_true(usage$Model >= 0)
 })
 
 test_that("varUsage handles model-only percentages", {
@@ -55,7 +55,7 @@ test_that("varUsage extracts variable names correctly", {
   usage <- mod$usage
 
   # Variable names should match predictor names
-  expect_true(all(names(data$x) %in% usage$Variable))
+  expect_all_true(names(data$x) %in% usage$Variable)
 })
 
 test_that("varUsage handles unused variables", {
@@ -65,7 +65,7 @@ test_that("varUsage handles unused variables", {
   usage <- mod$usage
 
   # All variables should be in usage (even if not used)
-  expect_true(all(names(data$x) %in% usage$Variable))
+  expect_all_true(names(data$x) %in% usage$Variable)
 
   # Unused variables should have 0 for both
   unused <- usage[usage$Conditions == 0 & usage$Model == 0, ]

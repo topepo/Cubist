@@ -21,7 +21,7 @@ test_that("countRules counts rules in multiple committee model", {
 
   expect_type(rules, "double")
   expect_length(rules, 3)
-  expect_true(all(rules >= 1))
+  expect_all_true(rules >= 1)
 })
 
 # --- getSplits() tests ---
@@ -45,7 +45,7 @@ test_that("getSplits extracts split information", {
 
 test_that("getSplits returns NULL when no splits", {
   # Create a very simple model that might have no splits
-  set.seed(42)
+  set.seed(5836)
   x <- data.frame(x1 = rnorm(20))
   y <- x$x1 + rnorm(20, sd = 0.01) # Almost perfect linear relationship
 
@@ -68,12 +68,12 @@ test_that("getSplits extracts type2 (continuous) splits", {
   if (!is.null(splits) && any(splits$type == "type2")) {
     type2_splits <- splits[splits$type == "type2", ]
     expect_true(nrow(type2_splits) > 0)
-    expect_true(all(!is.na(type2_splits$value) | type2_splits$dir == "="))
+    expect_all_true(!is.na(type2_splits$value) | type2_splits$dir == "=")
   }
 })
 
 test_that("getSplits extracts type3 (categorical) splits", {
-  set.seed(123)
+  set.seed(2947)
   x <- data.frame(
     num = rnorm(100),
     fac = factor(sample(letters[1:4], 100, replace = TRUE))
@@ -293,7 +293,7 @@ test_that("parser handles complex input", {
   result <- Cubist:::parser(input)
 
   expect_length(result, 3)
-  expect_true(all(c("key1", "key2", "key3") %in% names(result)))
+  expect_all_true(c("key1", "key2", "key3") %in% names(result))
 })
 
 test_that("coef.cubist returns all variables when varNames provided", {

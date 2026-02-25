@@ -61,7 +61,7 @@ test_that("QuinlanAttributes.matrix applies column-wise", {
   result <- QuinlanAttributes(mat)
 
   expect_length(result, 3)
-  expect_true(all(result == "continuous."))
+  expect_all_equal(result, "continuous.")
 })
 
 test_that("QuinlanAttributes.data.frame handles multiple column types", {

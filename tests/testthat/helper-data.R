@@ -5,7 +5,7 @@
 #' @param p Number of predictors
 #' @param seed Random seed
 #' @return List with x (data.frame) and y (numeric vector)
-new_cubist_data <- function(n = 100, p = 5, seed = 123) {
+new_cubist_data <- function(n = 100, p = 5, seed = 5203) {
   set.seed(seed)
   x <- as.data.frame(matrix(rnorm(n * p), n, p))
   names(x) <- paste0("x", seq_len(p))
@@ -17,7 +17,7 @@ new_cubist_data <- function(n = 100, p = 5, seed = 123) {
 #' @param n Number of observations
 #' @param seed Random seed
 #' @return data.frame with numeric, factor, ordered, and character columns
-new_mixed_data <- function(n = 100, seed = 123) {
+new_mixed_data <- function(n = 100, seed = 5203) {
   set.seed(seed)
   data.frame(
     num = rnorm(n),
@@ -36,7 +36,7 @@ new_mixed_data <- function(n = 100, seed = 123) {
 #' @param committees Number of committees
 #' @param seed Random seed
 #' @return A cubist model object
-new_fitted_model <- function(n = 100, committees = 1, seed = 123) {
+new_fitted_model <- function(n = 100, committees = 1, seed = 5203) {
   data <- new_cubist_data(n = n, seed = seed)
   cubist(data$x, data$y, committees = committees)
 }
@@ -45,7 +45,7 @@ new_fitted_model <- function(n = 100, committees = 1, seed = 123) {
 #' @param n Number of observations
 #' @param seed Random seed
 #' @return List with x and y
-new_sample_name_data <- function(n = 50, seed = 123) {
+new_sample_name_data <- function(n = 50, seed = 5203) {
   set.seed(seed)
   x <- data.frame(
     sample = rnorm(n),

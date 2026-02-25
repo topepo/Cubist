@@ -2,11 +2,11 @@ test_that("basic execution", {
   skip_if_not_installed("modeldata")
 
   suppressMessages(library(modeldata))
-  set.seed(1)
+  set.seed(4827)
   dat_tr <- sim_regression(100)
   dat_te <- sim_regression(100)
 
-  set.seed(1)
+  set.seed(4827)
   c5_xy <- cubist(dat_tr[, -1], y = dat_tr$outcome)
   expect_snapshot(c5_xy)
 
