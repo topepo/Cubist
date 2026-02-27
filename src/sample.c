@@ -19,7 +19,7 @@ int MAIN(int Argc, char *Argv[])
   RRuleSet *CubistModel;
   FILE *F;
   int o;
-  extern String OptArg, Option;
+  extern String OptArg;
 
   /*  Process options  */
 

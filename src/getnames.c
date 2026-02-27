@@ -330,7 +330,7 @@ void ExplicitAtt(FILE *Nf)
       }
 
       AttValName[MaxAtt] = Alloc(v + 3, String);
-      AttValName[MaxAtt][0] = (char *)(long)v + 1;
+      AttValName[MaxAtt][0] = (char *)(intptr_t)(v + 1);
       AttValName[MaxAtt][(MaxAttVal[MaxAtt] = 1)] = strdup("N/A");
     } else if (!strcmp(Buffer, "ignore")) {
       SpecialStatus[MaxAtt] = EXCLUDE;
