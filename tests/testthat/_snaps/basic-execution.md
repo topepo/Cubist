@@ -46,30 +46,30 @@
     Code
       cubistControl(strip_time_stamps = "yes")
     Condition
-      Error:
-      ! strip_time_stamps must be a single logical value
+      Error in `cubistControl()`:
+      ! `strip_time_stamps` must be `TRUE` or `FALSE`, not the string "yes".
 
 ---
 
     Code
       cubistControl(strip_time_stamps = c(TRUE, FALSE))
     Condition
-      Error:
-      ! strip_time_stamps must be a single logical value
+      Error in `cubistControl()`:
+      ! `strip_time_stamps` must be `TRUE` or `FALSE`, not a logical vector.
 
 ---
 
     Code
       cubistControl(strip_time_stamps = NA)
     Condition
-      Error:
-      ! strip_time_stamps must be a single logical value
+      Error in `cubistControl()`:
+      ! `strip_time_stamps` must be `TRUE` or `FALSE`, not `NA`.
 
 ---
 
     Code
       cubistControl(strip_time_stamps = 1)
     Condition
-      Error:
-      ! strip_time_stamps must be a single logical value
+      Error in `cubistControl()`:
+      ! `strip_time_stamps` must be `TRUE` or `FALSE`, not the number 1.
 
