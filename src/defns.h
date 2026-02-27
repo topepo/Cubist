@@ -162,7 +162,7 @@
 #define P1(x) (rint((x)*10) / 10)
 
 #define Before(n1, n2)                                                         \
-  (n1->Tested < n2->Tested || n1->Tested == n2->Tested && n1->Cut < n2->Cut)
+  (n1->Tested < n2->Tested || (n1->Tested == n2->Tested && n1->Cut < n2->Cut))
 
 #define Swap(a, b)                                                             \
   {                                                                            \
