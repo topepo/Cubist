@@ -1,9 +1,12 @@
-# Cubist (development version)
+# Cubist 0.6.0
 
 * A new control option, `strip_time_stamps`, is used to remove date/time and duration information for better reproducability. (#63) 
 
 * An error is thrown if a data or data/time column is passed. 
 
+* Switched from base R `stop()` and `warning()` to cli's `cli_abort()` and `cli_warn()` for improved error messages with better formatting and context.
+
+* Fixed compiler warnings for unused variables in C source code.
 
 # Cubist 0.5.1
 
