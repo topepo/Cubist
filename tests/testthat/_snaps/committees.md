@@ -3,6 +3,6 @@
     Code
       cubist(data$x, data$y, committees = 101)
     Condition
-      Error:
-      ! number of committees must be between 1 and 100
+      Error in `cubist()`:
+      ! `committees` must be a whole number between 1 and 100, not the number 101.
 

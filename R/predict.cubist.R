@@ -61,20 +61,13 @@
 #' @method predict cubist
 #' @export
 predict.cubist <- function(object, newdata = NULL, neighbors = 0, ...) {
-  if (is.null(newdata)) {
-    stop("newdata must be non-null", call. = FALSE)
-  }
+  check_data_frame(newdata)
+  check_names(newdata)
+  check_number_whole(neighbors, min = 0, max = 9)
 
   ## check order of data to make sure that it is the same
-  check_names(newdata)
   newdata <- newdata[, object$vars$all, drop = FALSE]
 
-  if (length(neighbors) > 1) {
-    stop("only a single value of neighbors is allowed")
-  }
-  if (neighbors > 9) {
-    stop("'neighbors' must be less than 10")
-  }
   if (neighbors > 0) {
     object$model <- gsub(
       "insts=\"0\"",

@@ -60,24 +60,21 @@ exportCubistFiles <-
       prefix <-
         paste("model", format(Sys.time(), "%Y%m%d_%H%M"), sep = "")
     }
-    cat(x$model, file = file.path(path, paste(prefix, "model", sep = ".")))
-    modelTest <-
-      file.exists(file.path(path, paste(prefix, "model", sep = ".")))
-    if (!modelTest) {
-      stop("the model file could not be created")
+    model_file <- file.path(path, paste(prefix, "model", sep = "."))
+    cat(x$model, file = model_file)
+    if (!file.exists(model_file)) {
+      cli_abort("The model file could not be created at {.file {model_file}}.")
     }
 
-    cat(x$names, file = file.path(path, paste(prefix, "names", sep = ".")))
-    namesTest <-
-      file.exists(file.path(path, paste(prefix, "names", sep = ".")))
-    if (!namesTest) {
-      stop("the names file could not be created")
+    names_file <- file.path(path, paste(prefix, "names", sep = "."))
+    cat(x$names, file = names_file)
+    if (!file.exists(names_file)) {
+      cli_abort("The names file could not be created at {.file {names_file}}.")
     }
 
-    cat(x$data, file = file.path(path, paste(prefix, "data", sep = ".")))
-    dataTest <-
-      file.exists(file.path(path, paste(prefix, "data", sep = ".")))
-    if (!dataTest) {
-      stop("the data file could not be created")
+    data_file <- file.path(path, paste(prefix, "data", sep = "."))
+    cat(x$data, file = data_file)
+    if (!file.exists(data_file)) {
+      cli_abort("The data file could not be created at {.file {data_file}}.")
     }
   }
