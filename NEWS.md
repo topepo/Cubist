@@ -1,3 +1,5 @@
+# Cubist (development version)
+
 # Cubist 0.6.0
 
 * A new control option, `strip_time_stamps`, is used to remove date/time and duration information for better reproducability. (#63) 
