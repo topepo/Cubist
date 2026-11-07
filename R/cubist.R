@@ -20,7 +20,7 @@ cubist <- function(x, ...) UseMethod("cubist")
 #  strings that mimic the formats that one would use with the
 #  command line version and get back the textual representation
 #  that would be saved to the .model file also as a string. The
-#  predicton function would then pass the model text string (and
+#  prediction function would then pass the model text string (and
 #  the data text string if instances are used) to the C code for
 #  prediction.
 
@@ -338,7 +338,7 @@ cubist.default <- function(
 #'
 #' @param unbiased a logical: should unbiased rules be used?
 #' @param rules an integer (or `NA`): define an explicit limit to
-#'  the number of rules used (`NA` let's Cubist decide).
+#'  the number of rules used (`NA` lets Cubist decide).
 #' @param extrapolation a number between 0 and 100: since Cubist
 #'  uses linear models, predictions can be outside of the outside of
 #'  the range seen the training set. This parameter controls how
