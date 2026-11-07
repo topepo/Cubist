@@ -52,7 +52,14 @@
 
     <div class="section level2">
 <h2 class="page-header" data-toc-text="development version" id="cubist-development-version">Cubist (development version)<a class="anchor" aria-label="anchor" href="#cubist-development-version"></a></h2>
-</div>
+<ul><li>
+<p>The feasible ranges for <code>committees</code> and <code>neighbors</code> have been removed:</p>
+<ul><li><p><code><a href="../reference/cubist.default.html">cubist()</a></code> no longer limits <code>committees</code> to 100. Any integer &gt;= 1 is allowed.</p></li>
+<li><p><code><a href="../reference/predict.cubist.html">predict.cubist()</a></code> no longer limits <code>neighbors</code> to 9. Any integer from 0 to the number of training set rows is allowed. The C code now sizes its neighbor buffers from the requested number of neighbors (plus room for ties) instead of using a fixed buffer of 20. Predictions for <code>neighbors</code> from 0 to 9 are unchanged. Note that a correction is only applied when at least half of the requested neighbors are closer than the average distance between training points, so large values of <code>neighbors</code> can leave more predictions uncorrected.</p></li>
+<li><p><code>committees</code> and <code>neighbors</code> must now be single whole numbers. Non-integer values, negative <code>neighbors</code>, and missing values are errors.</p></li>
+<li><p>The default tuning ranges in other packages (e.g., rules’ <code><a href="https://generics.r-lib.org/reference/tunable.html" class="external-link">tunable()</a></code> method for <code><a href="https://parsnip.tidymodels.org/reference/cubist_rules.html" class="external-link">cubist_rules()</a></code>, <code><a href="https://dials.tidymodels.org/reference/neighbors.html" class="external-link">dials::neighbors()</a></code>, and caret’s <code>"cubist"</code> grid) still use the old limits. Expand them manually to tune over larger values.</p></li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.6.0" id="cubist-060">Cubist 0.6.0<small>2026-03-02</small><a class="anchor" aria-label="anchor" href="#cubist-060"></a></h2>
 <ul><li><p>A new control option, <code>strip_time_stamps</code>, is used to remove date/time and duration information for better reproducability. (<a href="https://github.com/topepo/Cubist/issues/63" class="external-link">#63</a>)</p></li>
@@ -177,7 +184,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
       </footer></div>

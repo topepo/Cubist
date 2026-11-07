@@ -79,8 +79,8 @@ factor values are allowed. Must have column names.</p></dd>
 
 
 <dt id="arg-committees">committees<a class="anchor" aria-label="anchor" href="#arg-committees"></a></dt>
-<dd><p>an integer: how many committee models (e.g..
-boosting iterations) should be used?</p></dd>
+<dd><p>an integer &gt;= 1: how many committee models (e.g.,
+boosting iterations) should be used? Quinlan's original code limited this to 100; there is no upper limit here, but training time, memory use, and the size of the model all grow linearly with the number of committees.</p></dd>
 
 
 <dt id="arg-control">control<a class="anchor" aria-label="anchor" href="#arg-control"></a></dt>
@@ -263,7 +263,7 @@ modifications be Steve Weston</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
       </footer></div>
