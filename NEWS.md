@@ -1,5 +1,15 @@
 # Cubist (development version)
 
+* The feasible ranges for `committees` and `neighbors` have been removed:
+
+  * `cubist()` no longer limits `committees` to 100. Any integer >= 1 is allowed.
+
+  * `predict.cubist()` no longer limits `neighbors` to 9. Any integer from 0 to the number of training set rows is allowed. The C code now sizes its neighbor buffers from the requested number of neighbors (plus room for ties) instead of using a fixed buffer of 20. Predictions for `neighbors` from 0 to 9 are unchanged. Note that a correction is only applied when at least half of the requested neighbors are closer than the average distance between training points, so large values of `neighbors` can leave more predictions uncorrected.
+
+  * `committees` and `neighbors` must now be single whole numbers. Non-integer values, negative `neighbors`, and missing values are errors.
+
+  * The default tuning ranges in other packages (e.g., rules' `tunable()` method for `cubist_rules()`, `dials::neighbors()`, and caret's `"cubist"` grid) still use the old limits. Expand them manually to tune over larger values.
+
 # Cubist 0.6.0
 
 * A new control option, `strip_time_stamps`, is used to remove date/time and duration information for better reproducability. (#63) 

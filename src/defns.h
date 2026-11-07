@@ -85,8 +85,8 @@
 #define MINSPLIT 3     /* min branch size for initial tree */
 #define MINFRACT 0.001 /* min fraction of cases covered by rule */
 
-#define MAXN 20 /* max neighbors allowing for ties */
-#define NNMAX 9 /* upper limit for NN */
+#define NNMAX 9    /* upper limit for automatically selected NN */
+#define NNSLACK 11 /* extra neighbor slots allowing for ties */
 
 #define EVALSAMPLE 10000 /* sampling training data for evaluation */
 
@@ -384,10 +384,11 @@ typedef struct _indexrec {
 } IndexRec;
 
 typedef struct _nnrec {
-  int BestI[MAXN];   /* numbers of best instances */
-  float BestD[MAXN], /* distances to best instances */
-      *WorstBest,    /* points to worst BestD */
-      *AttMinD;      /* min attribute distance from case */
+  int NBest;      /* size of BestI and BestD (NN plus room for ties) */
+  int *BestI;     /* numbers of best instances */
+  float *BestD,   /* distances to best instances */
+      *WorstBest, /* points to worst BestD */
+      *AttMinD;   /* min attribute distance from case */
 } NNEnvRec;
 
 typedef union _def_val {

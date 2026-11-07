@@ -94,8 +94,8 @@ cubist <- function(x, ...) UseMethod("cubist")
 #'  data are allowed but (at this time) only numeric, character and
 #'  factor values are allowed. Must have column names.
 #' @param y a numeric vector of outcome
-#' @param committees an integer: how many committee models (e.g..
-#'  boosting iterations) should be used?
+#' @param committees an integer >= 1: how many committee models (e.g.,
+#'  boosting iterations) should be used? Quinlan's original code limited this to 100; there is no upper limit here, but training time, memory use, and the size of the model all grow linearly with the number of committees.
 #' @param control options that control details of the `cubist`
 #'  algorithm. See [cubistControl()]
 #' @param weights an optional vector of case weights (the same
@@ -180,8 +180,8 @@ cubist.default <- function(
     stop("cubist models require a numeric outcome", call. = FALSE)
   }
 
-  if (committees < 1 | committees > 100) {
-    stop("number of committees must be between 1 and 100", call. = FALSE)
+  if (!is_whole_number(committees) || committees < 1) {
+    stop("number of committees must be a single integer >= 1", call. = FALSE)
   }
 
   if (!is.data.frame(x) & !is.matrix(x)) {
@@ -208,7 +208,7 @@ cubist.default <- function(
     as.character(dataString),
     as.logical(control$unbiased), # -u : generate unbiased rules
     "yes", # -i and -a : how to combine these?
-    as.integer(1), # -n : set the number of nearest neighbors (1 to 9)
+    as.integer(1), # -n : set the number of nearest neighbors
     as.integer(committees), # -c : construct a committee model
     as.double(control$sample), # -S : use a sample of x% for training
     #      and a disjoint sample for testing
@@ -676,4 +676,10 @@ check_date_columns <- function(x) {
     )
   }
   invisible(NULL)
+}
+
+# Is `x` a single, non-missing, finite whole number?
+is_whole_number <- function(x) {
+  is.numeric(x) && length(x) == 1 && !is.na(x) && is.finite(x) &&
+    x == round(x)
 }

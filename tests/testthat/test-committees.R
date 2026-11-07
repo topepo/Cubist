@@ -87,15 +87,9 @@ test_that("predictions with neighbors work with multiple committees", {
   expect_length(preds, 100)
 })
 
-test_that("maximum 100 committees allowed", {
+test_that("committees are not limited to 100", {
   data <- new_cubist_data(n = 50, p = 3)
 
-  # 100 should work
   expect_silent(cubist(data$x, data$y, committees = 100))
-
-  # 101 should error
-  expect_snapshot(
-    cubist(data$x, data$y, committees = 101),
-    error = TRUE
-  )
+  expect_silent(cubist(data$x, data$y, committees = 101))
 })

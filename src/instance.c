@@ -81,6 +81,13 @@ void InitialiseInstances(RRuleSet *Cttee)
 
   GNNEnv.AttMinD = Alloc(MaxAtt + 1, float);
 
+  /*  Neighbor buffers hold NN entries plus extra slots for ties.  At
+      least NNMAX entries are needed in case SetParameters() chooses NN  */
+
+  GNNEnv.NBest = Max(NN, NNMAX) + NNSLACK;
+  GNNEnv.BestI = Alloc(GNNEnv.NBest, int);
+  GNNEnv.BestD = Alloc(GNNEnv.NBest, float);
+
   /*  Construct the first reference point  */
 
   Ref[0] = Alloc(MaxAtt + 1, AttValue);
@@ -138,6 +145,14 @@ void InitialiseInstances(RRuleSet *Cttee)
     SetParameters(Cttee);
   } else {
     SetNN = binfalse;
+  }
+
+  /*  Keep WorstBest inside the neighbor buffers  */
+
+  if (NN < 1) {
+    NN = 1;
+  } else if (NN > GNNEnv.NBest) {
+    NN = GNNEnv.NBest;
   }
 
   MinN = (NN + 1) / 2;
@@ -378,11 +393,11 @@ void CheckDistance(DataRec Case, CaseNo Saved)
          DPREC;
 
   if (Dist <= *GNNEnv.WorstBest) {
-    for (d = 0; d < MAXN && GNNEnv.BestD[d] < Dist; d++)
+    for (d = 0; d < GNNEnv.NBest && GNNEnv.BestD[d] < Dist; d++)
       ;
 
-    if (d < MAXN) {
-      for (dd = MAXN - 1; dd > d; dd--) {
+    if (d < GNNEnv.NBest) {
+      for (dd = GNNEnv.NBest - 1; dd > d; dd--) {
         GNNEnv.BestD[dd] = GNNEnv.BestD[dd - 1];
         GNNEnv.BestI[dd] = GNNEnv.BestI[dd - 1];
       }
@@ -408,7 +423,7 @@ void FindNearestNeighbors(DataRec Case)
 
   /*  Clear best distances and attribute minimum distances  */
 
-  ForEach(d, 0, MAXN - 1) {
+  ForEach(d, 0, GNNEnv.NBest - 1) {
     GNNEnv.BestD[d] = MAXD;
     GNNEnv.BestI[d] = -1;
   }
@@ -439,7 +454,7 @@ float AverageNeighbors(RRuleSet *Cttee, DataRec Case)
 
   /*  Check the number of neighbors actually found  */
 
-  for (Last = MAXN - 1; Last >= 0 && GNNEnv.BestI[Last] < 0; Last--)
+  for (Last = GNNEnv.NBest - 1; Last >= 0 && GNNEnv.BestI[Last] < 0; Last--)
     ;
 
   if (Last + 1 < MinN) {
@@ -761,6 +776,12 @@ void FreeInstances(void)
 
   FreeUnlessNil(GNNEnv.AttMinD);
   GNNEnv.AttMinD = Nil;
+  FreeUnlessNil(GNNEnv.BestI);
+  GNNEnv.BestI = Nil;
+  FreeUnlessNil(GNNEnv.BestD);
+  GNNEnv.BestD = Nil;
+  GNNEnv.WorstBest = Nil;
+  GNNEnv.NBest = 0;
   FreeUnlessNil(RSPredVal);
   RSPredVal = Nil;
 
