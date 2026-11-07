@@ -680,6 +680,5 @@ check_date_columns <- function(x) {
 
 # Is `x` a single, non-missing, finite whole number?
 is_whole_number <- function(x) {
-  is.numeric(x) && length(x) == 1 && !is.na(x) && is.finite(x) &&
-    x == round(x)
+  is.numeric(x) && length(x) == 1 && !is.na(x) && is.finite(x) && x == round(x)
 }
