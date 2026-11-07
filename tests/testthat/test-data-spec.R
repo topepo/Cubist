@@ -2,7 +2,13 @@
 
 # Fit through the legacy text interface (.names/.data strings), as
 # cubist.default() did up to version 0.6.0
-fit_legacy <- function(x, y, w = NULL, committees = 1, control = cubistControl()) {
+fit_legacy <- function(
+  x,
+  y,
+  w = NULL,
+  committees = 1,
+  control = cubistControl()
+) {
   .C(
     "cubist",
     makeNamesFile(x, y, w = w, label = control$label, comments = FALSE),
@@ -34,7 +40,10 @@ test_that("vector and text interfaces build identical models", {
   expect_same_fit <- function(x, y, w = NULL, committees = 1) {
     old <- fit_legacy(x, y, w = w, committees = committees, control = ctrl)
     new <- cubist(x, y, committees = committees, control = ctrl, weights = w)
-    expect_identical(model_without_insts(new$model), model_without_insts(old$model))
+    expect_identical(
+      model_without_insts(new$model),
+      model_without_insts(old$model)
+    )
     expect_identical(new$output, strip_time_stamps(old$output))
   }
 
@@ -64,7 +73,10 @@ test_that("vector and text interfaces give identical sampled models", {
   old <- fit_legacy(dat$x, dat$y, control = ctrl)
   new <- cubist(dat$x, dat$y, control = ctrl)
 
-  expect_identical(model_without_insts(new$model), model_without_insts(old$model))
+  expect_identical(
+    model_without_insts(new$model),
+    model_without_insts(old$model)
+  )
   expect_identical(new$output, strip_time_stamps(old$output))
   # the hold-out cases are evaluated
   expect_match(new$output, "Evaluation on test data", fixed = TRUE)

@@ -213,14 +213,21 @@ cubist.default <- function(
   check_names(x)
   if (length(y) != nrow(x)) {
     stop(
-      "`y` has ", length(y), " values but `x` has ", nrow(x), " rows",
+      "`y` has ",
+      length(y),
+      " values but `x` has ",
+      nrow(x),
+      " rows",
       call. = FALSE
     )
   }
   if (!is.null(weights) && length(weights) != nrow(x)) {
     stop(
-      "`weights` has ", length(weights), " values but `x` has ",
-      nrow(x), " rows",
+      "`weights` has ",
+      length(weights),
+      " values but `x` has ",
+      nrow(x),
+      " rows",
       call. = FALSE
     )
   }
