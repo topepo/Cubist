@@ -132,10 +132,9 @@ test_that("cubist handles plus and minus in variable names", {
   expect_s3_class(mod, "cubist")
 })
 
-# NOTE: Tests for factor levels with special characters (colons, semicolons,
-# commas) are NOT included here because they cause the underlying C code to
-# call exit(), which terminates the R session. These are documented limitations
-# of the Cubist C code.
+# Factor levels with special characters (colons, semicolons, commas) used to
+# make the C code exit. Data are now passed as vectors, so these work; see
+# test-data-spec.R.
 #
 # Known unsupported special characters in factor/character levels:
 # - Colons (:)
@@ -164,8 +163,7 @@ test_that("cubist handles factor levels with spaces", {
   expect_length(preds, 100)
 })
 
-# NOTE: Tests for factor/character levels with commas and colons removed
-# for the same reason - they cause C code to exit and crash the test session.
+# Factor/character levels with commas and colons: see test-data-spec.R.
 
 test_that("cubist handles numeric-like factor levels", {
   set.seed(1729)
@@ -348,8 +346,7 @@ test_that("cubist handles factor with many levels", {
   expect_s3_class(mod, "cubist")
 })
 
-# NOTE: Test for single-level factor removed - causes C code to exit()
-# Known limitation: factors must have at least 2 levels
+# Single-level factors: see test-data-spec.R.
 
 test_that("predict handles newdata with different row count", {
   train <- new_cubist_data(n = 100, p = 5)

@@ -499,8 +499,20 @@ void DumpOp(char OpCode, int Fi);
 Boolean UpdateTStack(char OpCode, ContValue F, String S, int Fi);
 AttValue EvaluateDef(Definition D, DataRec Case);
 
+/* rcubist.c */
+
+double CubistStart(void);
+void CubistBuild(double StartTime);
+
+/* rsample.c */
+
+void PredictLoaded(RRuleSet *CubistModel, double *outputv);
+
 /* getdata.c */
 
+void StartData(Boolean Train, CaseNo NCases);
+void KeepCase(DataRec DVec, Boolean Train, Boolean AllowUnknownTarget);
+void FinishData(Boolean Train);
 void GetData(FILE *Df, Boolean Train, Boolean AllowUnknownTarget);
 Boolean ReplaceUnknowns(DataRec Case, Boolean *AttMsg);
 DataRec GetDataRec(FILE *Df, Boolean Train);

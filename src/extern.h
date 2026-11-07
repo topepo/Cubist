@@ -103,3 +103,5 @@ extern CaseCount MINITEMS;
 extern int MAXRULES;
 
 extern float EXTRAP;
+
+extern void (*LoadTestData)(void); /* construct.c; set by rdata.c */

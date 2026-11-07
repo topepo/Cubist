@@ -2,7 +2,9 @@
 #include <R_ext/Rdynload.h>
 #include <Rinternals.h>
 #include <setjmp.h>
+#include <string.h>
 
+#include "rdata.h"
 #include "redefine.h"
 #include "rulebasedmodels.h"
 #include "strbuf.h"
@@ -144,6 +146,276 @@ static void predictions(char **casev, char **namesv, char **datav,
   initglobals();
 }
 
+/*
+ * .Call interface: data are passed as R vectors and loaded by rdata.c,
+ * with no .names/.data text in between.  All argument checking happens
+ * here, before any Cubist globals are touched, so that R errors cannot
+ * leave the C code half initialized.  The R side (R/data-spec.R) builds
+ * these arguments; the checks below only guard against misuse.
+ */
+
+static SEXP list_elt(SEXP list, const char *name) {
+  SEXP names = Rf_getAttrib(list, R_NamesSymbol);
+  for (R_xlen_t i = 0; i < Rf_xlength(list); i++) {
+    if (strcmp(CHAR(STRING_ELT(names, i)), name) == 0) {
+      return VECTOR_ELT(list, i);
+    }
+  }
+  Rf_error("internal error: attribute spec has no element '%s'", name);
+  return R_NilValue; /* not reached */
+}
+
+static const char *string_copy(SEXP s) {
+  const char *src = Rf_translateChar(s);
+  char *dst = R_alloc(strlen(src) + 1, 1);
+  strcpy(dst, src);
+  return dst;
+}
+
+static void unpack_spec(SEXP spec, RAttSpec *out) {
+  SEXP names = list_elt(spec, "names");
+  SEXP discrete = list_elt(spec, "discrete");
+  SEXP ordered = list_elt(spec, "ordered");
+  SEXP levels = list_elt(spec, "levels");
+  SEXP target = list_elt(spec, "target");
+  SEXP has_weights = list_elt(spec, "has_weights");
+
+  int p = Rf_length(names);
+  if (TYPEOF(names) != STRSXP || TYPEOF(discrete) != LGLSXP ||
+      TYPEOF(ordered) != LGLSXP || TYPEOF(levels) != VECSXP ||
+      Rf_length(discrete) != p || Rf_length(ordered) != p ||
+      Rf_length(levels) != p || TYPEOF(target) != STRSXP ||
+      Rf_length(target) != 1 || TYPEOF(has_weights) != LGLSXP ||
+      Rf_length(has_weights) != 1) {
+    Rf_error("internal error: malformed attribute spec");
+  }
+
+  const char **att_names = (const char **)R_alloc(p, sizeof(char *));
+  int *nlevels = (int *)R_alloc(p, sizeof(int));
+  const char ***lvls = (const char ***)R_alloc(p, sizeof(char **));
+
+  for (int j = 0; j < p; j++) {
+    att_names[j] = string_copy(STRING_ELT(names, j));
+    nlevels[j] = 0;
+    lvls[j] = NULL;
+    if (LOGICAL(discrete)[j]) {
+      SEXP lv = VECTOR_ELT(levels, j);
+      if (TYPEOF(lv) != STRSXP) {
+        Rf_error("internal error: levels for '%s' are not character",
+                 att_names[j]);
+      }
+      nlevels[j] = Rf_length(lv);
+      lvls[j] = (const char **)R_alloc(nlevels[j] + 1, sizeof(char *));
+      for (int k = 0; k < nlevels[j]; k++) {
+        lvls[j][k] = string_copy(STRING_ELT(lv, k));
+      }
+    }
+  }
+
+  out->NPred = p;
+  out->Names = att_names;
+  out->Discrete = LOGICAL(discrete);
+  out->Ordered = LOGICAL(ordered);
+  out->NLevels = nlevels;
+  out->Levels = lvls;
+  out->Target = string_copy(STRING_ELT(target, 0));
+  out->HasWeights = LOGICAL(has_weights)[0];
+}
+
+static void unpack_cases(SEXP x, SEXP y, SEXP w, const RAttSpec *spec,
+                         RCaseData *out) {
+  if (TYPEOF(x) != VECSXP || Rf_length(x) != spec->NPred) {
+    Rf_error("internal error: expected a list of %d columns", spec->NPred);
+  }
+
+  int n = -1;
+  if (y != R_NilValue) {
+    if (TYPEOF(y) != REALSXP) {
+      Rf_error("internal error: the outcome must be a double vector");
+    }
+    n = Rf_length(y);
+  } else if (spec->NPred > 0) {
+    n = Rf_length(VECTOR_ELT(x, 0));
+  }
+  if (n < 0) {
+    Rf_error("internal error: cannot determine the number of cases");
+  }
+
+  const void **cols = (const void **)R_alloc(spec->NPred + 1, sizeof(void *));
+  for (int j = 0; j < spec->NPred; j++) {
+    SEXP col = VECTOR_ELT(x, j);
+    if (Rf_length(col) != n) {
+      Rf_error("internal error: column '%s' has %d values, expected %d",
+               spec->Names[j], Rf_length(col), n);
+    }
+    if (spec->Discrete[j]) {
+      if (TYPEOF(col) != INTSXP) {
+        Rf_error("internal error: column '%s' must be integer codes",
+                 spec->Names[j]);
+      }
+      const int *codes = INTEGER(col);
+      for (int i = 0; i < n; i++) {
+        if (codes[i] != NA_INTEGER &&
+            (codes[i] < 1 || codes[i] > spec->NLevels[j])) {
+          Rf_error("internal error: column '%s' has an invalid code %d",
+                   spec->Names[j], codes[i]);
+        }
+      }
+      cols[j] = codes;
+    } else {
+      if (TYPEOF(col) != REALSXP) {
+        Rf_error("internal error: column '%s' must be double",
+                 spec->Names[j]);
+      }
+      cols[j] = REAL(col);
+    }
+  }
+
+  const double *wts = NULL;
+  if (w != R_NilValue) {
+    if (TYPEOF(w) != REALSXP || Rf_length(w) != n) {
+      Rf_error("internal error: case weights must be %d doubles", n);
+    }
+    wts = REAL(w);
+  }
+
+  out->N = n;
+  out->Cols = cols;
+  out->Y = (y == R_NilValue) ? NULL : REAL(y);
+  out->W = wts;
+}
+
+static SEXP make_string(const char *s) {
+  return Rf_ScalarString(Rf_mkChar(s));
+}
+
+SEXP C_cubist_fit(SEXP spec, SEXP x, SEXP y, SEXP w, SEXP unbiased,
+                  SEXP committees, SEXP sample, SEXP seed, SEXP rules,
+                  SEXP extrapolation) {
+  RAttSpec att_spec;
+  RCaseData train;
+  int val; /* Used by setjmp/longjmp for implementing rbm_exit */
+  const char *model_string = "";
+
+  if (RDATA_NA_INT != NA_INTEGER) {
+    Rf_error("internal error: NA_INTEGER does not match RDATA_NA_INT");
+  }
+
+  unpack_spec(spec, &att_spec);
+  if (y == R_NilValue) {
+    Rf_error("internal error: the outcome is required to fit a model");
+  }
+  unpack_cases(x, y, w, &att_spec, &train);
+
+  int c_unbiased = Rf_asLogical(unbiased);
+  int c_committees = Rf_asInteger(committees);
+  double c_sample = Rf_asReal(sample);
+  int c_seed = Rf_asInteger(seed);
+  int c_rules = Rf_asInteger(rules);
+  double c_extrapolation = Rf_asReal(extrapolation);
+
+  initglobals();
+
+  // "yes" and 1 are the composite and neighbors values that the .C
+  // interface has always passed from R; neighbors are chosen at
+  // prediction time instead.
+  setglobals(c_unbiased, "yes", 1, c_committees, c_sample, c_seed, c_rules,
+             c_extrapolation);
+
+  rbm_removeall();
+  FreeCases();
+  setOf();
+
+  if ((val = setjmp(rbm_buf)) == 0) {
+    RCubist(&att_spec, &train);
+
+    // Copy the model text before the strbufs are removed
+    const char *mstr = strbuf_getall(rbm_lookup("undefined.model"));
+    char *copy = R_alloc(strlen(mstr) + 1, 1);
+    strcpy(copy, mstr);
+    model_string = copy;
+  } else {
+    Rprintf("cubist code called exit with value %d\n", val - JMP_OFFSET);
+  }
+
+  const char *ostr = closeOf();
+  char *output_string = R_alloc(strlen(ostr) + 1, 1);
+  strcpy(output_string, ostr);
+
+  FreeCases();
+  rbm_removeall();
+  initglobals();
+
+  SEXP out = PROTECT(Rf_allocVector(VECSXP, 2));
+  SEXP out_names = PROTECT(Rf_allocVector(STRSXP, 2));
+  SET_VECTOR_ELT(out, 0, make_string(model_string));
+  SET_VECTOR_ELT(out, 1, make_string(output_string));
+  SET_STRING_ELT(out_names, 0, Rf_mkChar("model"));
+  SET_STRING_ELT(out_names, 1, Rf_mkChar("output"));
+  Rf_setAttrib(out, R_NamesSymbol, out_names);
+  UNPROTECT(2);
+  return out;
+}
+
+SEXP C_cubist_predict(SEXP spec, SEXP model, SEXP train_x, SEXP train_y,
+                      SEXP train_w, SEXP new_x) {
+  RAttSpec att_spec;
+  RCaseData train, cases;
+  int val; /* Used by setjmp/longjmp for implementing rbm_exit */
+
+  if (TYPEOF(model) != STRSXP || Rf_length(model) != 1) {
+    Rf_error("internal error: the model must be a single string");
+  }
+
+  unpack_spec(spec, &att_spec);
+  unpack_cases(train_x, train_y, train_w, &att_spec, &train);
+  unpack_cases(new_x, R_NilValue, R_NilValue, &att_spec, &cases);
+
+  // GetCommittee() reads the model through a strbuf; give it a private
+  // copy since strbuf_create_full() does not copy its buffer.
+  const char *mstr = Rf_translateChar(STRING_ELT(model, 0));
+  char *model_copy = R_alloc(strlen(mstr) + 1, 1);
+  strcpy(model_copy, mstr);
+
+  SEXP pred = PROTECT(Rf_allocVector(REALSXP, cases.N));
+  for (int i = 0; i < cases.N; i++) {
+    REAL(pred)[i] = NA_REAL;
+  }
+
+  initglobals();
+  rbm_removeall();
+  setOf();
+
+  STRBUF *sb_model = strbuf_create_full(model_copy, strlen(model_copy));
+  rbm_register(sb_model, "undefined.model", 1);
+
+  if ((val = setjmp(rbm_buf)) == 0) {
+    RPredict(&att_spec, &train, &cases, REAL(pred));
+  }
+
+  const char *ostr = closeOf();
+  char *output_string = R_alloc(strlen(ostr) + 1, 1);
+  strcpy(output_string, ostr);
+
+  rbm_removeall();
+  initglobals();
+
+  SEXP out = PROTECT(Rf_allocVector(VECSXP, 2));
+  SEXP out_names = PROTECT(Rf_allocVector(STRSXP, 2));
+  SET_VECTOR_ELT(out, 0, pred);
+  SET_VECTOR_ELT(out, 1, make_string(output_string));
+  SET_STRING_ELT(out_names, 0, Rf_mkChar("pred"));
+  SET_STRING_ELT(out_names, 1, Rf_mkChar("output"));
+  Rf_setAttrib(out, R_NamesSymbol, out_names);
+  UNPROTECT(3);
+  return out;
+}
+
+static const R_CallMethodDef callEntries[] = {
+    {"C_cubist_fit", (DL_FUNC)&C_cubist_fit, 10},
+    {"C_cubist_predict", (DL_FUNC)&C_cubist_predict, 6},
+    {NULL, NULL, 0}};
+
 // Declare the type of each of the arguments to the cubist function
 static R_NativePrimitiveArgType cubist_t[] = {
     STRSXP,  // namesv
@@ -181,8 +453,10 @@ void R_init_Cubist(DllInfo *dll) {
   // Announce ourselves for testing
   // Rprintf("R_init_Cubist called\n");
 
-  // Register the functions "cubist" and "predictions"
-  R_registerRoutines(dll, cEntries, NULL, NULL, NULL);
+  // Register the legacy .C functions "cubist" and "predictions" (used for
+  // models fitted before data were passed directly) and the .Call
+  // functions "C_cubist_fit" and "C_cubist_predict"
+  R_registerRoutines(dll, cEntries, callEntries, NULL, NULL);
 
   // This should help prevent people from accidentally accessing
   // any of our global variables, or any functions that are not
