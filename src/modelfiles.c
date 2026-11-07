@@ -322,7 +322,7 @@ void AsciiOut(String Pre, String S)
 void ReadHeader(void)
 /*   ---------  */
 {
-  Attribute Att;
+  Attribute Att = 0;
   DiscrValue v;
   char *p, Dummy;
   double Xd;

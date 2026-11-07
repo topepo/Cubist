@@ -37,16 +37,36 @@
 #include "redefine.h"
 #include "transform.h"
 
+/*************************************************************************/
+/*                                                                       */
+/* Model building is split so that the attributes and cases can be */
+/* loaded either from text files (cubistmain) or directly from R  */
+/* vectors (RCubist in rdata.c):      */
+/*                                                                       */
+/*   CubistStart - seed the sampler, start the clock, print header */
+/*   CubistBuild - everything after the data have been loaded  */
+/*                                                                       */
+/*************************************************************************/
+
+double CubistStart(void)
+/*     -----------  */
+{
+  /*  The command-line program set KRInit from the clock here and
+      then let the -I option override it.  In the R port, setglobals()
+      has already set KRInit from cubistControl(seed = ), so it must
+      not be overwritten.  */
+
+  return ExecTime();
+}
+
 int cubistmain(void)
 /*  ----------  */
 {
-  double StartTime, SumCWt = 0;
+  double StartTime;
   FILE *F;
-  CaseNo SaveMaxCase, i, NCWt = 0;
-  Attribute Att;
+  CaseNo SaveMaxCase;
 
-  KRInit = time(0) & 07777;
-  StartTime = ExecTime();
+  StartTime = CubistStart();
   PrintHeader("");
 
   /*  Get information on training data  */
@@ -70,6 +90,18 @@ int cubistmain(void)
     GetData(F, binfalse, binfalse);
     fprintf(Of, TX_ReadTest(MaxCase - SaveMaxCase, FileStem));
   }
+
+  CubistBuild(StartTime);
+
+  return 0;
+}
+
+void CubistBuild(double StartTime)
+/*   -----------  */
+{
+  double SumCWt = 0;
+  CaseNo i, NCWt = 0;
+  Attribute Att;
 
   /*  Check whether case weight attribute appears.  If it does,
       normalize values to average 1, and replace N/A values and
@@ -127,6 +159,4 @@ int cubistmain(void)
 #endif
 
   fprintf(Of, T_Time, ExecTime() - StartTime);
-
-  return 0;
 }

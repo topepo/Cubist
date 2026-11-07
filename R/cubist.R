@@ -94,8 +94,8 @@ cubist <- function(x, ...) UseMethod("cubist")
 #'  data are allowed but (at this time) only numeric, character and
 #'  factor values are allowed. Must have column names.
 #' @param y a numeric vector of outcome
-#' @param committees an integer: how many committee models (e.g..
-#'  boosting iterations) should be used?
+#' @param committees an integer >= 1: how many committee models (e.g.,
+#'  boosting iterations) should be used? Quinlan's original code limited this to 100; there is no upper limit here, but training time, memory use, and the size of the model all grow linearly with the number of committees.
 #' @param control options that control details of the `cubist`
 #'  algorithm. See [cubistControl()]
 #' @param weights an optional vector of case weights (the same
@@ -107,9 +107,22 @@ cubist <- function(x, ...) UseMethod("cubist")
 #'  relative weight is set to 1."
 #' @param \dots optional arguments to pass (not currently used)
 #' @return an object of class `cubist` with elements:
-#'  \item{data, names, model}{character strings that correspond to
-#'  their counterparts for the command-line program available from
+#'  \item{model}{a character string with the model, in the format of
+#'  the `.model` file of the command-line program available from
 #'  RuleQuest}
+#'  \item{spec}{a list that describes the predictors (names, whether
+#'  they are discrete, and their levels) for the C code}
+#'  \item{train}{a list with the training set predictors (`x`, as
+#'  numbers or integer level codes), outcome (`y`), and case weights
+#'  (`w`). These are needed for predictions with `neighbors > 0`.}
+#'  \item{format_version}{an integer for the way the data are stored.
+#'  Models fitted with Cubist 0.6.0 or earlier do not have this element;
+#'  instead they have a `data` string in the format of the command-line
+#'  program. Use [exportCubistFiles()] to write the data files.}
+#'  \item{names}{a character string that describes the outcome and
+#'  predictors in the format of the `.names` file of the command-line
+#'  program. Factor levels are not escaped. This is kept for compatibility
+#'  with other packages; the model does not use it.}
 #'  \item{output}{basic cubist output captured from the C code,
 #'  including the rules, their terminal models and variable usage
 #'  statistics}
@@ -178,7 +191,7 @@ cubist.default <- function(
   funcCall <- match.call(expand.dots = TRUE)
 
   check_numeric(y)
-  check_number_whole(committees, min = 1, max = 100)
+  check_number_whole(committees, min = 1)
   check_data_frame_or_matrix(x)
   check_numeric(weights, allow_null = TRUE)
 
@@ -188,34 +201,46 @@ cubist.default <- function(
 
   check_names(x)
   check_date_columns(x)
-  namesString <-
-    makeNamesFile(x, y, w = weights, label = control$label, comments = TRUE)
-  dataString <- makeDataFile(x, y, weights)
+  check_same_rows(y, x)
+  check_same_rows(weights, x)
 
-  Z <- .C(
-    "cubist",
-    as.character(namesString),
-    as.character(dataString),
+  check_finite(y)
+  check_enough_cases(y)
+  if (!is.null(weights)) {
+    check_finite(weights)
+  }
+
+  # Pass the data to the C code as vectors (see R/data-spec.R)
+  x_df <- as.data.frame(x, stringsAsFactors = FALSE)
+  spec <- cubist_data_spec(
+    x_df,
+    label = control$label,
+    has_weights = !is.null(weights)
+  )
+  train <- list(
+    x = cubist_data_columns(x_df, spec),
+    y = as.double(y),
+    w = NULL
+  )
+  if (!is.null(weights)) {
+    train$w <- as.double(weights)
+  }
+
+  Z <- call_cubist(.Call(
+    "C_cubist_fit",
+    spec,
+    train$x,
+    train$y,
+    train$w,
     as.logical(control$unbiased), # -u : generate unbiased rules
-    "yes", # -i and -a : how to combine these?
-    as.integer(1), # -n : set the number of nearest neighbors (1 to 9)
     as.integer(committees), # -c : construct a committee model
     as.double(control$sample), # -S : use a sample of x% for training
     #      and a disjoint sample for testing
     as.integer(control$seed), # -I : set the sampling seed value
     as.integer(control$rules), # -r: set the maximum number of rules
     as.double(control$extrapolation), # -e : set the extrapolation limit
-    model = character(1), # pass back .model file as a string
-    output = character(1), # pass back cubist output as a string
     PACKAGE = "Cubist"
-  )
-
-  # Check for converted names
-  has_reserved <- grep("\n__Sample", namesString, fixed = TRUE)
-  if (length(has_reserved) > 0) {
-    Z$output <- gsub("__Sample", "sample", Z$output)
-    Z$model <- gsub("__Sample", "sample", Z$model)
-  }
+  ))
 
   # Strip timestamps if requested
   if (isTRUE(control$strip_time_stamps)) {
@@ -267,9 +292,17 @@ cubist.default <- function(
     }
   }
 
+  # `names` is not used by this package any more (the C code gets `spec`
+  # instead), but other packages read the attribute types and levels from
+  # this string (e.g. tidyrules), so keep it in the 0.6.0 format. It is small
+  # compared with the `data` string, which is not kept.
+  names_string <- cubist_names_string(spec, escape_values = FALSE)
+
   out <- list(
-    data = dataString,
-    names = namesString,
+    spec = spec,
+    train = train,
+    format_version = 2L,
+    names = names_string,
     caseWeights = !is.null(weights),
     model = Z$model,
     output = Z$output,
@@ -694,6 +727,37 @@ check_data_frame_or_matrix <- function(
     c("a data frame", "a matrix"),
     ...,
     arg = arg,
+    call = call
+  )
+}
+
+# `x` (the outcome or case weights) must have one value per row of `data`
+check_same_rows <- function(
+  x,
+  data,
+  arg = caller_arg(x),
+  call = caller_env()
+) {
+  if (is.null(x) || length(x) == nrow(data)) {
+    return(invisible(NULL))
+  }
+  cli_abort(
+    "{.arg {arg}} has {length(x)} value{?s} but {.arg x} has {nrow(data)}
+     row{?s}.",
+    call = call
+  )
+}
+
+# The C code drops rows with a missing outcome. With no rows left it stops
+# with an error, but with a single row it never returns (the R session has to
+# be killed), so require at least two rows with a known outcome.
+check_enough_cases <- function(y, arg = caller_arg(y), call = caller_env()) {
+  n_known <- sum(!is.na(y))
+  if (n_known >= 2) {
+    return(invisible(NULL))
+  }
+  cli_abort(
+    "{.arg {arg}} must have at least 2 non-missing values, not {n_known}.",
     call = call
   )
 }

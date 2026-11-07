@@ -56,6 +56,18 @@ exportCubistFiles <-
         x$model
       )
     }
+    names_string <- x[["names"]]
+    data_string <- x[["data"]]
+    if (identical(x$format_version, 2L)) {
+      # Newer models store the data as vectors; write them in the text
+      # formats that the command-line version of Cubist reads.
+      names_string <- cubist_names_string(x$spec)
+      data_string <- makeDataFile(
+        cubist_data_decode(x$train$x, x$spec),
+        x$train$y,
+        x$train$w
+      )
+    }
     if (is.null(prefix)) {
       prefix <-
         paste("model", format(Sys.time(), "%Y%m%d_%H%M"), sep = "")
@@ -67,13 +79,13 @@ exportCubistFiles <-
     }
 
     names_file <- file.path(path, paste(prefix, "names", sep = "."))
-    cat(x$names, file = names_file)
+    cat(names_string, file = names_file)
     if (!file.exists(names_file)) {
       cli_abort("The names file could not be created at {.file {names_file}}.")
     }
 
     data_file <- file.path(path, paste(prefix, "data", sep = "."))
-    cat(x$data, file = data_file)
+    cat(data_string, file = data_file)
     if (!file.exists(data_file)) {
       cli_abort("The data file could not be created at {.file {data_file}}.")
     }

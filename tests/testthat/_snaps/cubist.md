@@ -6,21 +6,37 @@
       Error in `cubist()`:
       ! `y` must be a numeric vector, not a <factor> object.
 
-# cubist errors with committees outside 1-100
+# cubist errors with invalid committees
 
     Code
       cubist(data$x, data$y, committees = 0)
     Condition
       Error in `cubist()`:
-      ! `committees` must be a whole number between 1 and 100, not the number 0.
+      ! `committees` must be a whole number larger than or equal to 1, not the number 0.
 
 ---
 
     Code
-      cubist(data$x, data$y, committees = 101)
+      cubist(data$x, data$y, committees = 2.5)
     Condition
       Error in `cubist()`:
-      ! `committees` must be a whole number between 1 and 100, not the number 101.
+      ! `committees` must be a whole number, not the number 2.5.
+
+---
+
+    Code
+      cubist(data$x, data$y, committees = c(2, 3))
+    Condition
+      Error in `cubist()`:
+      ! `committees` must be a whole number, not a double vector.
+
+---
+
+    Code
+      cubist(data$x, data$y, committees = NA)
+    Condition
+      Error in `cubist()`:
+      ! `committees` must be a whole number, not `NA`.
 
 # cubist errors when x is not data.frame or matrix
 
@@ -37,6 +53,30 @@
     Condition
       Error in `cubist()`:
       ! `weights` must be a numeric vector or `NULL`, not a character vector.
+
+# cubist errors with fewer than 2 known outcome values
+
+    Code
+      cubist(data$x[1, ], data$y[1])
+    Condition
+      Error in `cubist()`:
+      ! `y` must have at least 2 non-missing values, not 1.
+
+---
+
+    Code
+      cubist(data$x, c(data$y[1], rep(NA, 4)))
+    Condition
+      Error in `cubist()`:
+      ! `y` must have at least 2 non-missing values, not 1.
+
+---
+
+    Code
+      cubist(data$x, rep(NA_real_, 5))
+    Condition
+      Error in `cubist()`:
+      ! `y` must have at least 2 non-missing values, not 0.
 
 # cubist errors with missing column names
 

@@ -357,7 +357,7 @@ void PrintRule(CRule R)
 void PrintCondition(Condition C)
 /*  --------------  */
 {
-  DiscrValue v, pv, Last, Values = 0;
+  DiscrValue v, pv, Last = 0, Values = 0;
   Boolean First = bintrue;
   Attribute Att;
   int Col, Base, Entry;
@@ -452,7 +452,7 @@ Boolean Satisfies(DataRec CaseDesc, Condition OneCond)
 {
   DiscrValue v;
   ContValue cv;
-  DiscrValue Outcome;
+  DiscrValue Outcome = 0;
   Attribute Att;
 
   Att = OneCond->Tested;

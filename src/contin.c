@@ -51,7 +51,7 @@
 void EvalContinuousAtt(Tree Node, Attribute Att, CaseNo Fp, CaseNo Lp)
 /*   -----------------  */
 {
-  CaseNo i, Xp, BestI, Cases, Edge, LoK, HiK;
+  CaseNo i, Xp, BestI = 0, Cases, Edge, LoK, HiK;
   ContValue Val, LowVal, HighVal;
   double ThisGain, BestGain = 0, LoSumX = 0, LoSumXX = 0, LoSumY = 0,
                    LoSumYY = 0, LoSumXY = 0, LoN, LoMX, LoVX, LoMY, LoVY, LoR,

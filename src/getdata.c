@@ -60,32 +60,25 @@ CaseNo SampleFrom; /* file count for sampling */
 
 /*************************************************************************/
 /*                                                                       */
-/* Read raw cases from file with given extension.    */
+/* Case loading is split into three steps so that cases can come  */
+/* either from a text file (GetData) or directly from R vectors  */
+/* (RLoadCases in rdata.c):        */
 /*                                                                       */
-/* On completion, cases are stored in array Case in the form  */
-/* of vectors of attribute values, and MaxCase is set to the  */
-/* number of data cases.       */
+/*   StartData  - reset the case store and the sampling state   */
+/*   KeepCase   - apply sampling, then store or discard one case  */
+/*   FinishData - compute means, modes, limits and replace unknowns */
 /*                                                                       */
 /*************************************************************************/
 
-void GetData(FILE *Df, Boolean Train, Boolean AllowUnknownTarget)
-/*   -------  */
-{
-  CaseNo CaseSpace, i;
-  DataRec DVec;
-  Boolean AnyUnknown = binfalse, FirstIgnore = bintrue, *AttMsg;
-  Attribute Att;
-  ContValue Val, Range;
-  size_t size = 20;
-  char CVS[size];
-  CaseCount *Freq; /* discrete value frequencies */
-  CaseNo Count, WantTrain, LeftTrain, WantTest, LeftTest;
-  Boolean SelectTrain;
-  double Sum, SumSq;
-  DiscrValue v;
+static CaseNo CaseSpace, WantTrain, LeftTrain, WantTest, LeftTest;
+static Boolean FirstIgnore;
 
+void StartData(Boolean Train, CaseNo NCases)
+/*   ---------  */
+{
   LineNo = 0;
   SuppressErrorMessages = SAMPLE && !Train;
+  FirstIgnore = bintrue;
 
   if (Train || !Case) {
     MaxCase = MaxLabel = CaseSpace = 0;
@@ -97,7 +90,7 @@ void GetData(FILE *Df, Boolean Train, Boolean AllowUnknownTarget)
 
   if (SAMPLE) {
     if (Train) {
-      SampleFrom = CountData(Df);
+      SampleFrom = NCases;
       ResetKR(KRInit); /* initialise KRandom() */
     } else {
       ResetKR(KRInit); /* restore  KRandom() */
@@ -106,64 +99,123 @@ void GetData(FILE *Df, Boolean Train, Boolean AllowUnknownTarget)
     WantTrain = SampleFrom * SAMPLE + 0.5;
     LeftTrain = SampleFrom;
 
-    WantTest = (SAMPLE < 0.5 ? WantTrain : SampleFrom - WantTrain);
+    if (SAMPLE < 0.5) {
+      WantTest = WantTrain;
+    } else {
+      WantTest = SampleFrom - WantTrain;
+    }
     LeftTest = SampleFrom - WantTrain;
   }
+}
+
+void KeepCase(DataRec DVec, Boolean Train, Boolean AllowUnknownTarget)
+/*   --------  */
+{
+  Boolean SelectTrain;
+
+  /*  Check whether to include if we are sampling */
+
+  if (SAMPLE) {
+    SelectTrain = KRandom() < WantTrain / (float)LeftTrain--;
+
+    /*  Include if
+         * Select and this is the training set
+         * ! Select and this is the test set and sub-select
+        NB: Must use different random number generator for
+        sub-selection since cannot disturb random number sequence  */
+
+    if (SelectTrain) {
+      WantTrain--;
+    }
+
+    if (SelectTrain != Train ||
+        (!Train && AltRandom >= WantTest / (float)LeftTest--)) {
+      FreeLastCase(DVec);
+      return;
+    }
+
+    if (!Train) {
+      WantTest--;
+    }
+  }
+
+  /*  Make sure there is room for another item  */
+
+  if (MaxCase >= CaseSpace) {
+    CaseSpace += Inc;
+    Realloc(Case, CaseSpace + 1, DataRec);
+  }
+
+  /*  Ignore cases with N/A target value (!) but possibly allow
+      cases with unknown target value  */
+
+  if (!NotApplic(DVec, ClassAtt) &&
+      (AllowUnknownTarget || CVal(DVec, ClassAtt) != UNKNOWN)) {
+    Case[MaxCase] = DVec;
+
+    MaxCase++;
+  } else {
+    if (FirstIgnore && Of) {
+      fprintf(Of, (AllowUnknownTarget ? T_IgnoreNATarget : T_IgnoreBadTarget));
+      FirstIgnore = binfalse;
+    }
+
+    FreeLastCase(DVec);
+  }
+}
+
+/*************************************************************************/
+/*                                                                       */
+/* Read raw cases from file with given extension.    */
+/*                                                                       */
+/* On completion, cases are stored in array Case in the form  */
+/* of vectors of attribute values, and MaxCase is set to the  */
+/* number of data cases.       */
+/*                                                                       */
+/*************************************************************************/
+
+void GetData(FILE *Df, Boolean Train, Boolean AllowUnknownTarget)
+/*   -------  */
+{
+  DataRec DVec;
+  CaseNo NCases = 0;
+
+  if (SAMPLE && Train) {
+    NCases = CountData(Df);
+  }
+
+  StartData(Train, NCases);
 
   while ((DVec = GetDataRec(Df, Train))) {
-    /*  Check whether to include if we are sampling */
-
-    if (SAMPLE) {
-      SelectTrain = KRandom() < WantTrain / (float)LeftTrain--;
-
-      /*  Include if
-           * Select and this is the training set
-           * ! Select and this is the test set and sub-select
-          NB: Must use different random number generator for
-          sub-selection since cannot disturb random number sequence  */
-
-      if (SelectTrain) {
-        WantTrain--;
-      }
-
-      if (SelectTrain != Train ||
-          (!Train && AltRandom >= WantTest / (float)LeftTest--)) {
-        FreeLastCase(DVec);
-        continue;
-      }
-
-      if (!Train) {
-        WantTest--;
-      }
-    }
-
-    /*  Make sure there is room for another item  */
-
-    if (MaxCase >= CaseSpace) {
-      CaseSpace += Inc;
-      Realloc(Case, CaseSpace + 1, DataRec);
-    }
-
-    /*  Ignore cases with N/A target value (!) but possibly allow
-        cases with unknown target value  */
-
-    if (!NotApplic(DVec, ClassAtt) &&
-        (AllowUnknownTarget || CVal(DVec, ClassAtt) != UNKNOWN)) {
-      Case[MaxCase] = DVec;
-
-      MaxCase++;
-    } else {
-      if (FirstIgnore && Of) {
-        fprintf(Of,
-                (AllowUnknownTarget ? T_IgnoreNATarget : T_IgnoreBadTarget));
-        FirstIgnore = binfalse;
-      }
-
-      FreeLastCase(DVec);
-    }
+    KeepCase(DVec, Train, AllowUnknownTarget);
   }
 
   fclose(Df);
+
+  FinishData(Train);
+}
+
+/*************************************************************************/
+/*                                                                       */
+/* Finish loading: check that there are cases, find means, limits, */
+/* modal values and precision, then replace unknown values   */
+/*                                                                       */
+/*************************************************************************/
+
+void FinishData(Boolean Train)
+/*   ----------  */
+{
+  CaseNo i;
+  Boolean AnyUnknown = binfalse, *AttMsg;
+  Attribute Att;
+  ContValue Val, Range;
+  size_t size = 20;
+  char CVS[size];
+  CaseCount *Freq; /* discrete value frequencies */
+  CaseNo Count;
+  double Sum, SumSq;
+  DiscrValue v;
+
   MaxCase--;
 
   if (Of && MaxCase < 0) {

@@ -78,14 +78,42 @@ test_that("predict.cubist errors with multiple neighbors values", {
   )
 })
 
-test_that("predict.cubist errors when neighbors > 9", {
+test_that("predict.cubist errors with invalid neighbors", {
   data <- new_cubist_data(n = 50, p = 3)
   mod <- cubist(data$x, data$y)
 
   expect_snapshot(
-    predict(mod, data$x, neighbors = 10),
+    predict(mod, data$x, neighbors = 51),
     error = TRUE
   )
+  expect_snapshot(
+    predict(mod, data$x, neighbors = -1),
+    error = TRUE
+  )
+  expect_snapshot(
+    predict(mod, data$x, neighbors = 2.5),
+    error = TRUE
+  )
+  expect_snapshot(
+    predict(mod, data$x, neighbors = NA),
+    error = TRUE
+  )
+})
+
+test_that("predict.cubist works with more than 9 neighbors", {
+  # Rounded predictors produce many tied distances
+  set.seed(1)
+  x <- data.frame(a = round(rnorm(200), 1), b = round(runif(200), 1))
+  y <- 2 * x$a + x$b + rnorm(200, sd = 0.2)
+  mod <- cubist(x[1:150, ], y[1:150])
+  rule_preds <- predict(mod, x[151:200, ])
+
+  for (k in c(10, 25, 50, 150)) {
+    preds <- predict(mod, x[151:200, ], neighbors = k)
+    expect_length(preds, 50)
+    expect_true(all(is.finite(preds)))
+    expect_false(isTRUE(all.equal(preds, rule_preds)))
+  }
 })
 
 test_that("predict.cubist works on new data with same structure", {
@@ -120,41 +148,6 @@ test_that("predict.cubist works with factor predictors", {
 
   expect_type(preds, "double")
   expect_length(preds, 20)
-})
-
-# --- bad_att_index() tests ---
-
-test_that("bad_att_index returns integer(0) when no bad attributes", {
-  # Normal output with no errors
-  output <- "Some normal output\nNo errors here"
-
-  result <- Cubist:::bad_att_index(output)
-  expect_equal(result, integer(0))
-})
-
-test_that("bad_att_index parses bad value errors from output", {
-  # Simulated output with bad value error (single string with newlines)
-  output <- paste(
-    "*** line 5 of `undefined.cases':",
-    "    bad value of 'unknown' for attribute 'category'",
-    sep = "\n"
-  )
-
-  result <- Cubist:::bad_att_index(output)
-  expect_equal(result, 5L)
-})
-
-test_that("bad_att_index handles multiple bad values", {
-  output <- paste(
-    "*** line 3 of `undefined.cases':",
-    "    bad value of 'x' for attribute 'a'",
-    "*** line 7 of `undefined.cases':",
-    "    bad value of 'y' for attribute 'b'",
-    sep = "\n"
-  )
-
-  result <- Cubist:::bad_att_index(output)
-  expect_equal(result, c(3L, 7L))
 })
 
 test_that("neighbors = 0 does not modify model", {

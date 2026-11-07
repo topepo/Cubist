@@ -1,9 +1,52 @@
 # Cubist (development version)
 
+* Data are now passed from R to the C code as vectors. Previously, `cubist()` and `predict()` wrote the data in the text formats of the command-line version of Cubist (`.names` and `.data` files, as strings) and the C code parsed them again. Removing that step fixes several problems:
+
+  * Factor levels `"?"` and `"N/A"` were read as missing and not-applicable values. They are now ordinary levels.
+
+  * Levels that differed only in whitespace (e.g., `"a b"` and `"a  b"`, or `"a"` and `" a"`) were merged. They are now kept apart.
+
+  * Factor levels with commas, colons, and other punctuation, empty-string levels, single-level factors, and names longer than 1000 characters made the C code stop (sometimes ending the R session). They now work.
+
+  * Column names with colons, semicolons, or vertical bars were changed (e.g., `c:d` became `c\:d`), which made `cubist()` fail. Names are now kept as is. Columns that start with `sample` are no longer renamed internally.
+
+  * Preparing the data takes much less time and the fitted object is smaller. The object no longer has a `data` string. Instead, it has `spec`, `train`, and `format_version` elements. The `names` string is still there (in the same format) because the tidyrules package parses it, but the model does not. `exportCubistFiles()` still writes the `.names` and `.data` files.
+
+  * Models with the same data and options are the same as before. The one exception is character predictors: their levels are now sorted (in the C locale), as `factor()` would do, instead of being kept in the order they first appear. Models fitted with Cubist 0.6.0 or earlier still work with `predict()`.
+
+* Input checks in `cubist()`, `cubistControl()`, `predict()`, and `exportCubistFiles()` now use cli and the rlang type checkers, so errors and warnings name the function that was called and the argument that is wrong (#69). When the C code stops (e.g., when all outcome values are missing), `cubist()` and `predict()` now give an error with the reason. Before, `cubist()` failed later with an unrelated error and `predict()` returned missing values.
+
+* In `predict()`, a factor or character value that is not in the training set is now treated as missing, with a warning. Before, those rows got a C error message and an invalid prediction.
+
+* In `predict()`, a column of `newdata` that has only missing values is treated as missing whatever its class (e.g. `data.frame(x = NA)` makes a logical column). This keeps the 0.6.0 behavior that the dendroTools package relies on. A logical column with values is used as 0/1 when the predictor was numeric in the training set. Before, `TRUE` and `FALSE` gave wrong predictions without a warning.
+
+* Clearer errors for infinite values in the predictors, outcome, or weights, for duplicated column names, for unsupported column types (e.g., logical), for an outcome `label` that is also a column name, for a `"case weight"` column when weights are used, and for `y` or `weights` with the wrong length.
+
+* `cubist()` now requires at least two rows with a non-missing outcome. With only one, the C code never returned and the R session had to be killed.
+
+* `cubistControl(seed = )` is now used. Before, the C code replaced it with a value from the clock, so models with `sample > 0` could not be reproduced.
+
+* Fixed `escapes()`, which escaped colons, semicolons, and vertical bars twice when writing the text formats (e.g. in `exportCubistFiles()`).
+
+* The feasible ranges for `committees` and `neighbors` have been removed:
+
+  * `cubist()` no longer limits `committees` to 100. Any integer >= 1 is allowed.
+
+  * `predict.cubist()` no longer limits `neighbors` to 9. Any integer from 0 to the number of training set rows is allowed. The C code now sizes its neighbor buffers from the requested number of neighbors (plus room for ties) instead of using a fixed buffer of 20. Predictions for `neighbors` from 0 to 9 are unchanged. Note that a correction is only applied when at least half of the requested neighbors are closer than the average distance between training points, so large values of `neighbors` can leave more predictions uncorrected.
+
+  * `committees` and `neighbors` must now be single whole numbers. Non-integer values, negative `neighbors`, and missing values are errors.
+
+  * The default tuning ranges in other packages (e.g., rules' `tunable()` method for `cubist_rules()`, `dials::neighbors()`, and caret's `"cubist"` grid) still use the old limits. Expand them manually to tune over larger values.
+
+# Cubist 0.6.0
+
 * A new control option, `strip_time_stamps`, is used to remove date/time and duration information for better reproducability. (#63) 
 
 * An error is thrown if a data or data/time column is passed. 
 
+* Switched from base R `stop()` and `warning()` to cli's `cli_abort()` and `cli_warn()` for improved error messages with better formatting and context.
+
+* Fixed compiler warnings for unused variables in C source code.
 
 # Cubist 0.5.1
 

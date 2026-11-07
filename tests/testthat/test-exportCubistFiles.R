@@ -4,8 +4,7 @@ test_that("exportCubistFiles creates .model, .names, .data files", {
   data <- new_cubist_data(n = 50, p = 3)
   mod <- cubist(data$x, data$y)
 
-  withr::local_tempdir(pattern = "cubist_test")
-  tmpdir <- getwd()
+  tmpdir <- withr::local_tempdir(pattern = "cubist_test")
 
   prefix <- "test_model"
   exportCubistFiles(mod, path = tmpdir, prefix = prefix)

@@ -295,3 +295,10 @@ test_that("escapes handles multiple special characters", {
   result <- Cubist:::escapes("a:b;c|d")
   expect_type(result, "character")
 })
+
+test_that("escapes adds exactly one backslash per special character", {
+  expect_identical(Cubist:::escapes("a:b"), "a\\:b")
+  expect_identical(Cubist:::escapes("a:b;c|d"), "a\\:b\\;c\\|d")
+  expect_identical(Cubist:::escapes("a, b."), "a\\, b\\.")
+  expect_identical(Cubist:::escapes("x\\y"), "x\\\\y")
+})

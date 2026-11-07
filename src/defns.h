@@ -85,8 +85,8 @@
 #define MINSPLIT 3     /* min branch size for initial tree */
 #define MINFRACT 0.001 /* min fraction of cases covered by rule */
 
-#define MAXN 20 /* max neighbors allowing for ties */
-#define NNMAX 9 /* upper limit for NN */
+#define NNMAX 9    /* upper limit for automatically selected NN */
+#define NNSLACK 11 /* extra neighbor slots allowing for ties */
 
 #define EVALSAMPLE 10000 /* sampling training data for evaluation */
 
@@ -162,7 +162,7 @@
 #define P1(x) (rint((x)*10) / 10)
 
 #define Before(n1, n2)                                                         \
-  (n1->Tested < n2->Tested || n1->Tested == n2->Tested && n1->Cut < n2->Cut)
+  (n1->Tested < n2->Tested || (n1->Tested == n2->Tested && n1->Cut < n2->Cut))
 
 #define Swap(a, b)                                                             \
   {                                                                            \
@@ -384,10 +384,11 @@ typedef struct _indexrec {
 } IndexRec;
 
 typedef struct _nnrec {
-  int BestI[MAXN];   /* numbers of best instances */
-  float BestD[MAXN], /* distances to best instances */
-      *WorstBest,    /* points to worst BestD */
-      *AttMinD;      /* min attribute distance from case */
+  int NBest;      /* size of BestI and BestD (NN plus room for ties) */
+  int *BestI;     /* numbers of best instances */
+  float *BestD,   /* distances to best instances */
+      *WorstBest, /* points to worst BestD */
+      *AttMinD;   /* min attribute distance from case */
 } NNEnvRec;
 
 typedef union _def_val {
@@ -498,8 +499,20 @@ void DumpOp(char OpCode, int Fi);
 Boolean UpdateTStack(char OpCode, ContValue F, String S, int Fi);
 AttValue EvaluateDef(Definition D, DataRec Case);
 
+/* rcubist.c */
+
+double CubistStart(void);
+void CubistBuild(double StartTime);
+
+/* rsample.c */
+
+void PredictLoaded(RRuleSet *CubistModel, double *outputv);
+
 /* getdata.c */
 
+void StartData(Boolean Train, CaseNo NCases);
+void KeepCase(DataRec DVec, Boolean Train, Boolean AllowUnknownTarget);
+void FinishData(Boolean Train);
 void GetData(FILE *Df, Boolean Train, Boolean AllowUnknownTarget);
 Boolean ReplaceUnknowns(DataRec Case, Boolean *AttMsg);
 DataRec GetDataRec(FILE *Df, Boolean Train);

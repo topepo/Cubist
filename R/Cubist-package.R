@@ -12,7 +12,7 @@
 
 ## usethis namespace: start
 #' @import rlang
-#' @importFrom cli cli_abort
+#' @importFrom cli cli_abort cli_warn
 #' @importFrom lattice dotplot panel.segments trellis.par.get
 #' @importFrom reshape2 melt
 #' @importFrom stats complete.cases reshape

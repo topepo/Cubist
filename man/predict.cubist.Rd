@@ -12,8 +12,7 @@
 \item{newdata}{a data frame of predictors (in the same order as
 the original training data). Must have column names.}
 
-\item{neighbors}{an integer from 0 to 9: how many instances to
-use to correct the rule-based prediction?}
+\item{neighbors}{an integer from 0 to the number of training set rows: how many instances to use to correct the rule-based prediction? Quinlan's original code limited this to 9. Only training set points that are closer than the average distance between training points are used as neighbors. If fewer than half of the requested neighbors are found within that distance, the rule-based prediction is returned without correction. Because of this, large values of \code{neighbors} can result in fewer corrected predictions. Prediction time also increases with \code{neighbors}.}
 
 \item{\dots}{other options to pass through the function (not
 currently used)}
@@ -28,10 +27,10 @@ these predictions are adjusted by training set instances nearby
 using the approach of Quinlan (1993).
 }
 \details{
-Note that the predictions can fail for various reasons.
-For example, as shown in the examples, if the model uses a
-qualitative predictor and the prediction data has a new level
-of that predictor, the function will throw an error.
+If a factor or character column in \code{newdata} has a value
+that was not in the training set, that value is treated as missing
+and a warning is issued. As for other missing values, Cubist then uses
+the most frequent training set value. Infinite values are an error.
 }
 \examples{
 
@@ -45,17 +44,15 @@ predict(mod1, BostonHousing[1:4, -14])
 ## now add instances
 predict(mod1, BostonHousing[1:4, -14], neighbors = 5)
 
-# Example error
+# New levels are treated as missing values
 iris_test <- iris
 iris_test$Species <- as.character(iris_test$Species)
 
 mod <- cubist(x = iris_test[1:99, 2:5],
               y = iris_test$Sepal.Length[1:99])
 
-# predict(mod, iris_test[100:151, 2:5])
-# Error:
-# *** line 2 of `undefined.cases':
-# bad value of 'virginica' for attribute 'Species'
+# 'virginica' is not in the training set:
+predict(mod, iris_test[100:105, 2:5])
 }
 \references{
 Quinlan. Learning with continuous classes.

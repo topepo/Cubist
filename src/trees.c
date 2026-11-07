@@ -246,7 +246,7 @@ int MaxLine(Tree T)
 {
   Attribute Att;
   DiscrValue v, vv;
-  int Ll, One, MaxLl = 0;
+  int Ll = 0, One, MaxLl = 0;
 
   Att = T->Tested;
 

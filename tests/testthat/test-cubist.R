@@ -90,8 +90,7 @@ test_that("cubist handles reserved name 'sample' in predictors", {
   expect_true("sample" %in% mod$vars$all)
 })
 
-test_that("cubist converts __Sample back to sample in output", {
-  # Create data with a column starting with 'sample'
+test_that("names starting with 'sample' are not renamed", {
   set.seed(8361)
   x <- data.frame(
     sample_var = rnorm(100),
@@ -102,12 +101,9 @@ test_that("cubist converts __Sample back to sample in output", {
   mod <- cubist(x, y)
   expect_s3_class(mod, "cubist")
 
-  # Check that output contains 'sample' not '__Sample'
-  # The conversion should happen
-  expect_true(
-    grepl("sample", mod$output, ignore.case = TRUE) ||
-      !grepl("__Sample", mod$output)
-  )
+  expect_match(mod$model, "att=\"sample_var\"", fixed = TRUE)
+  expect_no_match(mod$model, "__Sample", fixed = TRUE)
+  expect_no_match(mod$output, "__Sample", fixed = TRUE)
 })
 
 test_that("cubist works with single predictor", {
@@ -149,7 +145,7 @@ test_that("cubist errors with non-numeric outcome", {
   )
 })
 
-test_that("cubist errors with committees outside 1-100", {
+test_that("cubist errors with invalid committees", {
   data <- new_cubist_data(n = 50, p = 3)
 
   expect_snapshot(
@@ -157,9 +153,29 @@ test_that("cubist errors with committees outside 1-100", {
     error = TRUE
   )
   expect_snapshot(
-    cubist(data$x, data$y, committees = 101),
+    cubist(data$x, data$y, committees = 2.5),
     error = TRUE
   )
+  expect_snapshot(
+    cubist(data$x, data$y, committees = c(2, 3)),
+    error = TRUE
+  )
+  expect_snapshot(
+    cubist(data$x, data$y, committees = NA),
+    error = TRUE
+  )
+})
+
+test_that("cubist allows more than 100 committees", {
+  data <- new_cubist_data(n = 50, p = 3)
+
+  mod <- cubist(data$x, data$y, committees = 150)
+  expect_equal(mod$committees, 150)
+  expect_equal(length(unique(mod$coefficients$committee)), 150)
+
+  preds <- predict(mod, data$x)
+  expect_length(preds, 50)
+  expect_false(any(is.na(preds)))
 })
 
 test_that("cubist errors when x is not data.frame or matrix", {
@@ -178,6 +194,20 @@ test_that("cubist errors with non-numeric weights", {
     cubist(data$x, data$y, weights = rep("a", 50)),
     error = TRUE
   )
+})
+
+test_that("cubist errors with fewer than 2 known outcome values", {
+  data <- new_cubist_data(n = 5, p = 2)
+
+  expect_snapshot(cubist(data$x[1, ], data$y[1]), error = TRUE)
+  expect_snapshot(
+    cubist(data$x, c(data$y[1], rep(NA, 4))),
+    error = TRUE
+  )
+  expect_snapshot(cubist(data$x, rep(NA_real_, 5)), error = TRUE)
+
+  mod <- cubist(data$x[1:2, ], data$y[1:2])
+  expect_s3_class(mod, "cubist")
 })
 
 test_that("cubist errors with missing column names", {

@@ -14,8 +14,8 @@ factor values are allowed. Must have column names.}
 
 \item{y}{a numeric vector of outcome}
 
-\item{committees}{an integer: how many committee models (e.g..
-boosting iterations) should be used?}
+\item{committees}{an integer >= 1: how many committee models (e.g.,
+boosting iterations) should be used? Quinlan's original code limited this to 100; there is no upper limit here, but training time, memory use, and the size of the model all grow linearly with the number of committees.}
 
 \item{control}{options that control details of the \code{cubist}
 algorithm. See \code{\link[=cubistControl]{cubistControl()}}}
@@ -32,9 +32,22 @@ relative weight is set to 1."}
 }
 \value{
 an object of class \code{cubist} with elements:
-\item{data, names, model}{character strings that correspond to
-their counterparts for the command-line program available from
+\item{model}{a character string with the model, in the format of
+the \code{.model} file of the command-line program available from
 RuleQuest}
+\item{spec}{a list that describes the predictors (names, whether
+they are discrete, and their levels) for the C code}
+\item{train}{a list with the training set predictors (\code{x}, as
+numbers or integer level codes), outcome (\code{y}), and case weights
+(\code{w}). These are needed for predictions with \code{neighbors > 0}.}
+\item{format_version}{an integer for the way the data are stored.
+Models fitted with Cubist 0.6.0 or earlier do not have this element;
+instead they have a \code{data} string in the format of the command-line
+program. Use \code{\link[=exportCubistFiles]{exportCubistFiles()}} to write the data files.}
+\item{names}{a character string that describes the outcome and
+predictors in the format of the \code{.names} file of the command-line
+program. Factor levels are not escaped. This is kept for compatibility
+with other packages; the model does not use it.}
 \item{output}{basic cubist output captured from the C code,
 including the rules, their terminal models and variable usage
 statistics}

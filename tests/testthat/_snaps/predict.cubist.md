@@ -14,11 +14,35 @@
       Error in `predict()`:
       ! `neighbors` must be a whole number, not a double vector.
 
-# predict.cubist errors when neighbors > 9
+# predict.cubist errors with invalid neighbors
 
     Code
-      predict(mod, data$x, neighbors = 10)
+      predict(mod, data$x, neighbors = 51)
     Condition
       Error in `predict()`:
-      ! `neighbors` must be a whole number between 0 and 9, not the number 10.
+      ! `neighbors` must be a whole number between 0 and 50, not the number 51.
+
+---
+
+    Code
+      predict(mod, data$x, neighbors = -1)
+    Condition
+      Error in `predict()`:
+      ! `neighbors` must be a whole number between 0 and 50, not the number -1.
+
+---
+
+    Code
+      predict(mod, data$x, neighbors = 2.5)
+    Condition
+      Error in `predict()`:
+      ! `neighbors` must be a whole number, not the number 2.5.
+
+---
+
+    Code
+      predict(mod, data$x, neighbors = NA)
+    Condition
+      Error in `predict()`:
+      ! `neighbors` must be a whole number, not `NA`.
 

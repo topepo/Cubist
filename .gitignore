@@ -27,3 +27,4 @@ src/Makevars
 /doc/
 /Meta/
 .claude/settings.local.json
+/plans
