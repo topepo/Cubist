@@ -15,10 +15,10 @@
 #' @return a numeric vector is returned
 #' @author R code by Max Kuhn, original C sources by R Quinlan and
 #'  modifications be Steve Weston
-#' @details Note that the predictions can fail for various reasons.
-#'  For example, as shown in the examples, if the model uses a
-#'  qualitative predictor and the prediction data has a new level
-#'  of that predictor, the function will throw an error.
+#' @details If a factor or character column in `newdata` has a value
+#'  that was not in the training set, that value is treated as missing
+#'  and a warning is issued. As for other missing values, Cubist then uses
+#'  the most frequent training set value. Infinite values are an error.
 #' @seealso [cubist()], [cubistControl()], [summary.cubist()],
 #'  [predict.cubist()], [dotplot.cubist()]
 #' @references Quinlan. Learning with continuous classes.
@@ -46,17 +46,15 @@
 #' ## now add instances
 #' predict(mod1, BostonHousing[1:4, -14], neighbors = 5)
 #'
-#' # Example error
+#' # New levels are treated as missing values
 #' iris_test <- iris
 #' iris_test$Species <- as.character(iris_test$Species)
 #'
 #' mod <- cubist(x = iris_test[1:99, 2:5],
 #'               y = iris_test$Sepal.Length[1:99])
 #'
-#' # predict(mod, iris_test[100:151, 2:5])
-#' # Error:
-#' # *** line 2 of `undefined.cases':
-#' # bad value of 'virginica' for attribute 'Species'
+#' # 'virginica' is not in the training set:
+#' predict(mod, iris_test[100:105, 2:5])
 #' @method predict cubist
 #' @export
 predict.cubist <- function(object, newdata = NULL, neighbors = 0, ...) {
@@ -97,6 +95,44 @@ predict.cubist <- function(object, newdata = NULL, neighbors = 0, ...) {
     )
   }
 
+  if (identical(object$format_version, 2L)) {
+    return(predict_cubist_vectors(object, newdata))
+  }
+  predict_cubist_legacy(object, newdata)
+}
+
+# Models fitted with Cubist versions after 0.6.0 store the training data as
+# vectors (see R/data-spec.R) and are predicted without any text formatting.
+predict_cubist_vectors <- function(object, newdata) {
+  newdata <- as.data.frame(newdata, stringsAsFactors = FALSE)
+  cols <- cubist_data_columns(newdata, object$spec, new_data = TRUE)
+
+  # The model header records the sampling fraction used for fitting. If it
+  # were left in, the C code would also subsample the new cases. The
+  # header line starts with `sample=`; attribute lines start with `att=`, so
+  # variable names cannot match.
+  model <- gsub(
+    "(^|\n)sample=\"[^\"]*\" init=\"[^\"]*\"\n",
+    "\\1",
+    object$model
+  )
+
+  Z <- .Call(
+    "C_cubist_predict",
+    object$spec,
+    model,
+    object$train$x,
+    object$train$y,
+    object$train$w,
+    cols,
+    PACKAGE = "Cubist"
+  )
+  Z$pred
+}
+
+# Models fitted with Cubist <= 0.6.0 store the `.names` and `.data` files as
+# strings and are predicted through the original text interface.
+predict_cubist_legacy <- function(object, newdata) {
   ## If there are case weights used during training, the C code
   ## will expect a column of weights in the new data but the
   ## values will be ignored. `makeDataFile` puts those last in
@@ -126,8 +162,8 @@ predict.cubist <- function(object, newdata = NULL, neighbors = 0, ...) {
   Z <- .C(
     "predictions",
     as.character(caseString),
-    as.character(object$names),
-    as.character(object$data),
+    as.character(object[["names"]]),
+    as.character(object[["data"]]),
     as.character(caseModel),
     pred = double(nrow(newdata)),
     output = character(1),

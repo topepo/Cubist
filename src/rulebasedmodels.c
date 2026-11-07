@@ -52,6 +52,7 @@ void initglobals(void)
   MaxCase = -1;
 
   Case = Nil;
+  LoadTestData = Nil;
 
   SaveCase = Nil;
   Blocked = Nil;

@@ -94,9 +94,10 @@ makeNamesFile <-
     out
   }
 
-escapes <- function(x, chars = c(":", ";", "|")) {
-  for (i in chars) {
-    x <- gsub(i, paste("\\", i, sep = ""), x, fixed = TRUE)
-  }
-  gsub("([^[:alnum:]^[:space:]])", "\\\\\\1", x, useBytes = TRUE)
+# Prefix every character other than letters, digits, and whitespace with a
+# backslash, as the Cubist text formats require. This is done in one pass:
+# escaping some characters first and then everything else would escape the
+# added backslashes again (c:d became c\\\:d, which Cubist read as c\:d).
+escapes <- function(x) {
+  gsub("([^[:alnum:][:space:]])", "\\\\\\1", x, useBytes = TRUE)
 }

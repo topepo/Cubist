@@ -12,7 +12,6 @@ int samplemain(double *outputv)
 {
   RRuleSet *CubistModel;
   FILE *F;
-  CaseNo i;
 
   /*  Read information on attribute names and values  */
 
@@ -54,6 +53,24 @@ int samplemain(double *outputv)
   /* Not training, but allow unknown target */
   GetData(F, binfalse, bintrue); /* GetData closes the file */
 
+  PredictLoaded(CubistModel, outputv);
+
+  return 0;
+}
+
+/*************************************************************************/
+/*                                                                       */
+/* Predict the loaded cases, copy the predictions to outputv, and */
+/* free everything allocated while loading the names, model, and */
+/* data.  Shared by samplemain and RPredict (rdata.c).   */
+/*                                                                       */
+/*************************************************************************/
+
+void PredictLoaded(RRuleSet *CubistModel, double *outputv)
+/*   -------------  */
+{
+  CaseNo i;
+
   FindPredictedValues(CubistModel, 0, MaxCase);
 
   ForEach(i, 0, MaxCase) { outputv[i] = PredVal(Case[i]); }
@@ -73,6 +90,4 @@ int samplemain(double *outputv)
 
   /* Free memory allocated by GetNames */
   FreeNamesData();
-
-  return 0;
 }

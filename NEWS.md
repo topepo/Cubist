@@ -1,5 +1,29 @@
 # Cubist (development version)
 
+* Data are now passed from R to the C code as vectors. Previously, `cubist()` and `predict()` wrote the data in the text formats of the command-line version of Cubist (`.names` and `.data` files, as strings) and the C code parsed them again. Removing that step fixes several problems:
+
+  * Factor levels `"?"` and `"N/A"` were read as missing and not-applicable values. They are now ordinary levels.
+
+  * Levels that differed only in whitespace (e.g., `"a b"` and `"a  b"`, or `"a"` and `" a"`) were merged. They are now kept apart.
+
+  * Factor levels with commas, colons, and other punctuation, empty-string levels, single-level factors, and names longer than 1000 characters made the C code stop (sometimes ending the R session). They now work.
+
+  * Column names with colons, semicolons, or vertical bars were changed (e.g., `c:d` became `c\:d`), which made `cubist()` fail. Names are now kept as is. Columns that start with `sample` are no longer renamed internally.
+
+  * Preparing the data takes much less time and the fitted object is smaller. The object no longer has a `data` string. Instead, it has `spec`, `train`, and `format_version` elements. The `names` string is still there (in the same format) because the tidyrules package parses it, but the model does not. `exportCubistFiles()` still writes the `.names` and `.data` files.
+
+  * Models with the same data and options are the same as before. The one exception is character predictors: their levels are now sorted (in the C locale), as `factor()` would do, instead of being kept in the order they first appear. Models fitted with Cubist 0.6.0 or earlier still work with `predict()`.
+
+* In `predict()`, a factor or character value that is not in the training set is now treated as missing, with a warning. Before, those rows got a C error message and an invalid prediction.
+
+* In `predict()`, a column of `newdata` that has only missing values is treated as missing whatever its class (e.g. `data.frame(x = NA)` makes a logical column). This keeps the 0.6.0 behavior that the dendroTools package relies on. A logical column with values is used as 0/1 when the predictor was numeric in the training set. Before, `TRUE` and `FALSE` gave wrong predictions without a warning.
+
+* Clearer errors for infinite values in the predictors, outcome, or weights, for duplicated column names, for unsupported column types (e.g., logical), for an outcome `label` that is also a column name, for a `"case weight"` column when weights are used, and for `y` or `weights` with the wrong length.
+
+* `cubistControl(seed = )` is now used. Before, the C code replaced it with a value from the clock, so models with `sample > 0` could not be reproduced.
+
+* Fixed `escapes()`, which escaped colons, semicolons, and vertical bars twice when writing the text formats (e.g. in `exportCubistFiles()`).
+
 * The feasible ranges for `committees` and `neighbors` have been removed:
 
   * `cubist()` no longer limits `committees` to 100. Any integer >= 1 is allowed.

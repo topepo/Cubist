@@ -36,6 +36,13 @@
 #include "redefine.h"
 #include "transform.h"
 
+/*  When cases come from R vectors rather than a .data file (rdata.c),
+    the hold-out cases of a sampled fit cannot be re-read from a file.
+    RCubist() then sets this hook to load them; it is Nil otherwise and
+    is reset by initglobals().  */
+
+void (*LoadTestData)(void) = Nil;
+
 /*************************************************************************/
 /*                                                                       */
 /*      Construct, save and evaluate a single model    */
@@ -45,7 +52,8 @@
 void SingleCttee(void)
 /*   -----------  */
 {
-  FILE *F;
+  FILE *F = Nil;
+  Boolean HaveTest = binfalse;
 
   ConstructCttee();
 
@@ -59,7 +67,13 @@ void SingleCttee(void)
 
   EvaluateCttee(Cttee, binfalse);
 
-  if ((F = GetFile((SAMPLE ? ".data" : ".test"), "r"))) {
+  if (SAMPLE && LoadTestData) {
+    HaveTest = bintrue;
+  } else if ((F = GetFile((SAMPLE ? ".data" : ".test"), "r"))) {
+    HaveTest = bintrue;
+  }
+
+  if (HaveTest) {
     NotifyStage(READTEST);
     Progress(-1.0);
 
@@ -72,7 +86,11 @@ void SingleCttee(void)
     }
     Case = Nil;
 
-    GetData(F, binfalse, binfalse);
+    if (F) {
+      GetData(F, binfalse, binfalse);
+    } else {
+      LoadTestData();
+    }
 
     fprintf(Of, T_EvalTest, MaxCase + 1);
 

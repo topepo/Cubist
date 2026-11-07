@@ -90,8 +90,7 @@ test_that("cubist handles reserved name 'sample' in predictors", {
   expect_true("sample" %in% mod$vars$all)
 })
 
-test_that("cubist converts __Sample back to sample in output", {
-  # Create data with a column starting with 'sample'
+test_that("names starting with 'sample' are not renamed", {
   set.seed(8361)
   x <- data.frame(
     sample_var = rnorm(100),
@@ -102,12 +101,9 @@ test_that("cubist converts __Sample back to sample in output", {
   mod <- cubist(x, y)
   expect_s3_class(mod, "cubist")
 
-  # Check that output contains 'sample' not '__Sample'
-  # The conversion should happen
-  expect_true(
-    grepl("sample", mod$output, ignore.case = TRUE) ||
-      !grepl("__Sample", mod$output)
-  )
+  expect_match(mod$model, "att=\"sample_var\"", fixed = TRUE)
+  expect_no_match(mod$model, "__Sample", fixed = TRUE)
+  expect_no_match(mod$output, "__Sample", fixed = TRUE)
 })
 
 test_that("cubist works with single predictor", {

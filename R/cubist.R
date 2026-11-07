@@ -107,9 +107,22 @@ cubist <- function(x, ...) UseMethod("cubist")
 #'  relative weight is set to 1."
 #' @param \dots optional arguments to pass (not currently used)
 #' @return an object of class `cubist` with elements:
-#'  \item{data, names, model}{character strings that correspond to
-#'  their counterparts for the command-line program available from
+#'  \item{model}{a character string with the model, in the format of
+#'  the `.model` file of the command-line program available from
 #'  RuleQuest}
+#'  \item{spec}{a list that describes the predictors (names, whether
+#'  they are discrete, and their levels) for the C code}
+#'  \item{train}{a list with the training set predictors (`x`, as
+#'  numbers or integer level codes), outcome (`y`), and case weights
+#'  (`w`). These are needed for predictions with `neighbors > 0`.}
+#'  \item{format_version}{an integer for the way the data are stored.
+#'  Models fitted with Cubist 0.6.0 or earlier do not have this element;
+#'  instead they have a `data` string in the format of the command-line
+#'  program. Use [exportCubistFiles()] to write the data files.}
+#'  \item{names}{a character string that describes the outcome and
+#'  predictors in the format of the `.names` file of the command-line
+#'  program. Factor levels are not escaped. This is kept for compatibility
+#'  with other packages; the model does not use it.}
 #'  \item{output}{basic cubist output captured from the C code,
 #'  including the rules, their terminal models and variable usage
 #'  statistics}
@@ -198,34 +211,63 @@ cubist.default <- function(
   }
 
   check_names(x)
-  namesString <-
-    makeNamesFile(x, y, w = weights, label = control$label, comments = TRUE)
-  dataString <- makeDataFile(x, y, weights)
+  if (length(y) != nrow(x)) {
+    stop(
+      "`y` has ",
+      length(y),
+      " values but `x` has ",
+      nrow(x),
+      " rows",
+      call. = FALSE
+    )
+  }
+  if (!is.null(weights) && length(weights) != nrow(x)) {
+    stop(
+      "`weights` has ",
+      length(weights),
+      " values but `x` has ",
+      nrow(x),
+      " rows",
+      call. = FALSE
+    )
+  }
 
-  Z <- .C(
-    "cubist",
-    as.character(namesString),
-    as.character(dataString),
+  check_finite(y, "The outcome")
+  if (!is.null(weights)) {
+    check_finite(weights, "`weights`")
+  }
+
+  # Pass the data to the C code as vectors (see R/data-spec.R)
+  x_df <- as.data.frame(x, stringsAsFactors = FALSE)
+  spec <- cubist_data_spec(
+    x_df,
+    label = control$label,
+    has_weights = !is.null(weights)
+  )
+  train <- list(
+    x = cubist_data_columns(x_df, spec),
+    y = as.double(y),
+    w = NULL
+  )
+  if (!is.null(weights)) {
+    train$w <- as.double(weights)
+  }
+
+  Z <- .Call(
+    "C_cubist_fit",
+    spec,
+    train$x,
+    train$y,
+    train$w,
     as.logical(control$unbiased), # -u : generate unbiased rules
-    "yes", # -i and -a : how to combine these?
-    as.integer(1), # -n : set the number of nearest neighbors
     as.integer(committees), # -c : construct a committee model
     as.double(control$sample), # -S : use a sample of x% for training
     #      and a disjoint sample for testing
     as.integer(control$seed), # -I : set the sampling seed value
     as.integer(control$rules), # -r: set the maximum number of rules
     as.double(control$extrapolation), # -e : set the extrapolation limit
-    model = character(1), # pass back .model file as a string
-    output = character(1), # pass back cubist output as a string
     PACKAGE = "Cubist"
   )
-
-  # Check for converted names
-  has_reserved <- grep("\n__Sample", namesString, fixed = TRUE)
-  if (length(has_reserved) > 0) {
-    Z$output <- gsub("__Sample", "sample", Z$output)
-    Z$model <- gsub("__Sample", "sample", Z$model)
-  }
 
   # Strip timestamps if requested
   if (isTRUE(control$strip_time_stamps)) {
@@ -277,9 +319,17 @@ cubist.default <- function(
     }
   }
 
+  # `names` is not used by this package any more (the C code gets `spec`
+  # instead), but other packages read the attribute types and levels from
+  # this string (e.g. tidyrules), so keep it in the 0.6.0 format. It is small
+  # compared with the `data` string, which is not kept.
+  names_string <- cubist_names_string(spec, escape_values = FALSE)
+
   out <- list(
-    data = dataString,
-    names = namesString,
+    spec = spec,
+    train = train,
+    format_version = 2L,
+    names = names_string,
     caseWeights = !is.null(weights),
     model = Z$model,
     output = Z$output,
