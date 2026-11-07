@@ -14,8 +14,8 @@ factor values are allowed. Must have column names.}
 
 \item{y}{a numeric vector of outcome}
 
-\item{committees}{an integer: how many committee models (e.g..
-boosting iterations) should be used?}
+\item{committees}{an integer >= 1: how many committee models (e.g.,
+boosting iterations) should be used? Quinlan's original code limited this to 100; there is no upper limit here, but training time, memory use, and the size of the model all grow linearly with the number of committees.}
 
 \item{control}{options that control details of the \code{cubist}
 algorithm. See \code{\link[=cubistControl]{cubistControl()}}}

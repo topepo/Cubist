@@ -6,21 +6,37 @@
       Error:
       ! cubist models require a numeric outcome
 
-# cubist errors with committees outside 1-100
+# cubist errors with invalid committees
 
     Code
       cubist(data$x, data$y, committees = 0)
     Condition
       Error:
-      ! number of committees must be between 1 and 100
+      ! number of committees must be a single integer >= 1
 
 ---
 
     Code
-      cubist(data$x, data$y, committees = 101)
+      cubist(data$x, data$y, committees = 2.5)
     Condition
       Error:
-      ! number of committees must be between 1 and 100
+      ! number of committees must be a single integer >= 1
+
+---
+
+    Code
+      cubist(data$x, data$y, committees = c(2, 3))
+    Condition
+      Error:
+      ! number of committees must be a single integer >= 1
+
+---
+
+    Code
+      cubist(data$x, data$y, committees = NA)
+    Condition
+      Error:
+      ! number of committees must be a single integer >= 1
 
 # cubist errors when x is not data.frame or matrix
 

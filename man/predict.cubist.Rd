@@ -12,8 +12,7 @@
 \item{newdata}{a data frame of predictors (in the same order as
 the original training data). Must have column names.}
 
-\item{neighbors}{an integer from 0 to 9: how many instances to
-use to correct the rule-based prediction?}
+\item{neighbors}{an integer from 0 to the number of training set rows: how many instances to use to correct the rule-based prediction? Quinlan's original code limited this to 9. Only training set points that are closer than the average distance between training points are used as neighbors. If fewer than half of the requested neighbors are found within that distance, the rule-based prediction is returned without correction. Because of this, large values of \code{neighbors} can result in fewer corrected predictions. Prediction time also increases with \code{neighbors}.}
 
 \item{\dots}{other options to pass through the function (not
 currently used)}

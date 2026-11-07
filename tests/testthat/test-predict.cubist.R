@@ -78,14 +78,42 @@ test_that("predict.cubist errors with multiple neighbors values", {
   )
 })
 
-test_that("predict.cubist errors when neighbors > 9", {
+test_that("predict.cubist errors with invalid neighbors", {
   data <- new_cubist_data(n = 50, p = 3)
   mod <- cubist(data$x, data$y)
 
   expect_snapshot(
-    predict(mod, data$x, neighbors = 10),
+    predict(mod, data$x, neighbors = 51),
     error = TRUE
   )
+  expect_snapshot(
+    predict(mod, data$x, neighbors = -1),
+    error = TRUE
+  )
+  expect_snapshot(
+    predict(mod, data$x, neighbors = 2.5),
+    error = TRUE
+  )
+  expect_snapshot(
+    predict(mod, data$x, neighbors = NA),
+    error = TRUE
+  )
+})
+
+test_that("predict.cubist works with more than 9 neighbors", {
+  # Rounded predictors produce many tied distances
+  set.seed(1)
+  x <- data.frame(a = round(rnorm(200), 1), b = round(runif(200), 1))
+  y <- 2 * x$a + x$b + rnorm(200, sd = 0.2)
+  mod <- cubist(x[1:150, ], y[1:150])
+  rule_preds <- predict(mod, x[151:200, ])
+
+  for (k in c(10, 25, 50, 150)) {
+    preds <- predict(mod, x[151:200, ], neighbors = k)
+    expect_length(preds, 50)
+    expect_true(all(is.finite(preds)))
+    expect_false(isTRUE(all.equal(preds, rule_preds)))
+  }
 })
 
 test_that("predict.cubist works on new data with same structure", {

@@ -149,7 +149,7 @@ test_that("cubist errors with non-numeric outcome", {
   )
 })
 
-test_that("cubist errors with committees outside 1-100", {
+test_that("cubist errors with invalid committees", {
   data <- new_cubist_data(n = 50, p = 3)
 
   expect_snapshot(
@@ -157,9 +157,29 @@ test_that("cubist errors with committees outside 1-100", {
     error = TRUE
   )
   expect_snapshot(
-    cubist(data$x, data$y, committees = 101),
+    cubist(data$x, data$y, committees = 2.5),
     error = TRUE
   )
+  expect_snapshot(
+    cubist(data$x, data$y, committees = c(2, 3)),
+    error = TRUE
+  )
+  expect_snapshot(
+    cubist(data$x, data$y, committees = NA),
+    error = TRUE
+  )
+})
+
+test_that("cubist allows more than 100 committees", {
+  data <- new_cubist_data(n = 50, p = 3)
+
+  mod <- cubist(data$x, data$y, committees = 150)
+  expect_equal(mod$committees, 150)
+  expect_equal(length(unique(mod$coefficients$committee)), 150)
+
+  preds <- predict(mod, data$x)
+  expect_length(preds, 50)
+  expect_false(any(is.na(preds)))
 })
 
 test_that("cubist errors when x is not data.frame or matrix", {

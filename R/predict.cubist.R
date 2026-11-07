@@ -9,8 +9,7 @@
 #' @param object an object of class `cubist`
 #' @param newdata a data frame of predictors (in the same order as
 #'  the original training data). Must have column names.
-#' @param neighbors an integer from 0 to 9: how many instances to
-#'  use to correct the rule-based prediction?
+#' @param neighbors an integer from 0 to the number of training set rows: how many instances to use to correct the rule-based prediction? Quinlan's original code limited this to 9. Only training set points that are closer than the average distance between training points are used as neighbors. If fewer than half of the requested neighbors are found within that distance, the rule-based prediction is returned without correction. Because of this, large values of `neighbors` can result in fewer corrected predictions. Prediction time also increases with `neighbors`.
 #' @param \dots other options to pass through the function (not
 #'  currently used)
 #' @return a numeric vector is returned
@@ -72,9 +71,17 @@ predict.cubist <- function(object, newdata = NULL, neighbors = 0, ...) {
   if (length(neighbors) > 1) {
     stop("only a single value of neighbors is allowed")
   }
-  if (neighbors > 9) {
-    stop("'neighbors' must be less than 10")
+  n_train <- object$dims[1]
+  if (!is_whole_number(neighbors) || neighbors < 0 || neighbors > n_train) {
+    stop(
+      "'neighbors' must be a single integer between 0 and the number of ",
+      "training set rows (",
+      n_train,
+      ")",
+      call. = FALSE
+    )
   }
+  neighbors <- as.integer(neighbors)
   if (neighbors > 0) {
     object$model <- gsub(
       "insts=\"0\"",
