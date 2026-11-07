@@ -94,10 +94,10 @@ currently used)</p></dd>
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>Note that the predictions can fail for various reasons.
-For example, as shown in the examples, if the model uses a
-qualitative predictor and the prediction data has a new level
-of that predictor, the function will throw an error.</p>
+    <p>If a factor or character column in <code>newdata</code> has a value
+that was not in the training set, that value is treated as missing
+and a warning is issued. As for other missing values, Cubist then uses
+the most frequent training set value. Infinite values are an error.</p>
     </div>
     <div id="references">
     <h2>References</h2>
@@ -137,17 +137,18 @@ modifications be Steve Weston</p>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">mod1</span>, <span class="va">BostonHousing</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">14</span><span class="op">]</span>, neighbors <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 26.07685 21.67079 33.87119 34.64103</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Example error</span></span></span>
+<span class="r-in"><span><span class="co"># New levels are treated as missing values</span></span></span>
 <span class="r-in"><span><span class="va">iris_test</span> <span class="op">&lt;-</span> <span class="va">iris</span></span></span>
 <span class="r-in"><span><span class="va">iris_test</span><span class="op">$</span><span class="va">Species</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">iris_test</span><span class="op">$</span><span class="va">Species</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="cubist.default.html">cubist</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">iris_test</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">99</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span>,</span></span>
 <span class="r-in"><span>              y <span class="op">=</span> <span class="va">iris_test</span><span class="op">$</span><span class="va">Sepal.Length</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">99</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># predict(mod, iris_test[100:151, 2:5])</span></span></span>
-<span class="r-in"><span><span class="co"># Error:</span></span></span>
-<span class="r-in"><span><span class="co"># *** line 2 of `undefined.cases':</span></span></span>
-<span class="r-in"><span><span class="co"># bad value of 'virginica' for attribute 'Species'</span></span></span>
+<span class="r-in"><span><span class="co"># 'virginica' is not in the training set:</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">mod</span>, <span class="va">iris_test</span><span class="op">[</span><span class="fl">100</span><span class="op">:</span><span class="fl">105</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`newdata` has values that were not in the training set; they are treated as missing:</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   'Species': 'virginica'</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 5.888 7.100 6.308 6.872 6.668 6.824</span>
 </code></pre></div>
     </div>
   </div>
