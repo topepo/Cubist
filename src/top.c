@@ -161,7 +161,7 @@ static SEXP list_elt(SEXP list, const char *name) {
       return VECTOR_ELT(list, i);
     }
   }
-  Rf_error("internal error: attribute spec has no element '%s'", name);
+  Rf_error("attribute spec has no element '%s'", name);
   return R_NilValue; /* not reached */
 }
 
@@ -187,7 +187,7 @@ static void unpack_spec(SEXP spec, RAttSpec *out) {
       Rf_length(levels) != p || TYPEOF(target) != STRSXP ||
       Rf_length(target) != 1 || TYPEOF(has_weights) != LGLSXP ||
       Rf_length(has_weights) != 1) {
-    Rf_error("internal error: malformed attribute spec");
+    Rf_error("malformed attribute spec");
   }
 
   const char **att_names = (const char **)R_alloc(p, sizeof(char *));
@@ -201,7 +201,7 @@ static void unpack_spec(SEXP spec, RAttSpec *out) {
     if (LOGICAL(discrete)[j]) {
       SEXP lv = VECTOR_ELT(levels, j);
       if (TYPEOF(lv) != STRSXP) {
-        Rf_error("internal error: levels for '%s' are not character",
+        Rf_error("levels for '%s' are not character",
                  att_names[j]);
       }
       nlevels[j] = Rf_length(lv);
@@ -225,46 +225,46 @@ static void unpack_spec(SEXP spec, RAttSpec *out) {
 static void unpack_cases(SEXP x, SEXP y, SEXP w, const RAttSpec *spec,
                          RCaseData *out) {
   if (TYPEOF(x) != VECSXP || Rf_length(x) != spec->NPred) {
-    Rf_error("internal error: expected a list of %d columns", spec->NPred);
+    Rf_error("expected a list of %d columns", spec->NPred);
   }
 
   int n = -1;
   if (y != R_NilValue) {
     if (TYPEOF(y) != REALSXP) {
-      Rf_error("internal error: the outcome must be a double vector");
+      Rf_error("the outcome must be a double vector");
     }
     n = Rf_length(y);
   } else if (spec->NPred > 0) {
     n = Rf_length(VECTOR_ELT(x, 0));
   }
   if (n < 0) {
-    Rf_error("internal error: cannot determine the number of cases");
+    Rf_error("cannot determine the number of cases");
   }
 
   const void **cols = (const void **)R_alloc(spec->NPred + 1, sizeof(void *));
   for (int j = 0; j < spec->NPred; j++) {
     SEXP col = VECTOR_ELT(x, j);
     if (Rf_length(col) != n) {
-      Rf_error("internal error: column '%s' has %d values, expected %d",
+      Rf_error("column '%s' has %d values, expected %d",
                spec->Names[j], Rf_length(col), n);
     }
     if (spec->Discrete[j]) {
       if (TYPEOF(col) != INTSXP) {
-        Rf_error("internal error: column '%s' must be integer codes",
+        Rf_error("column '%s' must be integer codes",
                  spec->Names[j]);
       }
       const int *codes = INTEGER(col);
       for (int i = 0; i < n; i++) {
         if (codes[i] != NA_INTEGER &&
             (codes[i] < 1 || codes[i] > spec->NLevels[j])) {
-          Rf_error("internal error: column '%s' has an invalid code %d",
+          Rf_error("column '%s' has an invalid code %d",
                    spec->Names[j], codes[i]);
         }
       }
       cols[j] = codes;
     } else {
       if (TYPEOF(col) != REALSXP) {
-        Rf_error("internal error: column '%s' must be double",
+        Rf_error("column '%s' must be double",
                  spec->Names[j]);
       }
       cols[j] = REAL(col);
@@ -274,7 +274,7 @@ static void unpack_cases(SEXP x, SEXP y, SEXP w, const RAttSpec *spec,
   const double *wts = NULL;
   if (w != R_NilValue) {
     if (TYPEOF(w) != REALSXP || Rf_length(w) != n) {
-      Rf_error("internal error: case weights must be %d doubles", n);
+      Rf_error("case weights must be %d doubles", n);
     }
     wts = REAL(w);
   }
@@ -298,12 +298,12 @@ SEXP C_cubist_fit(SEXP spec, SEXP x, SEXP y, SEXP w, SEXP unbiased,
   const char *model_string = "";
 
   if (RDATA_NA_INT != NA_INTEGER) {
-    Rf_error("internal error: NA_INTEGER does not match RDATA_NA_INT");
+    Rf_error("NA_INTEGER does not match RDATA_NA_INT");
   }
 
   unpack_spec(spec, &att_spec);
   if (y == R_NilValue) {
-    Rf_error("internal error: the outcome is required to fit a model");
+    Rf_error("the outcome is required to fit a model");
   }
   unpack_cases(x, y, w, &att_spec, &train);
 
@@ -334,8 +334,12 @@ SEXP C_cubist_fit(SEXP spec, SEXP x, SEXP y, SEXP w, SEXP unbiased,
     char *copy = R_alloc(strlen(mstr) + 1, 1);
     strcpy(copy, mstr);
     model_string = copy;
-  } else {
-    Rprintf("cubist code called exit with value %d\n", val - JMP_OFFSET);
+  }
+  // When the C code stops (rbm_exit), the reason is in the output; R reports
+  // it as an error using the status below
+  int status = 0;
+  if (val != 0) {
+    status = val - JMP_OFFSET;
   }
 
   const char *ostr = closeOf();
@@ -346,12 +350,14 @@ SEXP C_cubist_fit(SEXP spec, SEXP x, SEXP y, SEXP w, SEXP unbiased,
   rbm_removeall();
   initglobals();
 
-  SEXP out = PROTECT(Rf_allocVector(VECSXP, 2));
-  SEXP out_names = PROTECT(Rf_allocVector(STRSXP, 2));
+  SEXP out = PROTECT(Rf_allocVector(VECSXP, 3));
+  SEXP out_names = PROTECT(Rf_allocVector(STRSXP, 3));
   SET_VECTOR_ELT(out, 0, make_string(model_string));
   SET_VECTOR_ELT(out, 1, make_string(output_string));
+  SET_VECTOR_ELT(out, 2, Rf_ScalarInteger(status));
   SET_STRING_ELT(out_names, 0, Rf_mkChar("model"));
   SET_STRING_ELT(out_names, 1, Rf_mkChar("output"));
+  SET_STRING_ELT(out_names, 2, Rf_mkChar("status"));
   Rf_setAttrib(out, R_NamesSymbol, out_names);
   UNPROTECT(2);
   return out;
@@ -364,7 +370,7 @@ SEXP C_cubist_predict(SEXP spec, SEXP model, SEXP train_x, SEXP train_y,
   int val; /* Used by setjmp/longjmp for implementing rbm_exit */
 
   if (TYPEOF(model) != STRSXP || Rf_length(model) != 1) {
-    Rf_error("internal error: the model must be a single string");
+    Rf_error("the model must be a single string");
   }
 
   unpack_spec(spec, &att_spec);
@@ -392,6 +398,11 @@ SEXP C_cubist_predict(SEXP spec, SEXP model, SEXP train_x, SEXP train_y,
   if ((val = setjmp(rbm_buf)) == 0) {
     RPredict(&att_spec, &train, &cases, REAL(pred));
   }
+  // See C_cubist_fit()
+  int status = 0;
+  if (val != 0) {
+    status = val - JMP_OFFSET;
+  }
 
   const char *ostr = closeOf();
   char *output_string = R_alloc(strlen(ostr) + 1, 1);
@@ -400,12 +411,14 @@ SEXP C_cubist_predict(SEXP spec, SEXP model, SEXP train_x, SEXP train_y,
   rbm_removeall();
   initglobals();
 
-  SEXP out = PROTECT(Rf_allocVector(VECSXP, 2));
-  SEXP out_names = PROTECT(Rf_allocVector(STRSXP, 2));
+  SEXP out = PROTECT(Rf_allocVector(VECSXP, 3));
+  SEXP out_names = PROTECT(Rf_allocVector(STRSXP, 3));
   SET_VECTOR_ELT(out, 0, pred);
   SET_VECTOR_ELT(out, 1, make_string(output_string));
+  SET_VECTOR_ELT(out, 2, Rf_ScalarInteger(status));
   SET_STRING_ELT(out_names, 0, Rf_mkChar("pred"));
   SET_STRING_ELT(out_names, 1, Rf_mkChar("output"));
+  SET_STRING_ELT(out_names, 2, Rf_mkChar("status"));
   Rf_setAttrib(out, R_NamesSymbol, out_names);
   UNPROTECT(3);
   return out;

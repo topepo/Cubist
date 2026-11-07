@@ -150,41 +150,6 @@ test_that("predict.cubist works with factor predictors", {
   expect_length(preds, 20)
 })
 
-# --- bad_att_index() tests ---
-
-test_that("bad_att_index returns integer(0) when no bad attributes", {
-  # Normal output with no errors
-  output <- "Some normal output\nNo errors here"
-
-  result <- Cubist:::bad_att_index(output)
-  expect_equal(result, integer(0))
-})
-
-test_that("bad_att_index parses bad value errors from output", {
-  # Simulated output with bad value error (single string with newlines)
-  output <- paste(
-    "*** line 5 of `undefined.cases':",
-    "    bad value of 'unknown' for attribute 'category'",
-    sep = "\n"
-  )
-
-  result <- Cubist:::bad_att_index(output)
-  expect_equal(result, 5L)
-})
-
-test_that("bad_att_index handles multiple bad values", {
-  output <- paste(
-    "*** line 3 of `undefined.cases':",
-    "    bad value of 'x' for attribute 'a'",
-    "*** line 7 of `undefined.cases':",
-    "    bad value of 'y' for attribute 'b'",
-    sep = "\n"
-  )
-
-  result <- Cubist:::bad_att_index(output)
-  expect_equal(result, c(3L, 7L))
-})
-
 test_that("neighbors = 0 does not modify model", {
   data <- new_cubist_data(n = 50, p = 3)
   mod <- cubist(data$x, data$y)

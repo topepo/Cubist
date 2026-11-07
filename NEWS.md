@@ -14,11 +14,15 @@
 
   * Models with the same data and options are the same as before. The one exception is character predictors: their levels are now sorted (in the C locale), as `factor()` would do, instead of being kept in the order they first appear. Models fitted with Cubist 0.6.0 or earlier still work with `predict()`.
 
+* Input checks in `cubist()`, `cubistControl()`, `predict()`, and `exportCubistFiles()` now use cli and the rlang type checkers, so errors and warnings name the function that was called and the argument that is wrong (#69). When the C code stops (e.g., when all outcome values are missing), `cubist()` and `predict()` now give an error with the reason. Before, `cubist()` failed later with an unrelated error and `predict()` returned missing values.
+
 * In `predict()`, a factor or character value that is not in the training set is now treated as missing, with a warning. Before, those rows got a C error message and an invalid prediction.
 
 * In `predict()`, a column of `newdata` that has only missing values is treated as missing whatever its class (e.g. `data.frame(x = NA)` makes a logical column). This keeps the 0.6.0 behavior that the dendroTools package relies on. A logical column with values is used as 0/1 when the predictor was numeric in the training set. Before, `TRUE` and `FALSE` gave wrong predictions without a warning.
 
 * Clearer errors for infinite values in the predictors, outcome, or weights, for duplicated column names, for unsupported column types (e.g., logical), for an outcome `label` that is also a column name, for a `"case weight"` column when weights are used, and for `y` or `weights` with the wrong length.
+
+* `cubist()` now requires at least two rows with a non-missing outcome. With only one, the C code never returned and the R session had to be killed.
 
 * `cubistControl(seed = )` is now used. Before, the C code replaced it with a value from the clock, so models with `sample > 0` could not be reproduced.
 

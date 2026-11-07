@@ -20,7 +20,7 @@ cubist <- function(x, ...) UseMethod("cubist")
 #  strings that mimic the formats that one would use with the
 #  command line version and get back the textual representation
 #  that would be saved to the .model file also as a string. The
-#  predicton function would then pass the model text string (and
+#  prediction function would then pass the model text string (and
 #  the data text string if instances are used) to the C code for
 #  prediction.
 
@@ -189,52 +189,25 @@ cubist.default <- function(
   ...
 ) {
   funcCall <- match.call(expand.dots = TRUE)
-  if (!is.numeric(y)) {
-    stop("cubist models require a numeric outcome", call. = FALSE)
-  }
 
-  if (!is_whole_number(committees) || committees < 1) {
-    stop("number of committees must be a single integer >= 1", call. = FALSE)
-  }
+  check_numeric(y)
+  check_number_whole(committees, min = 1)
+  check_data_frame_or_matrix(x)
+  check_numeric(weights, allow_null = TRUE)
 
-  if (!is.data.frame(x) & !is.matrix(x)) {
-    stop("x must be a matrix or data frame", call. = FALSE)
-  }
   if (inherits(x, "tbl_df")) {
     x <- as.data.frame(x)
   }
 
-  check_date_columns(x)
-
-  if (!is.null(weights) && !is.numeric(weights)) {
-    stop("case weights must be numeric", call. = FALSE)
-  }
-
   check_names(x)
-  if (length(y) != nrow(x)) {
-    stop(
-      "`y` has ",
-      length(y),
-      " values but `x` has ",
-      nrow(x),
-      " rows",
-      call. = FALSE
-    )
-  }
-  if (!is.null(weights) && length(weights) != nrow(x)) {
-    stop(
-      "`weights` has ",
-      length(weights),
-      " values but `x` has ",
-      nrow(x),
-      " rows",
-      call. = FALSE
-    )
-  }
+  check_date_columns(x)
+  check_same_rows(y, x)
+  check_same_rows(weights, x)
 
-  check_finite(y, "The outcome")
+  check_finite(y)
+  check_enough_cases(y)
   if (!is.null(weights)) {
-    check_finite(weights, "`weights`")
+    check_finite(weights)
   }
 
   # Pass the data to the C code as vectors (see R/data-spec.R)
@@ -253,7 +226,7 @@ cubist.default <- function(
     train$w <- as.double(weights)
   }
 
-  Z <- .Call(
+  Z <- call_cubist(.Call(
     "C_cubist_fit",
     spec,
     train$x,
@@ -267,7 +240,7 @@ cubist.default <- function(
     as.integer(control$rules), # -r: set the maximum number of rules
     as.double(control$extrapolation), # -e : set the extrapolation limit
     PACKAGE = "Cubist"
-  )
+  ))
 
   # Strip timestamps if requested
   if (isTRUE(control$strip_time_stamps)) {
@@ -365,7 +338,7 @@ cubist.default <- function(
 #'
 #' @param unbiased a logical: should unbiased rules be used?
 #' @param rules an integer (or `NA`): define an explicit limit to
-#'  the number of rules used (`NA` let's Cubist decide).
+#'  the number of rules used (`NA` lets Cubist decide).
 #' @param extrapolation a number between 0 and 100: since Cubist
 #'  uses linear models, predictions can be outside of the outside of
 #'  the range seen the training set. This parameter controls how
@@ -413,22 +386,10 @@ cubistControl <- function(
   label = "outcome",
   strip_time_stamps = TRUE
 ) {
-  if (!is.na(rules) & (rules < 1 | rules > 1000000)) {
-    stop("number of rules must be between 1 and 1000000", call. = FALSE)
-  }
-  if (extrapolation < 0 | extrapolation > 100) {
-    stop("percent extrapolation must between 0 and 100", call. = FALSE)
-  }
-  if (sample < 0.0 | sample > 99.9) {
-    stop("sampling percentage must be between 0.0 and 99.9", call. = FALSE)
-  }
-  if (
-    !is.logical(strip_time_stamps) ||
-      length(strip_time_stamps) != 1 ||
-      is.na(strip_time_stamps)
-  ) {
-    stop("strip_time_stamps must be a single logical value", call. = FALSE)
-  }
+  check_number_whole(rules, min = 1, max = 1000000, allow_na = TRUE)
+  check_number_decimal(extrapolation, min = 0, max = 100)
+  check_number_decimal(sample, min = 0, max = 99.9)
+  check_bool(strip_time_stamps)
 
   list(
     unbiased = unbiased,
@@ -684,10 +645,9 @@ truncateText <- function(x) {
   paste(out, collapse = "\n")
 }
 
-check_names <- function(x) {
-  cn <- colnames(x)
-  if (is.null(cn)) {
-    stop("The data should have column names")
+check_names <- function(x, arg = caller_arg(x), call = caller_env()) {
+  if (is.null(colnames(x))) {
+    cli_abort("{.arg {arg}} must have column names.", call = call)
   }
   invisible(NULL)
 }
@@ -705,30 +665,99 @@ strip_time_stamps <- function(x) {
   x
 }
 
-check_date_columns <- function(x) {
+check_date_columns <- function(x, arg = caller_arg(x), call = caller_env()) {
   date_classes <- c("Date", "POSIXt", "POSIXct", "POSIXlt")
   is_date <- vapply(x, function(col) inherits(col, date_classes), logical(1))
 
   if (any(is_date)) {
     date_cols <- colnames(x)[is_date]
-    stop(
-      "Column",
-      if (length(date_cols) > 1) "s" else "",
-      " ",
-      paste0("'", date_cols, "'", collapse = ", "),
-      " ",
-      if (length(date_cols) > 1) "have" else "has",
-      " a date/datetime class. ",
-      "Cubist does not support date or datetime predictors. ",
-      "Consider converting to numeric (e.g., days since a reference date) ",
-      "or extracting components (year, month, day) as separate predictors.",
-      call. = FALSE
+    cli_abort(
+      c(
+        "Column{?s} {.field {date_cols}} {?has/have} a date/datetime class.",
+        "x" = "Cubist does not support date or datetime predictors.",
+        "i" = "Consider converting to numeric (e.g., days since a reference
+               date) or extracting components (year, month, day) as separate
+               predictors."
+      ),
+      call = call
     )
   }
   invisible(NULL)
 }
 
-# Is `x` a single, non-missing, finite whole number?
-is_whole_number <- function(x) {
-  is.numeric(x) && length(x) == 1 && !is.na(x) && is.finite(x) && x == round(x)
+check_numeric <- function(
+  x,
+  ...,
+  allow_null = FALSE,
+  arg = caller_arg(x),
+  call = caller_env()
+) {
+  if (!missing(x)) {
+    if (is.null(x)) {
+      if (allow_null) {
+        return(invisible(NULL))
+      }
+    } else if (is.numeric(x)) {
+      return(invisible(NULL))
+    }
+  }
+
+  stop_input_type(
+    x,
+    "a numeric vector",
+    ...,
+    allow_null = allow_null,
+    arg = arg,
+    call = call
+  )
+}
+
+check_data_frame_or_matrix <- function(
+  x,
+  ...,
+  arg = caller_arg(x),
+  call = caller_env()
+) {
+  if (!missing(x) && (is.data.frame(x) || is.matrix(x))) {
+    return(invisible(NULL))
+  }
+
+  stop_input_type(
+    x,
+    c("a data frame", "a matrix"),
+    ...,
+    arg = arg,
+    call = call
+  )
+}
+
+# `x` (the outcome or case weights) must have one value per row of `data`
+check_same_rows <- function(
+  x,
+  data,
+  arg = caller_arg(x),
+  call = caller_env()
+) {
+  if (is.null(x) || length(x) == nrow(data)) {
+    return(invisible(NULL))
+  }
+  cli_abort(
+    "{.arg {arg}} has {length(x)} value{?s} but {.arg x} has {nrow(data)}
+     row{?s}.",
+    call = call
+  )
+}
+
+# The C code drops rows with a missing outcome. With no rows left it stops
+# with an error, but with a single row it never returns (the R session has to
+# be killed), so require at least two rows with a known outcome.
+check_enough_cases <- function(y, arg = caller_arg(y), call = caller_env()) {
+  n_known <- sum(!is.na(y))
+  if (n_known >= 2) {
+    return(invisible(NULL))
+  }
+  cli_abort(
+    "{.arg {arg}} must have at least 2 non-missing values, not {n_known}.",
+    call = call
+  )
 }

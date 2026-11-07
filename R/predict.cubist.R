@@ -58,28 +58,15 @@
 #' @method predict cubist
 #' @export
 predict.cubist <- function(object, newdata = NULL, neighbors = 0, ...) {
-  if (is.null(newdata)) {
-    stop("newdata must be non-null", call. = FALSE)
-  }
+  check_data_frame(newdata)
+  check_names(newdata)
+  # neighbors can be any number up to the training set size
+  check_number_whole(neighbors, min = 0, max = as.double(object$dims[1]))
+  neighbors <- as.integer(neighbors)
 
   ## check order of data to make sure that it is the same
-  check_names(newdata)
   newdata <- newdata[, object$vars$all, drop = FALSE]
 
-  if (length(neighbors) > 1) {
-    stop("only a single value of neighbors is allowed")
-  }
-  n_train <- object$dims[1]
-  if (!is_whole_number(neighbors) || neighbors < 0 || neighbors > n_train) {
-    stop(
-      "'neighbors' must be a single integer between 0 and the number of ",
-      "training set rows (",
-      n_train,
-      ")",
-      call. = FALSE
-    )
-  }
-  neighbors <- as.integer(neighbors)
   if (neighbors > 0) {
     object$model <- gsub(
       "insts=\"0\"",
@@ -96,16 +83,21 @@ predict.cubist <- function(object, newdata = NULL, neighbors = 0, ...) {
   }
 
   if (identical(object$format_version, 2L)) {
-    return(predict_cubist_vectors(object, newdata))
+    return(predict_cubist_vectors(object, newdata, call = current_env()))
   }
   predict_cubist_legacy(object, newdata)
 }
 
 # Models fitted with Cubist versions after 0.6.0 store the training data as
 # vectors (see R/data-spec.R) and are predicted without any text formatting.
-predict_cubist_vectors <- function(object, newdata) {
+predict_cubist_vectors <- function(object, newdata, call = caller_env()) {
   newdata <- as.data.frame(newdata, stringsAsFactors = FALSE)
-  cols <- cubist_data_columns(newdata, object$spec, new_data = TRUE)
+  cols <- cubist_data_columns(
+    newdata,
+    object$spec,
+    new_data = TRUE,
+    call = call
+  )
 
   # The model header records the sampling fraction used for fitting. If it
   # were left in, the C code would also subsample the new cases. The
@@ -117,15 +109,18 @@ predict_cubist_vectors <- function(object, newdata) {
     object$model
   )
 
-  Z <- .Call(
-    "C_cubist_predict",
-    object$spec,
-    model,
-    object$train$x,
-    object$train$y,
-    object$train$w,
-    cols,
-    PACKAGE = "Cubist"
+  Z <- call_cubist(
+    .Call(
+      "C_cubist_predict",
+      object$spec,
+      model,
+      object$train$x,
+      object$train$y,
+      object$train$w,
+      cols,
+      PACKAGE = "Cubist"
+    ),
+    call = call
   )
   Z$pred
 }
@@ -170,25 +165,4 @@ predict_cubist_legacy <- function(object, newdata) {
     PACKAGE = "Cubist"
   )
   Z$pred
-}
-
-# There are occations when a new sample is predicted that has a
-# different categoriucal value than what was in the training set.
-# The C code does nto return a status integer and only issues
-# errors in Z$output so we parse that and set these cases to NA
-
-bad_att_index <- function(x) {
-  bad_att <- grep("\n    bad value of", x, fixed = TRUE)
-  if (length(bad_att) == 0) {
-    return(integer(0))
-  } else {
-    x <- x[bad_att]
-    x <- strsplit(x, "\n")[[1]]
-    x <- x[grepl("*** line", x, fixed = TRUE)]
-    x <- gsub("*** line ", "", x, fixed = TRUE)
-    x <- strsplit(x, " ")
-    x <- lapply(x, function(x) as.integer(x[1]))
-    x <- unlist(x)
-  }
-  x
 }

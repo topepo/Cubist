@@ -390,6 +390,39 @@ test_that("infinite values in new data are an error", {
   expect_snapshot(predict(mod, bad), error = TRUE)
 })
 
+test_that("errors from the C code are reported", {
+  # cubist() checks for this first, so call the C code directly
+  dat <- new_cubist_data(n = 30, p = 2)
+  spec <- cubist_data_spec(dat$x)
+  cols <- cubist_data_columns(dat$x, spec)
+  expect_snapshot(
+    call_cubist(
+      .Call(
+        "C_cubist_fit",
+        spec,
+        cols,
+        rep(NA_real_, 30),
+        NULL,
+        FALSE,
+        1L,
+        0,
+        1L,
+        100L,
+        1
+      )
+    ),
+    error = TRUE
+  )
+
+  bad_spec <- list(names = "x1")
+  expect_snapshot(
+    call_cubist(
+      .Call("C_cubist_predict", bad_spec, "", list(), 1, NULL, list())
+    ),
+    error = TRUE
+  )
+})
+
 # ------------------------------------------------------------------------------
 # Export
 

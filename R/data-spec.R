@@ -16,11 +16,14 @@
 #   that the C code expects: doubles for numeric columns and integer codes
 #   (1..k, matching `spec$levels`) for factor and character columns.
 
-cubist_data_spec <- function(x, label = "outcome", has_weights = FALSE) {
-  if (!is.character(label) || length(label) != 1 || is.na(label)) {
-    stop("`label` must be a single character string", call. = FALSE)
-  }
-  check_column_names(x, label, has_weights)
+cubist_data_spec <- function(
+  x,
+  label = "outcome",
+  has_weights = FALSE,
+  call = caller_env()
+) {
+  check_string(label, call = call)
+  check_column_names(x, label, has_weights, call = call)
 
   is_discrete <- vapply(x, is_discrete_column, logical(1))
   is_continuous <- vapply(x, is.numeric, logical(1))
@@ -28,11 +31,13 @@ cubist_data_spec <- function(x, label = "outcome", has_weights = FALSE) {
   if (any(bad)) {
     bad_cols <- names(x)[bad]
     bad_types <- vapply(x[bad], function(col) class(col)[1], character(1))
-    stop(
-      "Predictors must be numeric, factor, or character. ",
-      "Unsupported column(s): ",
-      paste0("'", bad_cols, "' (", bad_types, ")", collapse = ", "),
-      call. = FALSE
+    bad_desc <- paste0(bad_cols, " (", bad_types, ")")
+    cli_abort(
+      c(
+        "Predictors must be numeric, factor, or character.",
+        "x" = "Unsupported column{?s}: {.field {bad_desc}}."
+      ),
+      call = call
     )
   }
 
@@ -49,11 +54,16 @@ cubist_data_spec <- function(x, label = "outcome", has_weights = FALSE) {
   )
 }
 
-cubist_data_columns <- function(x, spec, new_data = FALSE) {
+cubist_data_columns <- function(
+  x,
+  spec,
+  new_data = FALSE,
+  call = caller_env()
+) {
   if (!identical(names(x), spec$names)) {
-    stop(
-      "internal error: columns do not match the attribute spec",
-      call. = FALSE
+    cli_abort(
+      "The columns do not match the attribute spec.",
+      .internal = TRUE
     )
   }
   unseen <- list()
@@ -72,25 +82,32 @@ cubist_data_columns <- function(x, spec, new_data = FALSE) {
       if (new_data) {
         col <- coerce_new_numeric(col)
       }
+      col_name <- spec$names[j]
       if (!is.numeric(col)) {
-        stop(
-          "Column '",
-          spec$names[j],
-          "' was numeric in the training set but is ",
-          class(col)[1],
-          " in the new data",
-          call. = FALSE
+        col_class <- class(col)[1]
+        cli_abort(
+          "Column {.field {col_name}} was numeric in the training set but is
+           {.cls {col_class}} in the new data.",
+          call = call
         )
       }
-      check_finite(col, paste0("Column '", spec$names[j], "'"))
+      if (any(is.infinite(col))) {
+        cli_abort(
+          c(
+            "Column {.field {col_name}} has infinite values.",
+            "i" = "Use {.code NA} for missing values instead."
+          ),
+          call = call
+        )
+      }
       cols[[j]] <- as.double(col)
     }
   }
   if (length(unseen) > 0) {
     if (!new_data) {
-      stop(
-        "internal error: training data has values that are not in the spec",
-        call. = FALSE
+      cli_abort(
+        "The training set has values that are not in the attribute spec.",
+        .internal = TRUE
       )
     }
     warn_unseen_levels(unseen)
@@ -173,6 +190,58 @@ cubist_names_string <- function(spec, comments = TRUE, escape_values = TRUE) {
   )
 }
 
+# Call `C_cubist_fit()` or `C_cubist_predict()` and turn their failures into
+# cli errors:
+#
+# * The C wrappers check their inputs with `Rf_error()`. The R code above
+#   prepares those inputs, so a failure there is a bug in this package.
+# * When the Cubist code itself stops (e.g. "No cases with known target
+#   values"), it writes the reason to its output and returns a non-zero
+#   `status`. Without this check, a fit would continue with an empty model
+#   and fail later with an unrelated error, and predictions would all be `NA`.
+#
+# `expr` is the `.Call()` itself (rather than the routine name and arguments)
+# so that R CMD check can see which registered routine is called. It is
+# evaluated lazily, inside `try_fetch()`.
+call_cubist <- function(expr, call = caller_env()) {
+  res <- try_fetch(
+    expr,
+    error = function(cnd) {
+      # the call would be `withCallingHandlers()` from `try_fetch()`
+      cnd$call <- NULL
+      cli_abort(
+        "The data passed to the C code are not valid.",
+        parent = cnd,
+        .internal = TRUE,
+        call = call
+      )
+    }
+  )
+  if (res$status != 0) {
+    reasons <- cubist_error_lines(res$output)
+    cli_abort(
+      c("The Cubist C code stopped with an error.", reasons),
+      call = call
+    )
+  }
+  res
+}
+
+# The Cubist code starts its error and warning lines with "***"
+cubist_error_lines <- function(output) {
+  lines <- strsplit(output, "\n", fixed = TRUE)[[1]]
+  lines <- trimws(lines[grepl("^\\s*\\*\\*\\*", lines)])
+  lines <- trimws(sub("^\\*\\*\\*", "", lines))
+  if (length(lines) == 0) {
+    return(character(0))
+  }
+  # The lines can contain column names and values; double any braces so that
+  # cli prints them as is
+  lines <- gsub("([{}])", "\\1\\1", lines)
+  names(lines) <- rep("x", length(lines))
+  lines
+}
+
 # ------------------------------------------------------------------------------
 
 is_discrete_column <- function(col) {
@@ -214,45 +283,51 @@ coerce_new_numeric <- function(col) {
 }
 
 # The C code stops (and returns no model) when it sees an infinite value, so
-# catch these here. Missing values (NA, NaN) are allowed.
-check_finite <- function(x, what) {
+# catch these here (predictor columns are checked in `cubist_data_columns()`).
+# Missing values (NA, NaN) are allowed.
+check_finite <- function(x, arg = caller_arg(x), call = caller_env()) {
   if (any(is.infinite(x))) {
-    stop(
-      what,
-      " has infinite values; use NA for missing values instead",
-      call. = FALSE
+    cli_abort(
+      c(
+        "{.arg {arg}} has infinite values.",
+        "i" = "Use {.code NA} for missing values instead."
+      ),
+      call = call
     )
   }
   invisible(NULL)
 }
 
-check_column_names <- function(x, label, has_weights) {
+check_column_names <- function(x, label, has_weights, call = caller_env()) {
   nms <- names(x)
   if (is.null(nms) || anyNA(nms) || any(nms == "")) {
-    stop("All columns of `x` must have non-empty names", call. = FALSE)
+    cli_abort("All columns of {.arg x} must have non-empty names.", call = call)
   }
   dups <- unique(nms[duplicated(nms)])
   if (length(dups) > 0) {
-    stop(
-      "Column names of `x` must be unique. Duplicated: ",
-      paste0("'", dups, "'", collapse = ", "),
-      call. = FALSE
+    cli_abort(
+      c(
+        "Column names of {.arg x} must be unique.",
+        "x" = "Duplicated: {.field {dups}}."
+      ),
+      call = call
     )
   }
   if (label %in% nms) {
-    stop(
-      "The outcome label '",
-      label,
-      "' is also a column name in `x`. ",
-      "Use `cubistControl(label = )` to choose a different label.",
-      call. = FALSE
+    cli_abort(
+      c(
+        "The outcome label {.val {label}} is also a column name in {.arg x}.",
+        "i" = "Use {.code cubistControl(label = )} to choose a different
+               label."
+      ),
+      call = call
     )
   }
   if (has_weights && "case weight" %in% nms) {
-    stop(
-      "'case weight' is reserved for the case weights and cannot be ",
-      "a column name in `x` when `weights` are used",
-      call. = FALSE
+    cli_abort(
+      "{.val case weight} is reserved for the case weights and cannot be a
+       column name in {.arg x} when {.arg weights} are used.",
+      call = call
     )
   }
   invisible(NULL)
@@ -262,14 +337,19 @@ warn_unseen_levels <- function(unseen) {
   details <- vapply(
     names(unseen),
     function(nm) {
-      paste0("'", nm, "': ", paste0("'", unseen[[nm]], "'", collapse = ", "))
+      cli::format_inline("{.field {nm}}: {.val {unseen[[nm]]}}")
     },
     character(1)
   )
-  warning(
-    "`newdata` has values that were not in the training set; ",
-    "they are treated as missing:\n",
-    paste0("  ", details, collapse = "\n"),
-    call. = FALSE
+  # The details are already formatted; double any braces in the values so
+  # that cli does not interpolate them a second time
+  details <- gsub("([{}])", "\\1\\1", details)
+  names(details) <- rep("*", length(details))
+  cli_warn(
+    c(
+      "{.arg newdata} has values that were not in the training set; they are
+       treated as missing:",
+      details
+    )
   )
 }

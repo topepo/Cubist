@@ -196,6 +196,20 @@ test_that("cubist errors with non-numeric weights", {
   )
 })
 
+test_that("cubist errors with fewer than 2 known outcome values", {
+  data <- new_cubist_data(n = 5, p = 2)
+
+  expect_snapshot(cubist(data$x[1, ], data$y[1]), error = TRUE)
+  expect_snapshot(
+    cubist(data$x, c(data$y[1], rep(NA, 4))),
+    error = TRUE
+  )
+  expect_snapshot(cubist(data$x, rep(NA_real_, 5)), error = TRUE)
+
+  mod <- cubist(data$x[1:2, ], data$y[1:2])
+  expect_s3_class(mod, "cubist")
+})
+
 test_that("cubist errors with missing column names", {
   data <- new_cubist_data(n = 50, p = 3)
   x_no_names <- as.matrix(data$x)

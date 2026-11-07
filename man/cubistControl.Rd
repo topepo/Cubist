@@ -18,7 +18,7 @@ cubistControl(
 \item{unbiased}{a logical: should unbiased rules be used?}
 
 \item{rules}{an integer (or \code{NA}): define an explicit limit to
-the number of rules used (\code{NA} let's Cubist decide).}
+the number of rules used (\code{NA} lets Cubist decide).}
 
 \item{extrapolation}{a number between 0 and 100: since Cubist
 uses linear models, predictions can be outside of the outside of
