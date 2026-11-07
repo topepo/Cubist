@@ -404,7 +404,12 @@ test_that("exported files match the text interface", {
   path <- withr::local_tempdir()
   exportCubistFiles(mod, path = path, prefix = "m")
 
-  read_file <- function(f) readChar(f, file.size(f), useBytes = TRUE)
+  # exportCubistFiles() writes in text mode, so lines end in "\r\n" on
+  # Windows; use "\n" to compare with the strings
+  read_file <- function(f) {
+    txt <- readChar(f, file.size(f), useBytes = TRUE)
+    gsub("\r\n", "\n", txt, fixed = TRUE)
+  }
   names_file <- read_file(file.path(path, "m.names"))
   legacy_names <- makeNamesFile(dat, y, w = w, comments = TRUE)
   # drop the comment lines, which contain a time stamp
