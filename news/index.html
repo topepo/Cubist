@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Cubist</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -51,7 +51,7 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="development version" id="cubist-development-version">Cubist (development version)<a class="anchor" aria-label="anchor" href="#cubist-development-version"></a></h2>
+<h2 class="page-header" data-toc-text="1.0.0" id="cubist-100">Cubist 1.0.0<small>2026-11-19</small><a class="anchor" aria-label="anchor" href="#cubist-100"></a></h2>
 <ul><li>
 <p>Data are now passed from R to the C code as vectors. Previously, <code><a href="../reference/cubist.default.html">cubist()</a></code> and <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> wrote the data in the text formats of the command-line version of Cubist (<code>.names</code> and <code>.data</code> files, as strings) and the C code parsed them again. Removing that step fixes several problems:</p>
 <ul><li><p>Factor levels <code>"?"</code> and <code>"N/A"</code> were read as missing and not-applicable values. They are now ordinary levels.</p></li>
