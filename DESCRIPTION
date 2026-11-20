@@ -1,7 +1,7 @@
 Type: Package
 Package: Cubist
 Title: Rule- And Instance-Based Regression Modeling
-Version: 1.0.0
+Version: 1.0.0.9000
 Authors@R: c(
     person("Max", "Kuhn", , "mxkuhn@gmail.com", role = c("aut", "cre")),
     person("Steve", "Weston", role = "ctb"),
