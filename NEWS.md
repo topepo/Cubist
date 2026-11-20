@@ -1,4 +1,4 @@
-# Cubist (development version)
+# Cubist 1.0.0
 
 * Data are now passed from R to the C code as vectors. Previously, `cubist()` and `predict()` wrote the data in the text formats of the command-line version of Cubist (`.names` and `.data` files, as strings) and the C code parsed them again. Removing that step fixes several problems:
 
